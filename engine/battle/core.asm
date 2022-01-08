@@ -2690,17 +2690,6 @@ FinalPkmnMusicAndAnimation:
 	ld c, 20
 	call DelayFrames
 	call SlideEnemyPicOut
-	; ...play the final Pokémon music...
-	call IsJohtoGymLeader
-	jr nc, .no_music
-	push de
-	ld de, MUSIC_NONE
-	call PlayMusic
-	call DelayFrame
-	ld de, MUSIC_FINAL_POKEMON_BW
-	call PlayMusic
-	pop de
-.no_music
 	; ...show their sprite and final dialog...
 	ld a, [wTempEnemyMonSpecies]
 	push af
