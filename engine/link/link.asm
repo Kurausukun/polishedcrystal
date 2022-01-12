@@ -1222,33 +1222,16 @@ LinkTrade_TradeStatsMenu:
 	text_end
 
 ValidateOTTrademon:
+; Returns carry if level isn't within 1-100.
 	ld a, [wCurOTTradePartyMon]
-	ld hl, wOTPartyMon1Species
+	ld hl, wOTPartyMon1Level
 	call GetPartyLocation
-	push hl
-	ld a, [wCurOTTradePartyMon]
-	inc a
-	ld c, a
-	ld b, 0
-	ld hl, wOTPartyCount
-	add hl, bc
 	ld a, [hl]
-	pop hl
-	cp [hl]
-	jr nz, .abnormal
 
-	ld b, h
-	ld c, l
-	ld hl, MON_LEVEL
-	add hl, bc
-	ld a, [hl]
-	cp MAX_LEVEL + 1
-	jr nc, .abnormal
-	and a
-	ret
-
-.abnormal
-	scf
+	; Only allow level 1-100.
+	dec a
+	cp MAX_LEVEL
+	ccf
 	ret
 
 CheckAnyOtherAliveMonsForTrade:
@@ -1513,9 +1496,12 @@ LinkTrade:
 	rst CopyBytes
 ; species
 	ld a, [wCurTradePartyMon]
+	assert MON_IS_EGG == MON_FORM
 	ld hl, wPartyMon1IsEgg
 	call GetPartyLocation
-	bit MON_IS_EGG_F, [hl]
+	ld a, [hl]
+	ld [wPlayerTrademonForm], a
+	bit MON_IS_EGG_F, a
 	ld a, EGG
 	jr nz, .got_tradeparty_species
 	ld a, [wCurTradePartyMon]
@@ -1564,9 +1550,12 @@ LinkTrade:
 	rst CopyBytes
 ; species
 	ld a, [wCurOTTradePartyMon]
+	assert MON_IS_EGG == MON_FORM
 	ld hl, wOTPartyMon1IsEgg
 	call GetPartyLocation
-	bit MON_IS_EGG_F, [hl]
+	ld a, [hl]
+	ld [wOTTrademonForm], a
+	bit MON_IS_EGG_F, a
 	ld a, EGG
 	jr nz, .got_tradeot_species
 	ld bc, MON_SPECIES - MON_FORM
@@ -1651,7 +1640,8 @@ LinkTrade:
 	ld a, [hl]
 	ld [wCurPartySpecies], a
 	ld hl, wOTPartyMon1Species
-	ld b, $80
+	ld b, $81
+	inc c
 	farcall CopyBetweenPartyAndTemp
 	farcall AddTempMonToParty
 	ld a, [wPartyCount]
