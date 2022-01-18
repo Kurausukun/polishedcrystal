@@ -1,3 +1,7 @@
+ClearText::
+	text_start
+	done
+
 ClearSpeechBox::
 	hlcoord TEXTBOX_INNERX, TEXTBOX_INNERY
 	lb bc, TEXTBOX_INNERH - 1, TEXTBOX_INNERW
@@ -33,7 +37,7 @@ ClearTileMap::
 	rst ByteFill
 	; Update the BG Map.
 	ldh a, [rLCDC]
-	bit 7, a
+	bit rLCDC_ENABLE, a
 	ret z
 	jmp ApplyTilemapInVBlank
 
@@ -205,17 +209,17 @@ _bc_::
 
 SpecialCharacters:
 	dw FinishString     ; "@"
-	dw SpaceChar        ; "¯"
+	dw DoneText         ; "<DONE>"
+	dw PromptText       ; "<PROMPT>"
 	dw LineBreak        ; "<LNBRK>"
 	dw NextLineChar     ; "<NEXT>"
 	dw LineChar         ; "<LINE>"
 	dw ContText         ; "<CONT>"
 	dw Paragraph        ; "<PARA>"
-	dw DoneText         ; "<DONE>"
-	dw PromptText       ; "<PROMPT>"
 	dw PlaceTargetsName ; "<TARGET>"
 	dw PlaceUsersName   ; "<USER>"
 	dw PlaceEnemysName  ; "<ENEMY>"
+	dw SpaceChar        ; "¯"
 
 NextLineChar::
 	ld a, [wTextboxFlags]
@@ -450,6 +454,7 @@ TextCommands::
 	dw TextCommand_SOUND         ; $06 <SOUND>
 	dw TextCommand_DAY           ; $07 <DAY>
 	dw TextCommand_FAR           ; $08 <FAR>
+	dw TextCommand_CTXT          ; $09 <CTXT>
 	assert_table_length NGRAMS_START
 
 _ImplicitlyStartedText:
@@ -620,6 +625,72 @@ PrintDayOfWeek::
 .Satur:  db "Satur@"
 .Day:    db "day@"
 
-ClearText::
-	text_start
-	done
+TextCommand_CTXT::
+; decompress and print text
+	ld d, 1 ; start with no bits to read a byte right away
+.character_loop
+
+	push bc ; push coords
+
+	xor a ; start at node $00
+.tree_loop
+	; "e = [hli]" when d reaches 0, then carry = next bit from e
+	dec d
+	jr nz, .no_reload
+	ld e, [hl]
+	inc hl
+	ld d, 8
+.no_reload
+	sla e
+	; bc = TextCompressionHuffmanTree[node=a][branch=carry]
+	adc a
+	add LOW(TextCompressionHuffmanTree)
+	ld c, a
+	adc HIGH(TextCompressionHuffmanTree)
+	sub c
+	ld b, a
+	; keep traversing the tree until a leaf node ($7f and above)
+	ld a, [bc]
+	cp $7f
+	jr c, .tree_loop
+
+	; leaf node IDs $ec-$fb correspond to characters $4e-$5d
+	cp $ec
+	jr c, .ok
+	sub $ec - $4e
+.ok
+	; write printable string to wCompressedTextBuffer
+	ld [wCompressedTextBuffer], a
+	ld a, "@"
+	ld [wCompressedTextBuffer+1], a
+
+	pop bc ; pop coords
+
+	push hl ; push string position
+	push de ; push bit-reading state
+
+	; PlaceString expects de = start of string, hl = coords
+	ld de, wCompressedTextBuffer
+	ld a, [de]
+	push af
+	ld h, b
+	ld l, c
+	call _PlaceString ; +2 bytes, -2 cycles over "rst PlaceString"
+	pop af
+
+	pop de ; pop bit-reading state
+	pop hl ; pop string position
+
+	; check for characters that signal end of compression
+	; (same ones as DoTextUntilTerminator)
+	sub "@"
+	ret z ; return to DoTextUntilTerminator
+	assert "@" + 1 == "<DONE>"
+	dec a
+	jr z, .done
+	assert "<DONE>" + 1 == "<PROMPT>"
+	dec a
+	jr nz, .character_loop
+.done
+	pop bc ; pop DoTextUntilTerminator call
+	ret

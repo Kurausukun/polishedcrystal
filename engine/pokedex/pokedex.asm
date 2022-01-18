@@ -1381,7 +1381,7 @@ endr
 	hldexcoord 2, 18
 	ld a, $16
 	ld [hli], a
-	ld a, $f2
+	ld a, "<BLACK>"
 	ld b, 15
 .botmenu_loop
 	ld [hli], a
@@ -2225,21 +2225,17 @@ _Pokedex_Mode:
 	db "Unown Mode@"
 
 .MenuDescriptions:
-	text "<PK><MN> are listed in"
-	next "regional order."
-	text_end
+	db   "<PK><MN> are listed in"
+	next "regional order.@"
 
-	text "<PK><MN> are listed in"
-	next "national order."
-	text_end
+	db   "<PK><MN> are listed in"
+	next "national order.@"
 
-	text "Display Unown"
-	next "information."
-	text_end
+	db   "Display Unown"
+	next "information.@"
 
-	text "Return to the <PK><MN>"
-	next "list."
-	text_end
+	db   "Return to the <PK><MN>"
+	next "list.@"
 
 Pokedex_Search:
 ; Call to fully initialize Search page and reset cursor pos
@@ -2299,7 +2295,7 @@ _Pokedex_Search:
 	add b
 	add 4 ; shape, not mini
 	xor $80
-	hlcoord 7, 15
+	hlcoord 8, 15
 	ld [hli], a
 	inc a
 	ld [hld], a
@@ -2644,12 +2640,12 @@ Pokedex_GetSearchResults:
 
 	; Check if we're doing a null search. - 1 to exclude search order.
 	ld hl, wPokedex_SearchData
-	ld b, NUM_DEXSEARCH - 1
+	ld d, NUM_DEXSEARCH - 1
 	xor a
 .check_null_search
 	or [hl]
 	inc hl
-	dec b
+	dec d
 	jr nz, .check_null_search
 
 	; If we aren't, skip this entry.
@@ -3453,7 +3449,7 @@ Pokedex_ScheduleScreenUpdateWithHBlank:
 	; Needs to be set up immediately during init.
 	call Pokedex_RefreshScreen
 
-	ld a, 1 << 6
+	ld a, 1 << rSTAT_INT_LYC
 	ldh [rSTAT], a
 	ld hl, rIF
 	res LCD_STAT, [hl]
