@@ -289,7 +289,6 @@ StackDexGraphics:
 	ldh [hSCX], a
 	ldh [hSCY], a
 
-	call Pokedex_GetCursorMonInVBK1
 	pop de
 	call _de_
 
@@ -408,7 +407,7 @@ Pokedex_RefreshOAM:
 .indicator_oam
 	pop af
 
-	; In description mode, only display indicator if we have seen formes.
+	; In description mode, only display indicator if we have seen forms.
 	; This is specifically in regular description mode, we don't want to
 	; display it in the "new dex entry".
 	assert DEXDISP_SEARCH + 1 == DEXDISP_DESC

@@ -419,9 +419,24 @@ Pokedex_ScrollPageMon:
 
 Pokedex_GetCursorSpecies:
 ; Returns species in c and a, form+ext in b that cursor is hovering.
+; For a new dex entry, return species+form from wTempMon.
+	ld a, [wPokedex_DisplayMode]
+	cp DEXDISP_NEWDESC
+	jr nz, .not_newdesc
+	ld a, BANK(wTempSpecies)
+	call StackCallInWRAMBankA
+.StackCall1:
+	ld a, [wTempSpecies]
+	ld c, a
+	ld a, [wTempForm]
+	set MON_CAUGHT_F, a
+	ld b, a
+	ret
+
+.not_newdesc
 	ld a, BANK(wDexMons)
 	call StackCallInWRAMBankA
-.Function:
+.StackCall2:
 	ld a, [wPokedex_CursorPos]
 	push af
 	swap a
@@ -1344,12 +1359,12 @@ endr
 	xor b
 	ld [hli], a
 
+.sel_shiny
 	; Don't display bottom menu or shiny hint in new dex entry mode.
 	ld a, [wPokedex_DisplayMode]
 	cp DEXDISP_NEWDESC
 	jr z, .botmenu_done
 
-.sel_shiny
 	; Sel/Shiny indicator
 	ld a, SHINY_CHARM
 	ld [wCurKeyItem], a
@@ -1423,20 +1438,19 @@ endr
 	ld a, [wPokedex_DisplayMode]
 	cp DEXDISP_NEWDESC
 	jr nz, .joypad_loop
+	call Pokedex_GetCursorSpecies
+	call PlayCry
 
 .newdesc_joypad
 	call Pokedex_GetInput
 	rrca
 	jr c, .newdesc_a
 	rrca
-	jr c, .newdesc_done
-	jr .newdesc_joypad
+	jr nc, .newdesc_joypad
 
 .newdesc_a
 	call .SwitchPage
 	jr z, .newdesc_joypad
-.newdesc_done
-	; Exited early
 	pop af
 	pop hl
 	pop hl
@@ -1554,22 +1568,7 @@ Pokedex_Main:
 
 	ld hl, DexTilemap_Main
 	call Pokedex_LoadTilemapWithPokepic
-	ld de, wStringBuffer1
-	hlcoord 9, 2
-	rst PlaceString
 
-	ld a, [wPokedex_MonInfoBank]
-	and a
-	jr nz, .vram_bank_1
-	xor a
-	hlcoord 18, 3, wAttrmap
-	ld [hli], a
-	ld [hl], a
-	hlcoord 18, 4, wAttrmap
-	ld [hli], a
-	ld [hl], a
-
-.vram_bank_1
 	xor a
 	ld [wPokedex_DisplayMode], a
 
@@ -1855,6 +1854,7 @@ Pokedex_Bio:
 
 .AllString
 	db "All @"
+
 INCLUDE "data/pokedex_bio.asm"
 
 Pokedex_Stats:
@@ -2978,7 +2978,7 @@ Pokedex_IterateSpeciesWithMode:
 	xor 1
 Pokedex_IterateSpecies:
 ; Iterates all species. For each iteration, use hl as callback for a function to
-; call for each valid species ID including all formes. bc contains species+form
+; call for each valid species ID including all forms. bc contains species+form
 ; being checked. and de contains the resulting variant (not cosmetic) index.
 ; Iterate in the following order depending on a: 0 (natdex), 1 (johto), 2 (a-z)
 	ld b, 0
@@ -3003,7 +3003,7 @@ Pokedex_IterateSpecies:
 	srl d
 	dec de
 
-	; Begin at forme 1, not forme 0.
+	; Begin at form 1, not form 0.
 	inc b
 
 	push hl
@@ -3477,33 +3477,16 @@ NewPokedexEntry:
 	ld hl, rIE
 	res LCD_STAT, [hl]
 
-	ld hl, wNamedObjectIndex
-	ld a, [hli]
-	ld b, [hl]
-	ld c, a
-
-	; Convert dex number to (simplified) cursor position.
-	call GetPokedexNumber
-	dec bc
-	ld hl, hDividend + 1
-	ld a, c
-	ld [hld], a
-	ld [hl], b
-	ld a, 5
-	ldh [hDivisor], a
-	ld b, 2
-	call Divide
-	ldh a, [hQuotient + 2]
-	ld [wPokedex_Offset], a
-	ldh a, [hRemainder]
-	ld [wPokedex_CursorPos], a
-
 	call ClearPalettes
 	call DelayFrame
 	call StackDexGraphics
 
 	ld a, DEXDISP_NEWDESC
 	ld [wPokedex_DisplayMode], a
+
+	; Ensure that we write the mon graphics to vbk0.
+	ld a, 1 ; will be switched to 0 upon next Pokedex_GetCursorMon call.
+	ld [wPokedex_MonInfoBank], a
 	jmp Pokedex_Description
 
 Pokedex_GetDexEntryPointer:

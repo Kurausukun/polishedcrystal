@@ -426,6 +426,10 @@ PokeBallEffect:
 	ld [wWildMon], a
 	ld [wCurPartySpecies], a
 	ld [wTempSpecies], a
+	ld a, [wOTPartyMon1Form]
+	and SPECIESFORM_MASK
+	ld [wCurForm], a
+	ld [wTempForm], a
 	ld a, [wBattleType]
 	cp BATTLETYPE_TUTORIAL
 	jmp z, .FinishTutorial
@@ -2304,7 +2308,7 @@ Ball_ReplacePartyMonCaughtBall:
 BallReplacedText:
 	text "Put "
 	text_ram wStringBuffer1
-	ctxt " in"
+	text " in"
 	line "the "
 	text_ram wStringBuffer2
 	text "."
@@ -2705,14 +2709,14 @@ AbilityCap:
 	jr .loop
 
 ChangeAbilityToText:
-	ctxt "Change ability to"
+	text "Change ability to"
 	line ""
 	text_ram wStringBuffer1
 	text "?"
 	done
 
 AbilityChangedText:
-	ctxt "The ability was"
+	text "The ability was"
 	line "changed!"
 	prompt
 
