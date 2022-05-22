@@ -1003,7 +1003,7 @@ _GetCursorMon:
 .delay_loop
 	; Delay first before finishing frontpic. Retry if it puts us too late.
 	; If we try to proceed otherwise, we might run past the hblank interrupt
-	; window with GetPreparedFrontpic.
+	; window with Get2bpp.
 	call DelayFrame
 	ldh a, [rLY]
 	cp $13
@@ -1018,7 +1018,15 @@ _GetCursorMon:
 	ld a, 1
 	ldh [rVBK], a
 .dont_switch_vbk
-	farcall GetPreparedFrontpic
+	ldh a, [rSVBK]
+	push af
+	ld a, BANK(wDecompressScratch)
+	ldh [rSVBK], a
+	call GetPaddedFrontpicAddress
+	lb bc, BANK(_GetCursorMon), 7 * 7
+	call Get2bpp
+	pop af
+	ldh [rSVBK], a
 	xor a
 	ldh [rVBK], a
 	ld hl, wBillsPC_ItemVWF
@@ -2810,7 +2818,7 @@ BillsPC_ReleaseAll:
 
 .ReallyReleaseBox:
 	text "Really release the"
-	line "entire box?"
+	line "entire Box?"
 	done
 
 .CantRecallReleasedMons:
@@ -2820,7 +2828,7 @@ BillsPC_ReleaseAll:
 	done
 
 .NothingThere:
-	text "This box is empty."
+	text "The Box is empty."
 	prompt
 
 .NothingReleased:
@@ -2948,7 +2956,7 @@ BillsPC_Theme:
 	ld hl, .ThemeMenuDataHeader
 	call CopyMenuHeader
 	call InitScrollingMenu
-	xor a
+	call GetBoxTheme
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
 
@@ -2959,10 +2967,6 @@ BillsPC_Theme:
 	cp B_BUTTON
 	jr z, .refresh_theme ; revert back to what it used to be
 
-	; [sNewBox[wCurBox]Theme] = [wScrollingMenuCursorPosition]
-	ld a, [wCurBox]
-	ld b, a
-	inc b
 	ld a, [wScrollingMenuCursorPosition]
 	call SetBoxTheme
 
@@ -3307,7 +3311,7 @@ BillsPC_SwapStorage:
 	prompt
 
 .BoxIsFull:
-	text "The box is full."
+	text "The Box is full."
 	prompt
 
 .IsHoldingMail:

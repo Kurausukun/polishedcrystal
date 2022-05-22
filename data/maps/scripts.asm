@@ -209,7 +209,7 @@ SECTION "Goldenrod Scripts 2", ROMX
 INCLUDE "maps/GoldenrodBikeShop.asm"
 INCLUDE "maps/GoldenrodBillsHouse.asm"
 INCLUDE "maps/GoldenrodFlowerShop.asm"
-INCLUDE "maps/GoldenrodHPUpHouse.asm"
+INCLUDE "maps/GoldenrodHoneyHouse.asm"
 INCLUDE "maps/GoldenrodHappinessRater.asm"
 INCLUDE "maps/GoldenrodMagnetTrainStation.asm"
 INCLUDE "maps/GoldenrodNameRater.asm"
@@ -305,6 +305,13 @@ INCLUDE "maps/TinTower10F.asm"
 INCLUDE "maps/TinTowerRoof.asm"
 INCLUDE "maps/BurnedTower1F.asm"
 INCLUDE "maps/BurnedTowerB1F.asm"
+
+
+SECTION "Rugged Road + Snowtop Mountain Scripts", ROMX
+
+INCLUDE "maps/RuggedRoad.asm"
+INCLUDE "maps/SnowtopMountain.asm"
+INCLUDE "maps/Route39RuggedRoadGate.asm"
 
 
 SECTION "Olivine Scripts", ROMX

@@ -111,14 +111,10 @@ UpdateTimeRemaining:
 RestartDailyResetTimer:
 	ld hl, wDailyResetTimer
 	ld a, 1
-	; fallthrough
-
-InitNDaysCountdown:
-	ld [hl], a
+	ld [hli], a
 	push hl
 	call UpdateTime
 	pop hl
-	inc hl
 	jr CopyDayToHL
 
 InitializeStartDay:
@@ -127,22 +123,6 @@ InitializeStartDay:
 CopyDayToHL:
 	ld a, [wCurDay]
 	ld [hl], a
-	ret
-
-RestartLuckyNumberCountdown:
-	call .GetDaysUntilNextFriday
-	ld hl, wLuckyNumberDayBuffer
-	jr InitNDaysCountdown
-
-.GetDaysUntilNextFriday:
-	call GetWeekday
-	cpl
-	add FRIDAY + 1 ; a = FRIDAY - a
-	jr z, .friday_saturday
-	ret nc
-
-.friday_saturday
-	add 7
 	ret
 
 CheckDailyResetTimer::
@@ -267,8 +247,8 @@ CheckPokerusTick::
 	ld a, [hl]
 	and POKERUS_MASK
 	jr z, .next
-	assert POKERUS_CURED % 2 == 1
-	ld d, POKERUS_CURED ; no need to check if pokerus status = POKERUS_CURED, bit 0 is already set
+	assert POKERUS_CURED & %1000
+	ld d, POKERUS_CURED ; no need to check if pokerus status = POKERUS_CURED, bit 3 is already set
 	ld e, b
 .inner_loop
 	rlca

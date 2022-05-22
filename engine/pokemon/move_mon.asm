@@ -880,7 +880,6 @@ ComputeNPCTrademonStats:
 	ld [wCurSpecies], a
 	ld a, MON_FORM
 	call GetPartyParamLocationAndValue
-	and SPECIESFORM_MASK
 	ld [wCurForm], a
 	call GetBaseData
 	ld a, MON_MAXHP
@@ -895,6 +894,12 @@ ComputeNPCTrademonStats:
 	pop de
 	ld a, MON_HP
 	call GetPartyParamLocationAndValue
+	xor a
+	ld [hli], a
+	ld [hld], a
+	ld a, [wCurForm]
+	and IS_EGG_MASK
+	ret nz
 	ld a, [de]
 	inc de
 	ld [hli], a
@@ -1338,6 +1343,7 @@ GivePoke::
 	add a
 	add b
 	ld [wTempMonHappiness], a
+	jr .try_add
 .not_egg
 	ld de, wTempMonNickname
 	ld hl, wMonOrItemNameBuffer
@@ -1413,11 +1419,9 @@ GivePoke::
 	farcall CurBoxFullCheck
 	jr z, .box_not_full
 	ld hl, GiftMonBoxFullText
-	push bc
 	call PrintText
-	pop bc
 .box_not_full
-	farcall GetBoxName
+	farcall GetCurBoxName
 	ld a, [wTempMonForm]
 	bit MON_IS_EGG_F, a
 	ld hl, GiftEggSentToPCText
@@ -1507,7 +1511,8 @@ GivePoke::
 	call SetSeenAndCaughtMon
 .done
 	ld d, BOXMON
-	and a
+	xor a ; resets wCurPartyMon for nickname screen, also clears carry flag
+	ld [wCurPartyMon], a
 	ret
 
 GiftMonBoxFullText:

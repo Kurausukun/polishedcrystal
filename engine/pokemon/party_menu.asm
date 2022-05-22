@@ -879,28 +879,26 @@ PlacePartyMonEvoStoneCompatibility:
 	ld c, e
 	; bc = index
 	predef GetEvosAttacksPointer
-; Reads up to six evolution entries
+; Reads up to 10 EVOLVE_ITEM entries
 	ld de, wStringBuffer1
 	ld a, BANK(EvosAttacks)
-	ld bc, wStringBuffer2 - wStringBuffer1
+	ld bc, 10 * 4 + 1
+	push de
 	call FarCopyBytes
-	ld hl, wStringBuffer1
+	pop hl
+	ld a, [wCurItem]
+	ld b, a
 	ld de, .string_not_able
 .loop2
 	ld a, [hli]
-	inc a
+	cp -1
 	jr z, .done
-	dec a
-	inc hl
-	inc hl
 	cp EVOLVE_ITEM
+	ld a, [hli]
+	inc hl
+	inc hl
 	jr nz, .loop2
-	dec hl
-	dec hl
-	ld a, [wCurItem]
-	cp [hl]
-	inc hl
-	inc hl
+	cp b
 	jr nz, .loop2
 	ld de, .string_able
 .done
@@ -934,19 +932,14 @@ PlacePartyMonGender:
 	push hl
 	call PartyMenuCheckEgg
 	jr nz, .next
-	; push hl
-	; ld hl, wPartySpecies
-	; ld e, b
-	; ld d, 0
-	; add hl, de
-	; ld a, [hl]
-	; ld [wCurPartySpecies], a
-	; pop hl
 	ld a, [wCurPartyMon]
 	push af
 	ld a, b
 	ld [wCurPartyMon], a
 	push hl
+	ld a, MON_SPECIES
+	call GetPartyParamLocationAndValue
+	ld [wCurPartySpecies], a
 	xor a
 	ld [wMonType], a
 	call GetGender

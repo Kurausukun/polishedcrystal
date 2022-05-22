@@ -141,14 +141,14 @@ ProfElmScript:
 	iftrue ElmGiveTicketScript
 ElmCheckMasterBall:
 	checkevent EVENT_GOT_MASTER_BALL_FROM_ELM
-	iftrue ElmCheckEverstone
+	iftrue ElmCheckOddSouvenir
 	checkflag ENGINE_RISINGBADGE
 	iftrue ElmGiveMasterBallScript
-ElmCheckEverstone:
-	checkevent EVENT_GOT_EVERSTONE_FROM_ELM
+ElmCheckOddSouvenir:
+	checkevent EVENT_GOT_ODD_SOUVENIR_FROM_ELM
 	iftrue_jumpopenedtext ElmText_CallYou
 	checkevent EVENT_SHOWED_TOGEPI_TO_ELM
-	iftrue ElmGiveEverstoneScript
+	iftrue ElmGiveOddSouvenirScript
 	checkevent EVENT_TOLD_ELM_ABOUT_TOGEPI_OVER_THE_PHONE
 	iffalse ElmCheckTogepiEgg
 	setmonval TOGEPI
@@ -396,13 +396,13 @@ ShowElmTogepiScript:
 	promptbutton
 	writetext ShowElmTogepiText3
 	promptbutton
-ElmGiveEverstoneScript:
-	writetext ElmGiveEverstoneText1
+ElmGiveOddSouvenirScript:
+	writetext ElmGiveOddSouvenirText1
 	promptbutton
-	verbosegiveitem EVERSTONE
+	verbosegiveitem ODD_SOUVENIR
 	iffalse_endtext
-	setevent EVENT_GOT_EVERSTONE_FROM_ELM
-	jumpopenedtext ElmGiveEverstoneText2
+	setevent EVENT_GOT_ODD_SOUVENIR_FROM_ELM
+	jumpopenedtext ElmGiveOddSouvenirText2
 
 ElmGiveMasterBallScript:
 	writetext ElmGiveMasterBallText1
@@ -419,11 +419,12 @@ ElmGiveTicketScript:
 	writetext ElmSeenText
 	waitbutton
 	closetext
-	winlosstext ElmWinText, 0
+	winlosstext ElmWinText, ElmLoseText
 	setlasttalked ELMSLAB_ELM
 	loadtrainer PROF_ELM, 1
+	loadvar VAR_BATTLETYPE, BATTLETYPE_CANLOSE
 	startbattle
-	reloadmapafterbattle
+	reloadmap
 	opentext
 	writetext ElmGiveTicketText1
 	promptbutton
@@ -435,40 +436,56 @@ ElmGiveTicketScript:
 	special Special_FadeOutMusic
 	pause 10
 	readvar VAR_FACING
-	ifequal UP, .Longest
-	ifequal DOWN, .Shortest
+	ifequal UP, .Shortest
+	ifequal DOWN, .Longest
 	disappear ELMSLAB_LYRA
 	moveobject ELMSLAB_LYRA, 4, 7
-	appear ELMSLAB_LYRA
-	applymovement ELMSLAB_LYRA, LyraRunsInMovement
+	scall .LyraEntryShort
+	scall .LyraAnnouncesGymChallenge
+	turnobject PLAYER, RIGHT
 	sjump .Continue
 
 .Longest
 	disappear ELMSLAB_LYRA
-	moveobject ELMSLAB_LYRA, 5, 8
+	moveobject ELMSLAB_LYRA, 4, 6
 	appear ELMSLAB_LYRA
-	applymovement ELMSLAB_LYRA, LyraRunsInMovement
+	applymovement ELMSLAB_LYRA, LyraRunsInMoreMovement
+	turnobject ELMSLAB_ELM, UP
+	turnobject ELMSLAB_LYRA, RIGHT
+	turnobject PLAYER, LEFT
+	scall .LyraAnnouncesGymChallenge
+	turnobject PLAYER, DOWN
 	sjump .Continue
 
 .Shortest
 	disappear ELMSLAB_LYRA
-	moveobject ELMSLAB_LYRA, 5, 6
-	appear ELMSLAB_LYRA
-	applymovement ELMSLAB_LYRA, LyraRunsInLessMovement
+	moveobject ELMSLAB_LYRA, 5, 8
+	scall .LyraEntryShort
+	scall .LyraAnnouncesGymChallenge
+	turnobject PLAYER, UP
 
 .Continue
-	turnobject ELMSLAB_ELM, DOWN
-	turnobject PLAYER, DOWN
-	playmusic MUSIC_LYRA_ENCOUNTER_HGSS
-	showtext LyraAnnouncesGymChallengeText
-	applymovement ELMSLAB_LYRA, LyraLeavesMovement
-	disappear ELMSLAB_LYRA
-	pause 10
 	faceplayer
 	playmusic MUSIC_PROF_ELM
 	showtext ElmAfterTicketText
 	setevent EVENT_LYRA_IN_HER_ROOM
 	setevent EVENT_GOT_SS_TICKET_FROM_ELM
+	end
+
+.LyraAnnouncesGymChallenge
+	playmusic MUSIC_LYRA_ENCOUNTER_HGSS
+	showtext LyraAnnouncesGymChallengeText
+	applymovement ELMSLAB_LYRA, LyraLeavesMovement
+	disappear ELMSLAB_LYRA
+	pause 10
+	end
+
+.LyraEntryShort
+	appear ELMSLAB_LYRA
+	applymovement ELMSLAB_LYRA, LyraRunsInMovement
+	turnobject ELMSLAB_ELM, DOWN
+	turnobject ELMSLAB_LYRA, UP
+	turnobject PLAYER, DOWN
 	end
 
 ElmJumpBackScript1:
@@ -716,9 +733,10 @@ LyraLeavesMovement:
 	step_down
 	step_end
 
+LyraRunsInMoreMovement:
+	step_up
 LyraRunsInMovement:
 	step_up
-LyraRunsInLessMovement:
 	step_up
 	step_up
 	step_up
@@ -1208,7 +1226,7 @@ ShowElmTogepiText3:
 	cont "to be done."
 	done
 
-ElmGiveEverstoneText1:
+ElmGiveOddSouvenirText1:
 	text "Thanks, <PLAYER>!"
 	line "You're helping"
 
@@ -1220,23 +1238,22 @@ ElmGiveEverstoneText1:
 	cont "our appreciation."
 	done
 
-ElmGiveEverstoneText2:
-	text "That's an"
-	line "Everstone."
+ElmGiveOddSouvenirText2:
+	text "That's an oddity"
+	line "I was given by"
+	cont "Mr. #mon."
 
-	para "Some species of"
-	line "#mon evolve"
+	para "He told me it's a"
+	line "souvenir from his"
 
-	para "when they grow to"
-	line "certain levels."
+	para "trip to a tropical"
+	line "island."
 
-	para "A #mon holding"
-	line "the Everstone"
-	cont "won't evolve."
+	para "Supposedly there"
+	line "are a few species"
 
-	para "Give it to a #-"
-	line "mon you don't want"
-	cont "to evolve."
+	para "of #mon that"
+	line "like to hold it."
 	done
 
 ElmText_CallYou:
@@ -1355,6 +1372,11 @@ ElmSeenText:
 
 ElmWinText:
 	text "Astounding!"
+	done
+
+ElmLoseText:
+	text "…Were you going"
+	line "easy on me?"
 	done
 
 ElmRefusedBattleText:

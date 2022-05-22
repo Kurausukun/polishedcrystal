@@ -204,7 +204,8 @@ Pokedex_ChangeForm:
 Pokedex_MonHasCosmeticForms:
 ; Returns carry if the given mon on the cursor doesn't have cosmetic forms.
 	call Pokedex_GetCursorSpecies
-
+	; fallthrough
+_Pokedex_MonHasCosmeticForms:
 	; Used to track when we reach the end of the cosmetic table
 	ld de, -VariantSpeciesAndFormTable
 	ld hl, CosmeticSpeciesAndFormTable
@@ -2896,13 +2897,33 @@ Pokedex_CountSeenOwn:
 	push de
 	push bc
 	push af
+	ld hl, wDexCacheValid
+	ld a, [hli]
+	and a
+	ld de, wTempDexSeen
+	ld bc, 4
+	jr z, .cache_not_valid
+	rst CopyBytes
+	jr .done
+
+.cache_not_valid
 	; Reset temp dex data.
+	push hl
+	push de
+	push bc
 	ld hl, wTempDex
 	ld bc, wTempDexEnd - wTempDex
 	xor a
 	rst ByteFill
 	ld hl, Pokedex_HandleSeenOwn
 	call Pokedex_IterateSpecies
+	pop bc
+	pop hl
+	pop de
+	rst CopyBytes
+	ld a, 1
+	ld [wDexCacheValid], a
+.done
 	jmp PopAFBCDEHL
 
 Pokedex_HandleSeenOwn:
@@ -3124,13 +3145,18 @@ Pokedex_GetInput:
 
 Pokedex_LoadUndiscoveredPokepic:
 ; Always returns z.
+	ldh a, [rSVBK]
+	push af
+	ld a, BANK(wDecompressScratch)
+	ldh [rSVBK], a
+	ld a, 7
+	ld [wMonPicSize], a
 	ld hl, QuestionMarkLZ
-	ld de, sScratch + 1 tiles
-	ld a, BANK(sScratch)
-	call GetSRAMBank
+	call GetPaddedFrontpicAddress
 	ld a, BANK(QuestionMarkLZ)
 	call FarDecompressToDE
-	call CloseSRAM
+	pop af
+	ldh [rSVBK], a
 	ld hl, wPokedex_GFXFlags
 	set DEXGFX_FRONTPIC, [hl]
 
@@ -3267,7 +3293,13 @@ _Pokedex_GetCursorMon:
 
 	; Frontpic
 	call GetBaseData
+	ldh a, [rSVBK]
+	push af
+	ld a, BANK(wCurPartySpecies)
+	ldh [rSVBK], a
 	farcall PrepareFrontpic
+	pop af
+	ldh [rSVBK], a
 	ld hl, wPokedex_GFXFlags
 	set DEXGFX_FRONTPIC, [hl]
 

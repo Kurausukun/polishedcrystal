@@ -30,7 +30,7 @@ Special_GameCornerPrizeMonCheckDex:
 	ldh a, [hScriptVar+1]
 	ld b, a
 	push bc
-	call CheckCaughtMon
+	call CheckCosmeticCaughtMon
 	pop bc
 	ret nz
 	call SetSeenAndCaughtMon
@@ -154,7 +154,7 @@ BugContestJudging:
 
 .FirstPlacePrizes:
 	db MORN_HOUR, MOON_STONE
-	db DAY_HOUR,  DAWN_STONE
+	db DAY_HOUR,  SHINY_STONE
 	db EVE_HOUR,  SUN_STONE
 	db NITE_HOUR, DUSK_STONE
 	db -1,        MOON_STONE
@@ -283,7 +283,7 @@ StoreSwarmMapIndices::
 	ret
 
 Special_ResetLuckyNumberShowFlag:
-	farcall RestartLuckyNumberCountdown
+	farcall RestartDailyResetTimer
 	ld hl, wLuckyNumberShowFlag
 	res 0, [hl]
 	farjp LoadOrRegenerateLuckyIDNumber

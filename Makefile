@@ -109,7 +109,7 @@ clean: tidy
 	$(MAKE) clean -C tools/
 
 tidy:
-	rm -f $(crystal_obj) $(wildcard $(NAME)-*.gbc) $(wildcard $(NAME)-*.pocket) $(wildcard $(NAME)-*.bsp) \
+	$(RM) $(crystal_obj) $(wildcard $(NAME)-*.gbc) $(wildcard $(NAME)-*.pocket) $(wildcard $(NAME)-*.bsp) \
 		$(wildcard $(NAME)-*.map) $(wildcard $(NAME)-*.sym) rgbdscheck.o
 
 freespace: crystal tools/bankends
@@ -146,6 +146,8 @@ endif
 
 
 gfx/battle/lyra_back.2bpp: rgbgfx += -h
+gfx/battle/substitute-back.2bpp: rgbgfx += -h
+gfx/battle/substitute-front.2bpp: rgbgfx += -h
 
 gfx/battle_anims/angels.2bpp: tools/gfx += --trim-whitespace
 gfx/battle_anims/beam.2bpp: tools/gfx += --remove-xflip --remove-yflip --remove-whitespace

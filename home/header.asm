@@ -8,8 +8,8 @@ EntryPoint::
 	di
 	jmp Rst0Crash
 
-PushWindow::
-	farjp _PushWindow
+DisappearUser::
+	farjp _DisappearUser
 
 
 SECTION "rst08 FarCall", ROM0[$0008]
@@ -126,6 +126,13 @@ GetCGBLayout::
 
 SECTION "timer", ROM0[$0050]
 ; TIMER is never enabled
+
+	ds 3 ; unused
+
+SwitchToMapScriptsBank::
+	ld a, [wMapScriptsBank]
+	rst Bankswitch
+	ret
 
 
 SECTION "serial", ROM0[$0058]

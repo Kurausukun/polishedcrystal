@@ -1017,20 +1017,21 @@ wBGMapBuffer:: ds 48
 wBGMapPalBuffer:: ds 48
 wBGMapBufferPtrs:: ds 48 ; 24 bg map addresses (16x8 tiles)
 
+
+SECTION "More WRAM 0", WRAM0
+
 wMemCGBLayout:: db
 
 UNION
 wCreditsPos:: dw
 wCreditsTimer:: db
 wTrainerCardBadgePaletteAddr:: dw
-
 NEXTU
 wPlayerHPPal:: db
 wEnemyHPPal:: db
 wHPPals:: ds PARTY_LENGTH
 wCurHPPal:: db
 wHPPalIndex:: db
-
 ENDU
 
 wTileAnimBuffer:: ds 1 tiles
@@ -1145,6 +1146,7 @@ wPalFadeMode::
 ; bit 4: skip the last palette
 	db
 
+wMenuMetadata::
 wWindowStackPointer:: dw
 wMenuJoypad:: db
 wMenuSelection:: db
@@ -1152,8 +1154,8 @@ wMenuSelectionQuantity:: db
 wWhichIndexSet:: db
 wScrollingMenuCursorPosition:: db
 wWindowStackSize:: db
-
 	ds 8
+wMenuMetadataEnd::
 
 ; menu header
 wMenuHeader::
@@ -1229,19 +1231,21 @@ w2DMenuFlags1::
 w2DMenuFlags2:: db
 w2DMenuCursorOffsets:: db
 wMenuJoypadFilter:: db
-w2DMenuDataEnd::
 
 wMenuCursorY:: db
 wMenuCursorX:: db
 wCursorOffCharacter:: db
 wCursorCurrentTile:: dw
+	ds 3
+w2DMenuDataEnd::
+
+wMonPicSize:: db
+wMonAnimationSize:: db
 
 wBTTempOTSprite:: db
 
 wPendingOverworldGraphics:: db
 wTextDelayFrames:: db
-
-	ds 1
 
 wGenericDelay:: db
 
@@ -1285,6 +1289,9 @@ wOBP0:: db
 wOBP1:: db
 
 wNumHits:: db
+
+
+SECTION "Options", WRAM0
 
 wOptions3::
 ; bit 0: keyword abc/qwerty

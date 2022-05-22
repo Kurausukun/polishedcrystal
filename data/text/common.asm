@@ -192,28 +192,18 @@ _OakTimeWhatTimeIsItText::
 	text "What time is it?"
 	done
 
-SECTION "_OakTimeWhatHoursText", ROMX
-_OakTimeWhatHoursText::
-	text "What?"
-	done
-
-SECTION "_OakTimeHoursQuestionMarkText", ROMX
-_OakTimeHoursQuestionMarkText::
-	text "?"
-	done
-
 SECTION "_OakTimeHowManyMinutesText", ROMX
 _OakTimeHowManyMinutesText::
 	text "How many minutes?"
 	done
 
-SECTION "_OakTimeWhoaMinutesText", ROMX
-_OakTimeWhoaMinutesText::
+SECTION "_OakTimeWhoaText", ROMX
+_OakTimeWhoaText::
 	text "Whoa!"
 	done
 
-SECTION "_OakTimeMinutesQuestionMarkText", ROMX
-_OakTimeMinutesQuestionMarkText::
+SECTION "_OakTimeQuestionMarkText", ROMX
+_OakTimeQuestionMarkText::
 	text "?"
 	done
 
@@ -820,7 +810,7 @@ _LC_Text6::
 SECTION "_LC_Text7", ROMX
 _LC_Text7::
 	text_start
-	line "This week's Lucky"
+	line "Today's Lucky"
 	done
 
 SECTION "_LC_Text8", ROMX
@@ -1808,7 +1798,7 @@ SECTION "_NoRoomForEggText", ROMX
 _NoRoomForEggText::
 	text "You have no room"
 	line "in your party"
-	cont "or your box."
+	cont "or your Box."
 	cont "Come back later."
 	done
 
@@ -2371,6 +2361,22 @@ _PoisonFaintText::
 	line "recovered from"
 	cont "its poisoning!"
 	prompt
+
+SECTION "_UseSweetHoneyText", ROMX
+_UseSweetHoneyText::
+	text "<PLAYER> spread"
+if DEF(FAITHFUL)
+	line "the Honey!"
+else
+	line "the Sweet Honey!"
+endc
+	done
+
+SECTION "_SweetHoneyNothingText", ROMX
+_SweetHoneyNothingText::
+	text "Looks like there's"
+	line "nothing here…"
+	done
 
 SECTION "_SquirtbottleNothingText", ROMX
 _SquirtbottleNothingText::
@@ -3289,8 +3295,8 @@ _ElmText2::
 	text "This world is in-"
 	line "habited by crea-"
 	cont "tures that we call"
-	cont "#mon."
-	done
+	cont "#mon.@"
+	text_end
 
 SECTION "_ElmText4", ROMX
 _ElmText4::

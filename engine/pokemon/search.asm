@@ -5,24 +5,22 @@ SpecialBeastsCheck:
 
 	ld a, LOW(RAIKOU)
 	ldh [hScriptVar], a
-	ld a, HIGH(RAIKOU) << MON_EXTSPECIES_F
+	xor a ; ld a, HIGH(RAIKOU) << MON_EXTSPECIES_F
 	ldh [hScriptVar+1], a
 	call CheckOwnMonAnywhere
 	jr nc, SpecialMonCheckFailed
 
 	ld a, LOW(ENTEI)
 	ldh [hScriptVar], a
-	ld a, HIGH(ENTEI) << MON_EXTSPECIES_F
+	xor a ; ld a, HIGH(ENTEI) << MON_EXTSPECIES_F
 	ldh [hScriptVar+1], a
-	ldh [hScriptVar], a
 	call CheckOwnMonAnywhere
 	jr nc, SpecialMonCheckFailed
 
 	ld a, LOW(SUICUNE)
 	ldh [hScriptVar], a
-	ld a, HIGH(SUICUNE) << MON_EXTSPECIES_F
+	xor a ; ld a, HIGH(SUICUNE) << MON_EXTSPECIES_F
 	ldh [hScriptVar+1], a
-	ldh [hScriptVar], a
 	call CheckOwnMonAnywhere
 	jr nc, SpecialMonCheckFailed
 
@@ -115,7 +113,7 @@ CheckOwnMonAnywhere:
 	jr z, .loop
 	ld c, MONS_PER_BOX
 .loop
-	farcall GetStorageBoxMon
+	call GetStorageBoxMon ; different section, same bank
 	jr z, .next
 
 	; Check if the species is correct

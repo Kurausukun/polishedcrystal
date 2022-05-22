@@ -98,10 +98,10 @@ FalknerGroup:
 	; party
 	dbp 11, PIDGEY
 		db NO_ITEM, 16
-		db TACKLE, GUST, MUD_SLAP, ROOST
+		db TACKLE, GUST, MUD_SLAP, NO_MOVE
 	dbp 11, HOOTHOOT
 		db NO_ITEM, 16
-		db TACKLE, HYPNOSIS, CONFUSION, ROOST
+		db TACKLE, HYPNOSIS, PECK, CONFUSION
 	dbp 13, PIDGEOTTO
 		db PECHA_BERRY, 16
 		db GUST, MUD_SLAP, QUICK_ATTACK, ROOST
@@ -2972,7 +2972,7 @@ FisherGroup:
 	; party
 	dbp 5, MAGIKARP, MALE | PLAIN_FORM
 		db $87, $78, $77, ABILITY_1 | NAT_NEUTRAL
-	dbp 5, MAGIKARP, MALE | MAGIKARP_FOREHEAD_FORM
+	dbp 5, MAGIKARP, MALE | MAGIKARP_FOREHEAD1_FORM
 		db $88, $B8, $8B, ABILITY_1 | NAT_NEUTRAL
 	dbp 15, MAGIKARP, MALE | MAGIKARP_CALICO3_FORM
 		db $A2, $AA, $2A, ABILITY_1 | NAT_NEUTRAL
@@ -3132,7 +3132,7 @@ FisherGroup:
 	db "Virgil@"
 	db TRAINERTYPE_PERSONALITY
 	; party
-	dbp 51, MAGIKARP, MALE | MAGIKARP_MASK_FORM
+	dbp 51, MAGIKARP, MALE | MAGIKARP_MASK1_FORM
 		db ABILITY_1 | NAT_NEUTRAL
 	dbp 52, MAGIKARP, MALE | MAGIKARP_CALICO1_FORM
 		db ABILITY_1 | NAT_NEUTRAL
@@ -5706,7 +5706,7 @@ SchoolgirlGroup:
 	; party
 	dbp 6, TEDDIURSA
 		db "Teddy@"
-	dbp 6, PHANPY
+	dbp 5, PHANPY
 		db "@"
 	db -1 ; end
 
@@ -9679,11 +9679,6 @@ TowerTycoonGroup:
 	; TOWERTYCOON
 	db "Palmer@"
 	db TRAINERTYPE_NORMAL
-
-;	; party
-;	dbp 50, GYARADOS
-;	dbp 50, RHYPERIOR
-;	dbp 50, DRAGONITE
 	db -1 ; end
 
 	; TOWERTYCOON
@@ -9708,6 +9703,21 @@ TowerTycoonGroup:
 	dbp 72, HERACROSS
 		db BLACK_BELT
 		db MEGAHORN, CROSS_CHOP, SEISMIC_TOSS, NIGHT_SLASH
+	db -1 ; end
+
+
+SECTION "FactoryHeadGroup", ROMX
+FactoryHeadGroup:
+
+	; unused
+	; FACTORYHEAD
+	db "Thorton@"
+	db TRAINERTYPE_NORMAL
+	db -1 ; end
+
+	; FACTORYHEAD
+	db "Thorton@"
+	db TRAINERTYPE_NORMAL
 	db -1 ; end
 
 
@@ -10221,15 +10231,21 @@ AnabelGroup:
 
 	; ANABEL
 	db "Anabel@"
-	db TRAINERTYPE_NORMAL
+	db TRAINERTYPE_EVS
 	; party
 	; TODO: movesets, etc
-	dbp 57, ESPEON
-	dbp 55, SNORLAX
-	dbp 56, SLOWKING
-	dbp 54, BELLOSSOM
-	dbp 55, POLITOED
-	dbp 56, ALAKAZAM
+	dbp 30, ESPEON
+		db 68
+	dbp 28, SNORLAX
+		db 68
+	dbp 29, SLOWKING
+		db 68
+	dbp 27, BELLOSSOM
+		db 68
+	dbp 28, POLITOED
+		db 68
+	dbp 29, ALAKAZAM
+		db 68
 	db -1 ; end
 
 	; ANABEL
@@ -10604,6 +10620,11 @@ KukuiGroup:
 	dbp 75, EXEGGUTOR, MALE | ALOLAN_FORM
 		db ABILITY_1 | NAT_NEUTRAL
 	db -1 ; end
+
+
+SECTION "MelonyGroup", ROMX
+MelonyGroup:
+	; TODO
 
 
 SECTION "VictorGroup", ROMX

@@ -54,17 +54,19 @@ Pokémon Polished Crystal would never have been finished without the help of man
 * Freeline for animations of Honchkrow and Munchlax, and the Rocket Executives' and stat trainers' overworld sprites.
 * Megaman-Omega for some of Prism's overworld sprites.
 * SoupPotato (aka SourApple) for some move animations, sprites of Red Gyarados and Ace Duo, and Berry tree tiles.
-* flempa for some Pokémon sprites and move animations and for Galarian Articuno and Galarian Zapdos animations..
+* flempa for some Pokémon sprites and move animations and for Galarian Articuno and Galarian Zapdos animations.
+* Scarlax for many new Pokémon animations.
+* ShadowOne333 for many new Pokémon animations.
+* octorox for Galarian Rapidash and Galarian Slowking's backpics.
 * spritershawn for sprites of Red, Blue, and Green.
 * isamuakai01 for sprites of Steven and Cynthia.
 * Maddalena for sprites of Imakuni and the Ghost.
-* ShadowOne333 for Ambipom, Bonsly, Happiny, Galarian Mr. Mime, Mime Jr. and Mantyke, Galarian Meowth, Alolan Rattata, Alolan Raticate, Alolan Muk and Alolan Grimer animations.
-* Scarlax for most 8th gen backpics and Mr. Rime, Galarian Rapidash, Galarian Farfetch'd, Galarian Corola, Cursola, Sirfetch'd and Spiky-eared Pichu animations.
 * EeveeEe1999 for 8th gen menu icons and Lickilicky and Galarian Slowking animations.
 * Luna for some sprites and tiles.
 * Twilir for Lyra's back sprite.
 * Danny-E for Lorelei's sprite.
 * Nic7C5 for Yellow's sprite.
+* PomPomKing and Jace for Melony's sprite.
 * Kage for Walker's sprite.
 * Pyro for Tamer's sprite.
 * Constantine for Nurse's sprite.

@@ -78,9 +78,7 @@ TextboxBorder::
 	; fallthrough
 CreateBoxBorders::
 	ld a, SCREEN_WIDTH
-	; fallthrough
-_CreateBoxBorders:
-; a: Screen width to consider (dex uses a custom size).
+
 	; Top
 	call .PlaceRow
 	jr .row
@@ -126,6 +124,12 @@ _CreateBoxBorders:
 	jr nz, .loop
 	pop bc
 	ret
+
+MenuTextbox::
+	push hl
+	call LoadMenuTextbox
+	pop hl
+	; fallthrough
 
 PrintText::
 ; input: hl = string, bc = coords
@@ -428,6 +432,12 @@ FarString::
 	ret
 
 DoTextUntilTerminator::
+	xor a
+	ldh [hStopPrintingString], a
+.loop
+	ldh a, [hStopPrintingString]
+	and a
+	ret nz
 	ld a, [hli]
 	cp "@"
 	ret z
@@ -436,7 +446,7 @@ DoTextUntilTerminator::
 	cp "<PROMPT>"
 	ret z
 	call .TextCommand
-	jr DoTextUntilTerminator
+	jr .loop
 
 .TextCommand:
 	cp NGRAMS_START
@@ -734,7 +744,8 @@ DecompressString::
 	jr nz, .character_loop
 
 .done
-	ld hl, EmptyString ; for DoTextUntilTerminator
+	inc a ; ld a, 1 since it's zero
+	ldh [hStopPrintingString], a
 
 .end
 	pop bc ; pop starting coords

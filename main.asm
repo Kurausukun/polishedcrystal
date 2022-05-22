@@ -49,7 +49,7 @@ SECTION "Print Number", ROMX
 INCLUDE "engine/math/print_num.asm"
 
 
-SECTION "Bills PC", ROMX
+SECTION "Bill's PC", ROMX
 
 INCLUDE "engine/pokemon/bills_pc.asm"
 INCLUDE "engine/pokemon/bills_pc_ui.asm"
@@ -269,6 +269,7 @@ INCLUDE "engine/events/squirtbottle.asm"
 INCLUDE "engine/events/card_key.asm"
 INCLUDE "engine/events/basement_key.asm"
 INCLUDE "engine/events/sacred_ash.asm"
+INCLUDE "engine/events/sweet_honey.asm"
 
 
 SECTION "bank14", ROMX
@@ -339,6 +340,7 @@ SECTION "bank24", ROMX
 
 INCLUDE "engine/phone/phone.asm"
 INCLUDE "engine/rtc/timeset.asm"
+INCLUDE "engine/pokegear/phone.asm"
 INCLUDE "engine/pokegear/pokegear.asm"
 INCLUDE "engine/events/fish.asm"
 INCLUDE "engine/games/slot_machine.asm"
