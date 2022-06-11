@@ -5571,6 +5571,7 @@ LinkBattleSendReceiveAction:
 ; of linking we are performing.
 	call .StageForSend
 	ld [wLinkBattleSentAction], a
+	vc_hook Wireless_start_exchange
 	call PlaceWaitingText
 	ld a, [wLinkBattleSentAction]
 	ld [wPlayerLinkAction], a
@@ -5584,20 +5585,35 @@ LinkBattleSendReceiveAction:
 	inc a
 	jr z, .waiting
 
+	vc_hook Wireless_end_exchange
+	vc_patch Wireless_net_delay_3
+if DEF(VIRTUAL_CONSOLE)
+	ld b, 26
+else
 	ld b, 10
+endc
+	vc_patch_end
 .receive
 	call DelayFrame
 	call LinkTransfer
 	dec b
 	jr nz, .receive
 
+	vc_hook Wireless_start_send_zero_bytes
+	vc_patch Wireless_net_delay_4
+if DEF(VIRTUAL_CONSOLE)
+	ld b, 26
+else
 	ld b, 10
+endc
+	vc_patch_end
 .acknowledge
 	call DelayFrame
 	call LinkDataReceived
 	dec b
 	jr nz, .acknowledge
 
+	vc_hook Wireless_end_send_zero_bytes
 	ld a, [wOtherPlayerLinkAction]
 	ld [wBattleAction], a
 	ret
@@ -6978,7 +6994,7 @@ AnimateExpBar:
 GetNewBaseExp:
 ; basic stage mons: BST*0.2
 ; stage 1 or non-evolver: BST*0.35
-; stage 2 or legendaries: BST*0.45
+; stage 2 or legendaries: BST*0.5
 ; exceptions: Chansey, Blissey
 	ld a, MON_SPECIES
 	call OTPartyAttr
@@ -7052,7 +7068,7 @@ _GetNewBaseExp:
 	jr c, .legendary
 	farcall GetPreEvolution
 .legendary
-	ld a, 9 ; stage 2 or legendary: *9/20 -> *0.45
+	ld a, 10 ; stage 2 or legendary: *10/20 -> *0.5
 	jr c, .got_multiplier
 .stage_1_or_nonevolver
 	ld a, 7 ; stage 1 or non-evolver: *7/20 -> *0.35
