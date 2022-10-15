@@ -1,8 +1,8 @@
 if DEF(FAITHFUL)
-	db  73,  95,  62,  85,  65,  85 ; 465 BST
+	db  73,  95,  62,  85,  85,  65 ; 465 BST
 	;   hp  atk  def  spd  sat  sdf
 else
-	db  73, 100,  62,  85,  65,  85 ; 470 BST
+	db  73, 100,  62,  85,  85,  65 ; 470 BST
 	;   hp  atk  def  spd  sat  sdf
 endc
 
@@ -14,8 +14,8 @@ endc
 	db 45 ; catch rate
 	db 165 ; base exp
 	db NO_ITEM, NO_ITEM ; held items
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/stantler/front.dimensions"
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for STANTLER, INTIMIDATE, FRISK, SAP_SIPPER
 	db GROWTH_SLOW ; growth rate
 	dn EGG_GROUND, EGG_GROUND ; egg groups

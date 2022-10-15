@@ -6,7 +6,7 @@ PushOAM::
 	ret nz
 ForcePushOAM:
 	lb bc, 40 + 1, LOW(rDMA)
-	ld a, HIGH(wVirtualOAM)
+	ld a, HIGH(wShadowOAM)
 	jmp hPushOAM
 
 ContinueGDMACopy:
@@ -139,7 +139,7 @@ WaitTop::
 	ldh [hBGMapMode], a
 	ret
 
-HALF_HEIGHT EQU SCREEN_HEIGHT / 2
+DEF HALF_HEIGHT EQU SCREEN_HEIGHT / 2
 
 UpdateBGMap::
 ; Update the BG Map, in halves, from wTilemap and wAttrmap.

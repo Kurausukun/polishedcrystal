@@ -10,6 +10,8 @@ wStackTop::
 
 SECTION "Audio RAM", WRAM0
 
+wEchoRAMTest:: db
+
 wMusic::
 wMusicPlaying:: db ; nonzero if playing
 
@@ -26,7 +28,6 @@ endr
 wCurTrackDuty:: db
 wCurTrackIntensity:: db
 wCurTrackFrequency:: dw
-	ds 1 ; BCD value, dummied out
 wCurNoteDuration:: db ; used in MusicE0 and LoadNote
 
 wCurMusicByte:: db
@@ -186,9 +187,14 @@ wTilePermissions::
 ; bit 0: right
 	db
 
-wCompressedTextBuffer:: ds 2 ; one character and "@"
+	ds 2
 
-	ds 11
+wLinkOtherPlayerGameID:: db
+wLinkOtherPlayerVersion:: dw
+wLinkOtherPlayerMinTradeVersion:: dw
+wLinkOtherPlayerGender:: db
+
+	ds 5
 
 
 SECTION "Sprite Animations", WRAM0
@@ -268,11 +274,11 @@ wMusicPlayerWRAMEnd::
 
 SECTION "Sprites", WRAM0
 
-wVirtualOAM::
+wShadowOAM::
 for n, NUM_SPRITE_OAM_STRUCTS
-wVirtualOAMSprite{02d:n}:: sprite_oam_struct wVirtualOAMSprite{02d:n}
+wShadowOAMSprite{02d:n}:: sprite_oam_struct wShadowOAMSprite{02d:n}
 endr
-wVirtualOAMEnd::
+wShadowOAMEnd::
 
 
 SECTION "Tilemap and Attrmap", WRAM0
@@ -339,6 +345,11 @@ wLinkMisc:: ds 10
 wLinkPlayerFixedPartyMon1ID:: ds 3
 	ds 37
 
+SECTION UNION "Misc 480", WRAM0
+; polished link transfer buffer
+wLinkReceivedPolishedMiscBuffer:: ds 10
+wLinkPolishedMiscBuffer:: ds 10
+
 
 SECTION UNION "Misc 480", WRAM0
 ; battle + pokédex (merged because pokédex can be called from battle)
@@ -360,7 +371,7 @@ wBattleMonNickname:: ds MON_NAME_LENGTH
 wBattleMon:: battle_struct wBattleMon
 
 wWildMon:: db
-	ds 1
+wBadgeBaseLevel:: db
 wEnemyTrainerItem1:: db
 wEnemyTrainerItem2:: db
 wEnemyTrainerBaseReward:: db
@@ -797,6 +808,7 @@ wPokegearRadioChannelBank:: db
 wPokegearRadioChannelAddr:: dw
 wPokegearRadioMusicPlaying:: db
 wPokegearNumberBuffer:: db
+wPokegearMapCursorSpawnpoint:: db
 
 
 SECTION UNION "Misc 480", WRAM0
@@ -868,22 +880,41 @@ wPuzzlePieces:: ds 6 * 6
 wUnownPuzzleEnd::
 
 
-SECTION UNION "Misc 1300", WRAM0
+SECTION UNION "Misc 1326", WRAM0
 ; overworld map
 
-; large enough for 45x20 NavelRockInside.ablk; (45+6)x(20+6) = 1326 < 1408
+; large enough for 45x20 NavelRockInside.ablk; (45+6)x(20+6) = 1326
 ; was originally only 1300 bytes
-wOverworldMapBlocks:: ds $580
+wOverworldMapBlocks:: ds 1326
 wOverworldMapBlocksEnd::
 
 
-SECTION UNION "Misc 1300", WRAM0
+SECTION UNION "Misc 1326", WRAM0
+; psychic inver party
+
+; large enough for 4x4 KantoHouse1.asm in wOverworldMapBlocks
+	ds (4 + 6) * (4 + 6)
+
+wInverIndexes:: ds NUM_INVER_MONS
+
+wInverGroup::
+	ds 7 ; db "Inver@"
+	db ; TRAINERTYPE_ITEM | TRAINERTYPE_DVS | TRAINERTYPE_PERSONALITY | TRAINERTYPE_MOVES
+	rept PARTY_LENGTH
+		ds 3 ; dbp <level>, <species>, <form>
+		ds 5 ; db <item>, <dv1>, <dv2>, <dv3>, <nat | abil>
+		ds NUM_MOVES ; moves
+	endr
+	db ; db -1 ; end
+
+
+SECTION UNION "Misc 1326", WRAM0
 ; credits image
 
 wCreditsBlankFrame2bpp:: ds 8 * 8 * 2
 
 
-SECTION UNION "Misc 1300", WRAM0
+SECTION UNION "Misc 1326", WRAM0
 ; Bill's PC
 
 ; If you change ordering of this, remember to fix LCD hblank code too.
@@ -944,14 +975,14 @@ wBillsPC_QuickFrames:: db
 wBillsPC_ApplyThemePals:: db ; used by _CGB_BillsPC
 
 
-SECTION UNION "Misc 1300", WRAM0
+SECTION UNION "Misc 1326", WRAM0
 ; raw link data
 
 wLinkData:: ds 1300
 wLinkDataEnd::
 
 
-SECTION UNION "Misc 1300", WRAM0
+SECTION UNION "Misc 1326", WRAM0
 ; link data members
 
 wLinkPlayerName:: ds NAME_LENGTH
@@ -984,7 +1015,7 @@ wLinkPatchList2:: ds SERIAL_PATCH_LIST_LENGTH
 ENDU
 
 
-SECTION UNION "Misc 1300", WRAM0
+SECTION UNION "Misc 1326", WRAM0
 ; link mail data
 	ds 500
 
@@ -1003,7 +1034,7 @@ wLinkOTMailEnd::
 	ds 10
 
 
-SECTION UNION "Misc 1300", WRAM0
+SECTION UNION "Misc 1326", WRAM0
 ; received link mail data
 	ds 500
 
@@ -1019,6 +1050,8 @@ wBGMapBufferPtrs:: ds 48 ; 24 bg map addresses (16x8 tiles)
 
 
 SECTION "More WRAM 0", WRAM0
+
+	ds 82 ; unused
 
 wMemCGBLayout:: db
 
@@ -1078,10 +1111,10 @@ NEXTU
 ; pokegear
 wPokegearCard:: db
 wPokegearMapRegion:: db
+wTownMapCanFlyHere:: db
 
 NEXTU
 ; pack
-wPackJumptableIndex:: db
 wCurPocket:: db
 wPackUsedItem:: db
 
@@ -1314,7 +1347,7 @@ wOptions1::
 wSaveFileExists:: db
 
 wTextboxFrame::
-; bits 0-3: textbox frame 0-8
+; bits 0-4: textbox frame 1-20
 	db
 wTextboxFlags::
 ; bit 0: 1-frame text delay

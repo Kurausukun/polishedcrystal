@@ -61,7 +61,7 @@ StartMenu::
 	push af
 	ld a, 1
 	ldh [hOAMUpdate], a
-	call LoadFontsExtra
+	call LoadFrame
 	pop af
 	ldh [hOAMUpdate], a
 .ReturnEnd:
@@ -121,16 +121,14 @@ StartMenu::
 	jmp .Reopen
 
 .MenuDataHeader:
-	db $40 ; tile backup
-	db 0, 10 ; start coords
-	db 17, 19 ; end coords
+	db MENU_BACKUP_TILES
+	menu_coords 10, 0, 19, 17
 	dw .MenuData
 	db 1 ; default selection
 
 .ContestMenuDataHeader:
-	db $40 ; tile backup
-	db 2, 10 ; start coords
-	db 17, 19 ; end coords
+	db MENU_BACKUP_TILES
+	menu_coords 10, 2, 19, 17
 	dw .MenuData
 	db 1 ; default selection
 
@@ -342,6 +340,9 @@ StartMenu_Pokegear:
 	call FadeToMenu
 	farcall InitPokegearPalettes
 	farcall PokeGear
+	ld a, [wDefaultSpawnpoint]
+	and a
+	jr nz, _ExitStartMenuAndDoScript
 	call CloseSubmenu
 	call ApplyTilemapInVBlank
 	call SetPalettes
@@ -354,12 +355,12 @@ StartMenu_Pack:
 	call Pack
 	ld a, [wPackUsedItem]
 	and a
-	jr nz, .used_item
+	jr nz, _ExitStartMenuAndDoScript
 	call CloseSubmenu
 	xor a
 	ret
 
-.used_item
+_ExitStartMenuAndDoScript:
 	call ExitAllMenus
 	ld a, 4
 	ret
@@ -378,6 +379,8 @@ StartMenu_Pokemon:
 	farcall InitPartyMenuWithCancel
 	farcall InitPartyMenuGFX
 .menunoreload
+	ld a, A_BUTTON | B_BUTTON | SELECT
+	ld [wMenuJoypadFilter], a
 	farcall WritePartyMenuTilemap
 	farcall PrintPartyMenuText
 	call ApplyTilemapInVBlank
@@ -385,7 +388,14 @@ StartMenu_Pokemon:
 	call DelayFrame
 	farcall PartyMenuSelect
 	jr c, .return ; if cancelled or pressed B
+	ldh a, [hJoyLast]
+	and SELECT
+	jr z, .not_switch
+	call SwitchPartyMons
+	jr .after_action
+.not_switch
 	call PokemonActionSubmenu
+.after_action
 	push af
 	call SFXDelay2
 	pop af

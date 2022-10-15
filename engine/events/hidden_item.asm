@@ -4,9 +4,9 @@ HiddenItemScript:
 	getitemname STRING_BUFFER_3, USE_SCRIPT_VAR
 	farwritetext _FoundItemText
 	giveitem ITEM_FROM_MEM
-	iffalse .bag_full
+	iffalsefwd .bag_full
 	callasm SetMemEvent
-	callasm .ShowItemIcon
+	special ShowItemIcon
 	specialsound
 	itemnotify
 	endtext
@@ -15,10 +15,6 @@ HiddenItemScript:
 	promptbutton
 	pocketisfull
 	endtext
-
-.ShowItemIcon:
-	ld a, [wHiddenItemID]
-	farjp ItemGet_ShowItemIconFromA
 
 SetMemEvent:
 	ld hl, wHiddenItemEvent

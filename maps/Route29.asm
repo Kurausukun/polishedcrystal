@@ -34,7 +34,7 @@ Route29_MapScriptHeader:
 
 Route29Tuscany:
 	checkflag ENGINE_ZEPHYRBADGE
-	iftrue .DoesTuscanyAppear
+	iftruefwd .DoesTuscanyAppear
 
 .TuscanyDisappears:
 	disappear ROUTE29_TUSCANY
@@ -57,11 +57,11 @@ Route29Tutorial1:
 	opentext
 	writetext CatchingTutorialIntroText
 	yesorno
-	iffalse Route29RefusedTutorial
+	iffalsefwd Route29RefusedTutorial
 	closetext
 	follow ROUTE29_LYRA, PLAYER
 	applymovement ROUTE29_LYRA, LyraMovementData1b
-	sjump Route29TutorialScript
+	sjumpfwd Route29TutorialScript
 
 Route29Tutorial2:
 	turnobject ROUTE29_LYRA, UP
@@ -74,7 +74,7 @@ Route29Tutorial2:
 	opentext
 	writetext CatchingTutorialIntroText
 	yesorno
-	iffalse Route29RefusedTutorial
+	iffalsefwd Route29RefusedTutorial
 	closetext
 	follow ROUTE29_LYRA, PLAYER
 	applymovement ROUTE29_LYRA, LyraMovementData2b
@@ -89,9 +89,12 @@ Route29TutorialScript:
 	writetext CatchingTutorialDebriefText
 Route29FinishTutorial:
 	promptbutton
-	getitemname POKE_BALL, $1
-	callstd receiveitem
 	giveitem POKE_BALL, 5
+	waitsfx
+	writetext CatchingTutorialPokeBallText
+	special ShowItemIcon
+	playsound SFX_ITEM
+	waitsfx
 	itemnotify
 	writetext CatchingTutorialGoodbyeText
 	waitbutton
@@ -121,7 +124,7 @@ TuscanyScript:
 	readvar VAR_WEEKDAY
 	ifnotequal TUESDAY, TuscanyNotTuesdayScript
 	checkevent EVENT_MET_TUSCANY_OF_TUESDAY
-	iftrue .MetTuscany
+	iftruefwd .MetTuscany
 	writetext MeetTuscanyText
 	promptbutton
 	setevent EVENT_MET_TUSCANY_OF_TUESDAY
@@ -202,6 +205,11 @@ CatchingTutorialRefusedText:
 	para "Anyway, I'll give"
 	line "you these."
 	cont "Good luck!"
+	done
+
+CatchingTutorialPokeBallText:
+	text "<PLAYER> gained"
+	line "5 # Balls."
 	done
 
 CatchingTutorialGoodbyeText:
@@ -325,7 +333,13 @@ Route29Sign2Text:
 Route29AdvancedTipsSignText:
 	text "Advanced Tips!"
 
-	para "Press Start in"
-	line "the Bag to sort"
-	cont "an item pocket!"
+	para "Press Down+B at"
+	line "the title screen"
+
+	para "to reset the"
+	line "clock!"
+
+	para "Press Left+B to"
+	line "reset the initial"
+	cont "game options!"
 	done

@@ -4,10 +4,9 @@
 	db GHOST, POISON ; type
 	db 90 ; catch rate
 	db 126 ; base exp
-	db NO_ITEM ; item 1
-	db SPELL_TAG ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/haunter/front.dimensions"
+	db NO_ITEM, SPELL_TAG ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for HAUNTER, LEVITATE, LEVITATE, LEVITATE
 	db GROWTH_MEDIUM_SLOW ; growth rate
 	dn EGG_INDETERMINATE, EGG_INDETERMINATE ; egg groups

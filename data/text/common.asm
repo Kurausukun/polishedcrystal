@@ -1,6 +1,3 @@
-INCLUDE "constants.asm"
-
-
 SECTION "_FruitBearingTreeText", ROMX
 _FruitBearingTreeText::
 	text "It's a fruit-"
@@ -2465,18 +2462,13 @@ _AskItemMoveText::
 
 SECTION "Text_AreYouABoyOrAreYouAGirl", ROMX
 Text_AreYouABoyOrAreYouAGirl::
-	text "Are you a boy?"
-	line "Or are you a girl?"
+	text "Which photo is on"
+	line "your Trainer Card?"
 	done
 
-SECTION "Text_SoYoureABoy", ROMX
-Text_SoYoureABoy::
-	text "So you're a boy?"
-	done
-
-SECTION "Text_SoYoureAGirl", ROMX
-Text_SoYoureAGirl::
-	text "So you're a girl?"
+SECTION "Text_SoThisIsYou", ROMX
+Text_SoThisIsYou::
+	text "So this is you?"
 	done
 
 SECTION "Text_BattleUser", ROMX
@@ -3358,6 +3350,7 @@ endc
 
 SECTION "_WarnVBAText", ROMX
 _WarnVBAText::
+if !DEF(DEBUG)
 	text "Warning!"
 
 	para "This Game Boy"
@@ -3372,6 +3365,11 @@ _WarnVBAText::
 	para "such as BGB, mGBA,"
 	line "or Gambatte."
 	prompt
+else
+	text "Emulator test"
+	line "failed."
+	prompt
+endc
 
 SECTION "_ClockTimeMayBeWrongText", ROMX
 _ClockTimeMayBeWrongText::
@@ -3494,9 +3492,9 @@ _ObjectEventText::
 	text "Object event"
 	done
 
-SECTION "_ReceivedItemText", ROMX
-_ReceivedItemText::
-	text "<PLAYER> received"
+SECTION "_GainedItemText", ROMX
+_GainedItemText::
+	text "<PLAYER> gained"
 	line ""
 	text_ram wStringBuffer4
 	text "."
@@ -3520,6 +3518,15 @@ _PocketIsFullText::
 	text ""
 	line "is full…"
 	prompt
+
+SECTION "_FoundWingsText", ROMX
+_FoundWingsText::
+	text "<PLAYER> got "
+	text_decimal wCurWingQuantity, 1, 2
+	line ""
+	text_ram wStringBuffer4
+	text "."
+	done
 
 SECTION "_CongratulationsYourPokemonText", ROMX
 _CongratulationsYourPokemonText::
@@ -4646,4 +4653,11 @@ SECTION "AlreadyInThatBallTextData", ROMX
 AlreadyInThatBallTextData::
 	text "Your #mon is in"
 	line "that Ball already."
+	prompt
+
+SECTION "CantChangeTradedMonBallTextData", ROMX
+CantChangeTradedMonBallTextData::
+	text "You can't change"
+	line "the Ball a traded"
+	cont "#mon is in."
 	prompt

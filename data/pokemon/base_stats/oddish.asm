@@ -4,10 +4,9 @@
 	db GRASS, POISON ; type
 	db 255 ; catch rate
 	db 78 ; base exp
-	db SILVER_LEAF ; item 1
-	db SILVER_LEAF ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/oddish/front.dimensions"
+	db SILVER_LEAF, SILVER_LEAF ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for ODDISH, CHLOROPHYLL, CHLOROPHYLL, RUN_AWAY
 	db GROWTH_MEDIUM_SLOW ; growth rate
 	dn EGG_PLANT, EGG_PLANT ; egg groups

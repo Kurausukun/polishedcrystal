@@ -19,10 +19,10 @@ TinTowerRoof_MapScriptHeader:
 
 TinTowerRoofHoOh:
 	checkevent EVENT_FOUGHT_HO_OH
-	iftrue .NoAppear
+	iftruefwd .NoAppear
 	checkkeyitem RAINBOW_WING
-	iftrue .Appear
-	sjump .NoAppear
+	iftruefwd .Appear
+	sjumpfwd .NoAppear
 
 .Appear:
 	appear TINTOWERROOF_HO_OH
@@ -45,7 +45,11 @@ TinTowerHoOh:
 	startbattle
 	disappear TINTOWERROOF_HO_OH
 	reloadmapafterbattle
-	setevent EVENT_SET_WHEN_FOUGHT_HO_OH
+	special CheckBattleCaughtResult
+	iffalsefwd .nocatch
+	setflag ENGINE_PLAYER_CAUGHT_HO_OH
+.nocatch
+	clearevent EVENT_EUSINES_HOUSE_EUSINE
 	end
 
 HoOhText:

@@ -54,28 +54,31 @@ _GetFrontpic:
 
 _PrepareFrontpic:
 	push de
+
+	; This is no longer needed for the pic size, but do it just
+	; in case subsequent code expects base data available
 	call GetBaseData ; [wCurSpecies] and [wCurForm] are already set
-	ld a, [wBasePicSize]
-	and $f
+
+	call GetPicSize
 	ld b, a
 	ld [wMonPicSize], a
-	push bc
 
+	push bc
 	; Get frontpic pointer
 	ld a, [wCurPartySpecies]
 	ld c, a
 	ld a, [wCurForm]
 	ld b, a
 	call GetCosmeticSpeciesAndFormIndex
-	ld hl, FrontPicPointers
-rept 3
+	ld hl, PokemonPicPointers
+rept 5
 	add hl, bc
 endr
-	ld a, BANK(FrontPicPointers)
+	ld a, BANK(PokemonPicPointers)
 	call GetFarByte
 	push af
 	inc hl
-	ld a, BANK(FrontPicPointers)
+	ld a, BANK(PokemonPicPointers)
 	call GetFarWord
 	pop bc
 
@@ -199,15 +202,17 @@ GetBackpic:
 	push de
 	; bc = index
 	call GetCosmeticSpeciesAndFormIndex
-	ld hl, BackPicPointers
-rept 3
+	ld hl, PokemonPicPointers
+rept 5
 	add hl, bc
 endr
-	ld a, BANK(BackPicPointers)
+	ld a, BANK(PokemonPicPointers)
 	call GetFarByte
 	push af
 	inc hl
-	ld a, BANK(BackPicPointers)
+	inc hl
+	inc hl
+	ld a, BANK(PokemonPicPointers)
 	call GetFarWord
 	pop af
 	call FarDecompress
@@ -271,20 +276,17 @@ GetPaintingPic:
 	ldh [hBGMapMode], a
 	ld hl, PaintingPicPointers
 	ld a, [wTrainerClass]
-	ld bc, 3
+	ld bc, 2
 	rst AddNTimes
 	ldh a, [rSVBK]
 	push af
 	ld a, $6
 	ldh [rSVBK], a
 	push de
-	ld a, BANK(PaintingPicPointers)
-	call GetFarByte
-	push af
 	inc hl
 	ld a, BANK(PaintingPicPointers)
 	call GetFarWord
-	pop af
+	ld a, BANK("Painting Pics")
 	jr _Decompress7x7Pic
 
 FixBackpicAlignment:

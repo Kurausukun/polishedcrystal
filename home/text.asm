@@ -31,8 +31,9 @@ ClearScreen::
 	rst ByteFill
 ClearTileMap::
 ; Fill wTilemap with blank tiles.
-	hlcoord 0, 0
 	ld a, " "
+FillTileMap::
+	hlcoord 0, 0
 	ld bc, wTilemapEnd - wTilemap
 	rst ByteFill
 	; Update the BG Map.
@@ -40,6 +41,17 @@ ClearTileMap::
 	bit rLCDC_ENABLE, a
 	ret z
 	jmp ApplyTilemapInVBlank
+
+BlackOutScreen::
+	xor a
+	ldh [hBGMapMode], a
+	hlcoord 0, 0
+	ld bc, SCREEN_HEIGHT * SCREEN_WIDTH
+	ld a, "<BLACK>"
+	rst ByteFill
+	ld a, $1
+	ldh [hBGMapMode], a
+	ret
 
 SpeechTextbox::
 ; Standard textbox.
@@ -658,6 +670,10 @@ DecompressString::
 
 	inc hl ; skip "<CTXT>"
 
+	; terminate buffer for printing each character
+	ld a, "@"
+	ldh [hCompressedTextBuffer+1], a
+
 	ld b, 1 ; start with no bits to read a byte right away
 .character_loop
 
@@ -690,10 +706,8 @@ DecompressString::
 	jr c, .got_char
 	sub $ec - $4d
 .got_char
-	; write printable string to wCompressedTextBuffer
-	ld [wCompressedTextBuffer], a
-	ld a, "@"
-	ld [wCompressedTextBuffer+1], a
+	; buffer character for printing
+	ldh [hCompressedTextBuffer], a
 
 	pop de ; pop current coords
 
@@ -710,7 +724,7 @@ DecompressString::
 	ldh a, [hPlaceStringCoords+1]
 	ld b, a
 
-	ld de, wCompressedTextBuffer
+	ld de, hCompressedTextBuffer
 	ld a, [de]
 	push af
 

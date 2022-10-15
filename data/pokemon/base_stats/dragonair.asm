@@ -4,10 +4,9 @@
 	db DRAGON, DRAGON ; type
 	db 45 ; catch rate
 	db 144 ; base exp
-	db NO_ITEM ; item 1
-	db DRAGON_SCALE ; item 2
-	dn GENDER_F50, 7 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/dragonair/front.dimensions"
+	db NO_ITEM, DRAGON_SCALE ; held items
+	dn GENDER_F50, HATCH_SLOWEST ; gender ratio, step cycles to hatch
+
 	abilities_for DRAGONAIR, SHED_SKIN, SHED_SKIN, MARVEL_SCALE
 	db GROWTH_SLOW ; growth rate
 	dn EGG_WATER_1, EGG_DRAGON ; egg groups

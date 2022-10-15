@@ -4,10 +4,9 @@
 	db NORMAL, FAIRY ; type
 	db 150 ; catch rate
 	db 33 ; base exp
-	db NO_ITEM ; item 1
-	db NO_ITEM ; item 2
-	dn GENDER_F75, 1 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/azurill/front.dimensions"
+	db NO_ITEM, NO_ITEM ; held items
+	dn GENDER_F75, HATCH_FASTER ; gender ratio, step cycles to hatch
+
 	abilities_for AZURILL, THICK_FAT, HUGE_POWER, SAP_SIPPER
 	db GROWTH_FAST ; growth rate
 	dn EGG_NONE, EGG_NONE ; egg groups

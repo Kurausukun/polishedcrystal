@@ -4,10 +4,9 @@
 	db FIRE, ROCK ; type
 	db 75 ; catch rate
 	db 213 ; base exp
-	db NO_ITEM ; item 1
-	db ASPEAR_BERRY ; item 2
-	dn GENDER_F25, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/arcanine_hisuian/front.dimensions"
+	db NO_ITEM, ASPEAR_BERRY ; held items
+	dn GENDER_F25, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 if DEF(FAITHFUL)
 	abilities_for ARCANINE_HISUIAN, INTIMIDATE, FLASH_FIRE, JUSTIFIED
 else

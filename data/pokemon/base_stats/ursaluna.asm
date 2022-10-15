@@ -4,10 +4,9 @@
 	db NORMAL, GROUND ; type
 	db 30 ; catch rate
 	db 229 ; base exp
-	db ALWAYS_ITEM_2 ; item 1
-	db SITRUS_BERRY ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/ursaluna/front.dimensions"
+	db ALWAYS_ITEM_2, SITRUS_BERRY ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for URSALUNA, GUTS, BULLETPROOF, UNNERVE
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_GROUND, EGG_GROUND ; egg groups

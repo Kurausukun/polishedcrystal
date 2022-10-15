@@ -1,11 +1,14 @@
 LoadCGBLayout::
+	assert CGB_RAM == 0
 	and a ; CGB_RAM?
 	jr nz, .not_ram
 	ld a, [wMemCGBLayout]
 .not_ram
+	assert CGB_PARTY_MENU_HP_PALS == NUM_CGB_LAYOUTS - 1
 	cp CGB_PARTY_MENU_HP_PALS
 	jmp z, ApplyPartyMenuHPPals
-	call ResetBGPals
+	cp CGB_MAPPALS
+	call nz, ResetBGPals
 	dec a
 	call StackJumpTable
 
@@ -14,30 +17,33 @@ LoadCGBLayout::
 	dw _CGB_BattleGrayscale
 	dw _CGB_BattleColors
 	dw _CGB_PokegearPals
-	dw _CGB_PokedexAreaPals
 	dw _CGB_StatsScreenHPPals
 	dw _CGB_Pokedex
+	dw _CGB_Pokedex_PrepareOnly
 	dw _CGB_SlotMachine
-	dw _CGB_Diploma
+	dw _CGB_Plain
 	dw _CGB_MapPals
 	dw _CGB_PartyMenu
 	dw _CGB_Evolution
 	dw _CGB_MoveList
-	dw _CGB_Pokedex_PrepareOnly
 	dw _CGB_BuyMenu
 	dw _CGB_PackPals
 	dw _CGB_TrainerCard
 	dw _CGB_TrainerCard2
 	dw _CGB_TrainerCard3
-	dw _CGB_PokedexUnownMode
 	dw _CGB_BillsPC
 	dw _CGB_UnownPuzzle
 	dw _CGB_GameFreakLogo
 	dw _CGB_TradeTube
 	dw _CGB_IntroPals
+	dw _CGB_IntroGenderPals
 	dw _CGB_PlayerOrMonFrontpicPals
 	dw _CGB_TrainerOrMonFrontpicPals
 	dw _CGB_JudgeSystem
+	dw _CGB_NamingScreen
+	dw _CGB_Mail
+	dw _CGB_FlyMap
+	dw _CGB_NewDiploma
 	assert_table_length NUM_CGB_LAYOUTS - 2 ; discount CGB_RAM and CGB_PARTY_MENU_HP_PALS
 
 _CGB_BattleGrayscale:
@@ -54,86 +60,148 @@ rept 2
 endr
 	jmp _CGB_FinishBattleScreenLayout
 
+GetDefaultBattlePalette:
+	ld a, BANK(wTempBattleMonSpecies)
+	call StackCallInWRAMBankA
+.Function:
+	ld a, h
+	and a ; PAL_BATTLE_BG_PLAYER
+	jr z, SetBattlePal_Player
+	dec a ; PAL_BATTLE_BG_ENEMY
+	jr z, SetBattlePal_Enemy
+	dec a ; PAL_BATTLE_BG_ENEMY_HP
+	jr z, SetBattlePal_EnemyHP
+	dec a ; PAL_BATTLE_BG_PLAYER_HP
+	jr z, SetBattlePal_PlayerHP
+	dec a ; PAL_BATTLE_BG_EXP_GENDER
+	jr z, SetBattlePal_ExpGender
+	dec a ; PAL_BATTLE_BG_STATUS
+	jr z, SetBattlePal_Status
+	dec a ; PAL_BATTLE_BG_TYPE_CAT
+	jr z, SetBattlePal_Player ; type+cat uses player pal normally.
+	dec a ; PAL_BATTLE_BG_TEXT
+	jr z, SetBattlePal_Text
+	dec a ; PAL_BATTLE_OB_ENEMY
+	jr z, SetBattlePal_Enemy
+	dec a ; PAL_BATTLE_OB_PLAYER
+	jr z, SetBattlePal_Player
+
+	; At this point, a is 1-6. Load a battle object pal.
+	ld hl, BattleObjectPals - 1 palettes
+	ld bc, 1 palettes
+	rst AddNTimes
+	jmp FarCopyWRAM
+
+GetPartyMonDVs:
+	ld hl, wPartyMon1DVs
+	ld a, [wCurBattleMon]
+	jmp GetPartyLocation
+
+GetEnemyMonDVs:
+	ld hl, wOTPartyMon1DVs
+	ld a, [wCurOTMon]
+	jmp GetPartyLocation
+
+SetBattlePal_Player:
+	ld hl, wTempBattleMonSpecies
+	push hl
+	call GetBattlemonBackpicPalettePointer
+	ld bc, GetPartyMonDVs
+	jr SetBattlePal_Pokepic
+
+SetBattlePal_Enemy:
+	ld hl, wTempEnemyMonSpecies
+	push hl
+	call GetEnemyFrontpicPalettePointer
+	ld bc, GetEnemyMonDVs
+	; fallthrough
+SetBattlePal_Pokepic:
+	push bc
+	call LoadPalette_White_Col1_Col2_Black
+	pop bc
+	pop hl
+
+	push de
+	ld a, 6
+.loop
+	dec de
+	dec a
+	jr nz, .loop
+	push de
+
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+
+	; hl = DVs
+	call _bc_
+
+	ld b, d
+	ld c, e
+
+	; vary colors by DVs
+	call CopyDVsToColorVaryDVs
+	pop hl
+	call VaryColorsByDVs
+	pop de
+	ret
+
+SetBattlePal_PlayerHP:
+	ld a, [wPlayerHPPal]
+	jr SetBattlePal_HP
+
+SetBattlePal_EnemyHP:
+	ld a, [wEnemyHPPal]
+	; fallthrough
+SetBattlePal_HP:
+	add a
+	add a
+	add LOW(HPBarInteriorPals)
+	ld l, a
+	adc HIGH(HPBarInteriorPals)
+	sub l
+	ld h, a
+	jmp LoadPalette_White_Col1_Col2_Black
+
+SetBattlePal_ExpGender:
+	ld hl, GenderAndExpBarPals
+	jmp LoadPalette_White_Col1_Col2_Black
+
+SetBattlePal_Status:
+	call LoadPlayerStatusIconPalette
+	jmp LoadEnemyStatusIconPalette
+
+SetBattlePal_Text:
+	ld a, BANK("GBC Video")
+	call StackCallInWRAMBankA
+.Function:
+	ld a, -1
+	lb bc, 2, 4
+.loop
+	ld [de], a
+	inc de
+	dec c
+	jr nz, .loop
+	xor a
+	ld c, 4
+	dec b
+	jr nz, .loop
+	ret
+
 _CGB_BattleColors:
 	push bc
 	ld de, wBGPals1
-	call GetBattlemonBackpicPalettePointer
-	call LoadPalette_White_Col1_Col2_Black
-	ld a, [wTempBattleMonSpecies]
-	and a
-	jr z, .player_backsprite
-	push de
-	; hl = DVs
-	farcall GetPartyMonDVs
-	; c = species
-	ld a, [wTempBattleMonSpecies]
-	ld c, a
-	ld a, [wCurForm]
-	ld b, a
-	; vary colors by DVs
-	call CopyDVsToColorVaryDVs
-	ld hl, wBGPals1 palette PAL_BATTLE_BG_PLAYER + 2
-	call VaryColorsByDVs
-	pop de
-.player_backsprite
-
-	call GetEnemyFrontpicPalettePointer
-	call LoadPalette_White_Col1_Col2_Black
-	ld a, [wTempEnemyMonSpecies]
-	and a
-	jr z, .trainer_sprite
-	push de
-	; hl = DVs
-	farcall GetEnemyMonDVs
-	; c = species
-	ld a, [wTempEnemyMonSpecies]
-	ld c, a
-	ld a, [wCurForm]
-	ld b, a
-	; vary colors by DVs
-	call CopyDVsToColorVaryDVs
-	ld hl, wBGPals1 palette PAL_BATTLE_BG_ENEMY + 2
-	call VaryColorsByDVs
-	pop de
-.trainer_sprite
-
-	ld a, [wEnemyHPPal]
-	add a
-	add a
-	add LOW(HPBarInteriorPals)
-	ld l, a
-	adc HIGH(HPBarInteriorPals)
-	sub l
-	ld h, a
-	call LoadPalette_White_Col1_Col2_Black
-
-	ld a, [wPlayerHPPal]
-	add a
-	add a
-	add LOW(HPBarInteriorPals)
-	ld l, a
-	adc HIGH(HPBarInteriorPals)
-	sub l
-	ld h, a
-	call LoadPalette_White_Col1_Col2_Black
-
-	ld hl, GenderAndExpBarPals
-	call LoadPalette_White_Col1_Col2_Black
-
-	call LoadPlayerStatusIconPalette
-	call LoadEnemyStatusIconPalette
-
-	ld hl, wBGPals1 palette PAL_BATTLE_BG_PLAYER
+	call SetBattlePal_Player
+	call SetBattlePal_Enemy
+	call SetBattlePal_EnemyHP
+	call SetBattlePal_PlayerHP
+	call SetBattlePal_ExpGender
+	call SetBattlePal_Status
 	ld de, wBGPals1 palette PAL_BATTLE_BG_TYPE_CAT
-	call LoadOnePalette
-
-	ld hl, wBGPals1 palette PAL_BATTLE_BG_ENEMY
-	ld de, wOBPals1 palette PAL_BATTLE_OB_ENEMY
-	call LoadOnePalette
-
-	ld hl, wBGPals1 palette PAL_BATTLE_BG_PLAYER
-	ld de, wOBPals1 palette PAL_BATTLE_OB_PLAYER
-	call LoadOnePalette
+	call SetBattlePal_Player
+	call SetBattlePal_Text
+	call SetBattlePal_Enemy
+	call SetBattlePal_Player
 
 	ld a, CGB_BATTLE_COLORS
 	ld [wMemCGBLayout], a
@@ -190,12 +258,9 @@ _CGB_FinishBattleScreenLayout:
 	call FillBoxWithByte
 
 	ld a, PAL_BATTLE_BG_EXP_GENDER
-	hlcoord 1, 1, wAttrmap
-	ld [hl], a
-	hlcoord 8, 1, wAttrmap
-	ld [hl], a
-	hlcoord 18, 8, wAttrmap
-	ld [hl], a
+	ldcoord_a 1, 1, wAttrmap
+	ldcoord_a 8, 1, wAttrmap
+	ldcoord_a 18, 8, wAttrmap
 
 	hlcoord 12, 8, wAttrmap
 	lb bc, 1, 2
@@ -243,6 +308,13 @@ _CGB_FinishBattleScreenLayout:
 .apply_attr_map
 	jmp ApplyAttrMap
 
+_CGB_FlyMap:
+	ld hl, PokegearOBPals
+	ld de, wOBPals1
+	ld c, 8 palettes
+	call LoadPalettes
+	; fallthrough
+
 _CGB_PokegearPals:
 	ld hl, PokegearPals
 	ld de, wBGPals1
@@ -256,21 +328,6 @@ _CGB_PokegearPals:
 	ld de, wBGPals1 palette 0
 	call LoadOnePalette
 .male
-
-	call ApplyPals
-	ld a, $1
-	ldh [hCGBPalUpdate], a
-	ret
-
-_CGB_PokedexAreaPals:
-	ld hl, PokegearPals palette 1
-	ld de, wBGPals1 palette 1
-	ld c, 7 palettes
-	call LoadPalettes
-
-	ld hl, PokedexPals palette 1
-	ld de, wBGPals1 palette 0
-	call LoadOnePalette
 
 	call ApplyPals
 	ld a, $1
@@ -418,28 +475,176 @@ _CGB_SlotMachine:
 
 	jmp _CGB_FinishLayout
 
-_CGB_Diploma:
-	ld hl, DiplomaPals
+_CGB_Plain:
+	ld b, 8
 	ld de, wBGPals1
-	ld c, 16 palettes
-	call LoadPalettes
-
-	ld de, wBGPals1
-	ld hl, .DiplomaPalette
+.loop
+	ld hl, Gen1Palette
 	call LoadOnePalette
+	dec b
+	jr nz, .loop
+
+	; de == wOBPals1
+	ld hl, PokegearOBPals
+	ld c, 8 palettes
+	call LoadPalettes
 
 	call WipeAttrMap
 	jmp ApplyAttrMap
 
-.DiplomaPalette
-if !DEF(MONOCHROME)
-	RGB 31, 31, 31
-	RGB 30, 22, 17
-	RGB 16, 14, 19
-	RGB 00, 00, 00
-else
-	MONOCHROME_RGB_FOUR
-endc
+_CGB_NamingScreen:
+	ld a, [wNamingScreenType]
+	cp $4 ; box?
+	ld a, THEME_STANDARD
+	jr nz, .got_theme
+	farcall GetBoxTheme
+.got_theme
+	call GetBillsPCThemePalette
+	inc hl
+	inc hl
+
+	ldh a, [rSVBK]
+	push af
+	ld a, $5
+	ldh [rSVBK], a
+
+	push hl
+	ld hl, GenderAndExpBarPals
+	ld de, wBGPals1 + 2
+	ld c, 2 * 2
+	call LoadColorBytes
+	pop hl
+	ld c, 5 * 2
+	call LoadColorBytes
+
+	ld hl, wBGPals1 palette 1
+	ld de, wBGPals1 palette 2
+	call LoadOneColor
+	ld hl, wBGPals1 + 6
+	ld de, wBGPals1 palette 2 + 6
+	call LoadOneColor
+
+	pop af
+	ldh [rSVBK], a
+
+	ld hl, PokegearOBPals
+	ld de, wOBPals1
+	ld c, 8 palettes
+	call LoadPalettes
+
+	ld a, [wNamingScreenType]
+	and a
+	jr nz, .not_pokemon
+	; mon minis use palette [wCurPartyMon]+2
+	ld hl, wOBPals1 palette 2 + 2
+	ld bc, 1 palettes
+	ld a, [wCurPartyMon]
+	rst AddNTimes
+	ld d, h
+	ld e, l
+	call LoadPartyMonPalette
+.not_pokemon
+
+	; message area + Shift/Del/End
+	ld a, $1
+	hlcoord 0, 0, wAttrmap
+	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
+	rst ByteFill
+	; input characters
+	inc a
+	hlcoord 0, 6, wAttrmap
+	ld c, SCREEN_WIDTH * 9
+	rst ByteFill
+
+	call FillNamingScreenTextBoxes
+
+	; gender icon
+	xor a
+	ldcoord_a 1, 2, wAttrmap
+
+	jmp ApplyAttrMap
+
+_CGB_Mail:
+	ld a, [wCurItem]
+	sub FIRST_MAIL
+	call LoadMailPalettes
+
+	ldh a, [rSVBK]
+	push af
+	ld a, $5
+	ldh [rSVBK], a
+
+	ld hl, wBGPals1
+	ld de, wBGPals1 palette 1
+	call LoadOneColor
+	ld hl, wBGPals1
+	ld de, wBGPals1 palette 2
+	call LoadOneColor
+	ld hl, wBGPals1 + 2
+	ld de, wBGPals1 palette 2 + 4
+	call LoadOneColor
+	ld hl, wBGPals1 + 4
+	ld de, wBGPals1 palette 1 + 4
+	call LoadOneColor
+	ld hl, wBGPals1 + 6
+	ld de, wBGPals1 palette 1 + 2
+	call LoadOneColor
+	ld hl, wBGPals1 + 6
+	ld de, wBGPals1 palette 2 + 2
+	call LoadOneColor
+	ld hl, WhitePalette
+	ld de, wBGPals1 palette 1 + 6
+	call LoadOneColor
+	ld hl, WhitePalette
+	ld de, wBGPals1 palette 2 + 6
+	call LoadOneColor
+
+	ld hl, PokegearOBPals
+	ld de, wOBPals1
+	ld c, 8 palettes
+	call LoadColorBytes
+
+	pop af
+	ldh [rSVBK], a
+
+	; message area
+	ld a, $1
+	hlcoord 0, 0, wAttrmap
+	ld bc, SCREEN_WIDTH * 6
+	rst ByteFill
+	; input characters
+	xor a
+	ld c, SCREEN_WIDTH * 9
+	rst ByteFill
+	; Shift/Del/End
+	ld a, $2
+	ld c, SCREEN_WIDTH * 3
+	rst ByteFill
+
+	call FillNamingScreenTextBoxes
+
+	jmp ApplyAttrMap
+
+LoadOneColor:
+	ld c, 2
+LoadColorBytes:
+	ld a, [hli]
+	ld [de], a
+	inc de
+	dec c
+	jr nz, LoadColorBytes
+	ret
+
+FillNamingScreenTextBoxes:
+	; Shift/Del/End
+	ld a, $7
+	hlcoord 1, SCREEN_HEIGHT - 2, wAttrmap
+	ld bc, SCREEN_WIDTH - 2
+	rst ByteFill
+	; message area
+	hlcoord 1, 1, wAttrmap
+	lb bc, 4, SCREEN_WIDTH - 2
+	jmp FillBoxWithByte
 
 _CGB_MapPals:
 	call LoadMapPals
@@ -633,16 +838,11 @@ endr
 	ld [hl], a
 
 	ld a, $1
-	hlcoord 7, 2, wAttrmap
-	ld [hl], a
-	hlcoord 7, 4, wAttrmap
-	ld [hl], a
-	hlcoord 7, 6, wAttrmap
-	ld [hl], a
-	hlcoord 7, 8, wAttrmap
-	ld [hl], a
-	hlcoord 7, 10, wAttrmap
-	ld [hl], a
+	ldcoord_a 7, 2, wAttrmap
+	ldcoord_a 7, 4, wAttrmap
+	ldcoord_a 7, 6, wAttrmap
+	ldcoord_a 7, 8, wAttrmap
+	ldcoord_a 7, 10, wAttrmap
 	hlcoord 0, 2, wAttrmap
 	lb bc, 5, 5
 	call FillBoxWithByte
@@ -882,38 +1082,11 @@ LoadFirstTwoTrainerCardPals:
 	pop de
 	ret
 
-_CGB_PokedexUnownMode:
-	ld de, wBGPals1
-	ld hl, PokedexPals
-	call LoadOnePalette
-
-	ld a, [wCurPartySpecies]
-	call GetMonPalettePointer
-	call LoadPalette_White_Col1_Col2_Black
-
-	call WipeAttrMap
-
-	hlcoord 6, 5, wAttrmap
-	lb bc, 7, 7
-	ld a, $1
-	call FillBoxWithByte
-
-	call InitPartyMenuOBPals
-
-	jmp _CGB_FinishLayout
-
 _CGB_BillsPC:
 	farcall GetBoxTheme
 BillsPC_PreviewTheme:
-	; hl = BillsPC_ThemePals + a * 6 * 2
-	add a
-	add a
-	ld e, a
-	ld d, 0
-	ld hl, BillsPC_ThemePals
-	add hl, de
-	add hl, de
-	add hl, de
+	call GetBillsPCThemePalette
+
 	ld de, wBGPals1
 	ld c, 1 * 2
 	call LoadPalettes
@@ -947,6 +1120,9 @@ BillsPC_PreviewTheme:
 	call LoadOnePalette
 	ld hl, .PackPal
 	ld de, wOBPals1 palette 4
+	call LoadOnePalette
+	ld hl, .WhitePal
+	ld de, wOBPals1 palette 6
 	jmp LoadOnePalette
 
 .apply_pals
@@ -978,6 +1154,31 @@ else
 	RGB_MONOCHROME_DARK
 	RGB_MONOCHROME_BLACK
 endc
+
+.WhitePal:
+if !DEF(MONOCHROME)
+	RGB 31, 31, 31
+	RGB 31, 31, 31
+	RGB 31, 31, 31
+	RGB 31, 31, 31
+else
+	RGB_MONOCHROME_WHITE
+	RGB_MONOCHROME_WHITE
+	RGB_MONOCHROME_WHITE
+	RGB_MONOCHROME_WHITE
+endc
+
+GetBillsPCThemePalette:
+	; hl = BillsPC_ThemePals + a * 6 * 2
+	add a
+	add a
+	ld e, a
+	ld d, 0
+	ld hl, BillsPC_ThemePals
+	add hl, de
+	add hl, de
+	add hl, de
+	ret
 
 _CGB_UnownPuzzle:
 	ld de, wBGPals1
@@ -1106,7 +1307,7 @@ _CGB_IntroPals:
 	call VaryBGPal0ByTempMonDVs
 	pop de
 
-	ld hl, .IntroGradientPalette
+	ld hl, IntroGradientPalette
 	call LoadOnePalette
 
 	call WipeAttrMap
@@ -1119,7 +1320,31 @@ _CGB_IntroPals:
 	call ApplyAttrMap
 	jmp ApplyPals
 
-.IntroGradientPalette:
+_CGB_IntroGenderPals:
+	ld de, wBGPals1
+	ld hl, ChrisPalette
+	call LoadPalette_White_Col1_Col2_Black
+	ld hl, IntroGradientPalette
+	call LoadOnePalette
+	ld hl, KrisPalette
+	call LoadPalette_White_Col1_Col2_Black
+
+	call WipeAttrMap
+
+	hlcoord 0, 0, wAttrmap
+	lb bc, 3, 20
+	ld a, $1
+	call FillBoxWithByte
+
+	hlcoord 10, 3, wAttrmap
+	lb bc, 8, 7
+	ld a, $2
+	call FillBoxWithByte
+
+	call ApplyAttrMap
+	jmp ApplyPals
+
+IntroGradientPalette:
 if !DEF(MONOCHROME)
 	RGB 31, 31, 31
 	RGB 27, 31, 31
@@ -1128,6 +1353,27 @@ if !DEF(MONOCHROME)
 else
 	MONOCHROME_RGB_FOUR
 endc
+
+_CGB_NewDiploma:
+	ld hl, DiplomaPals
+	ld de, wBGPals1
+	ld c, 4 palettes
+	call LoadPalettes
+
+	call WipeAttrMap
+
+	hlcoord 3, 2, wAttrmap
+	lb bc, 2, 14
+	ld a, $1
+	call FillBoxWithByte
+
+	hlcoord 2, 4, wAttrmap
+	ld a, $2
+	ldcoord_a 17, 6, wAttrmap
+	lb bc, 8, 15
+	call FillBoxWithByte
+
+	jmp ApplyAttrMap
 
 _CGB_PlayerOrMonFrontpicPals:
 	ld de, wBGPals1

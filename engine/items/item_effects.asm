@@ -289,6 +289,7 @@ KeyItemEffects:
 	dw Itemfinder         ; ITEMFINDER
 	dw CoinCase           ; COIN_CASE
 	dw ApricornBox        ; APRICORN_BOX
+	dw WingCase           ; WING_CASE
 	dw TypeChart          ; TYPE_CHART
 	dw BlueCard           ; BLUE_CARD
 	dw SquirtBottle       ; SQUIRTBOTTLE
@@ -332,7 +333,20 @@ PokeBallEffect:
 
 	; Everything below this are regular wild battles
 	farcall DoesNuzlockeModePreventCapture
+if !DEF(DEBUG)
 	jmp c, Ball_NuzlockeFailureMessage
+else
+	jr nc, .NoNuzlockeCheck
+
+	ld hl, .DebugNuzlockeBypassMessage
+	call PrintText
+	jr .NoNuzlockeCheck
+
+.DebugNuzlockeBypassMessage:
+	text "(Debug) Nuzlocke"
+	line "mode bypassed."
+	prompt
+endc
 
 .NoNuzlockeCheck
 	ld a, [wEnemySubStatus3] ; BATTLE_VARS_SUBSTATUS3_OPP
@@ -500,11 +514,9 @@ PokeBallEffect:
 	ld a, [wBattleType]
 	cp BATTLETYPE_CONTEST
 	jmp z, .catch_bug_contest_mon
-	cp BATTLETYPE_LEGENDARY
-	jr nz, .not_celebi ; false positive for other legendaries, but that's okay
+
 	ld hl, wBattleResult
-	set 6, [hl]
-.not_celebi
+	set BATTLERESULT_CAUGHT_POKEMON_F, [hl]
 
 	ld a, [wPartyCount]
 	cp PARTY_LENGTH
@@ -615,10 +627,11 @@ PokeBallEffect:
 
 	farcall SetBoxMonCaughtData
 
+	; We don't care for the pointer, but we want to know about full storage.
 	farcall NewStorageBoxPointer
 	jr nc, .BoxNotFullYet
 	ld hl, wBattleResult
-	set 7, [hl]
+	set BATTLERESULT_BOX_FULL_F, [hl]
 .BoxNotFullYet:
 	ld a, [wCurItem]
 	cp FRIEND_BALL
@@ -666,16 +679,22 @@ PokeBallEffect:
 
 	farcall UpdateStorageBoxMonFromTemp
 	farcall CurBoxFullCheck
+
+	push af
+	call SpeechTextbox
+	call ApplyAttrAndTilemapInVBlank
+	pop af
+
 	jr z, .box_not_full
 	ld hl, Text_CurBoxFull
 	push bc
-	call PrintText
+	call PrintTextNoBox
 	pop bc
 
 .box_not_full
 	farcall GetCurBoxName
 	ld hl, Text_SentToBillsPC
-	call PrintText
+	call PrintTextNoBox
 
 	ld c, 15
 	call FadeToWhite
@@ -899,22 +918,16 @@ VitaminEffect:
 	jmp c, ItemNotUsed_ExitMenu
 
 	call SetUpEVModifier
-	add hl, bc
-	ld a, [hl]
-	cp 252
-	jmp nc, WontHaveAnyEffectMessage
-
-	add 10
-	jr c, .set_to_max
-	cp 252 + 1
-	jr c, .ev_value_ok
-.set_to_max
-	ld a, 252
+	ld a, 10
+	call CheckEVCap
+	jr nc, .ev_value_ok
+	and a
+	jmp z, WontHaveAnyEffectMessage
 
 .ev_value_ok
+	add [hl]
 	ld [hl], a
 	call UpdatePkmnStats
-
 	call GetStatStringAndPlayFullHealSFX
 	ld hl, ItemStatRoseText
 	call PrintText
@@ -935,33 +948,46 @@ SetUpEVModifier:
 	ld a, MON_EVS
 	jmp GetPartyParamLocationAndValue
 
+CheckEVCap:
+; Take the EV amount in a with the stat in c, and clamp a to the max
+; amount of EVs we can give for the given stat, if a exceeds it.
+; Returns the relevant EV in hl. Returns carry if a was modified.
+	push bc
+	ld b, a
+	ld a, MON_EVS
+	add c
+	call GetPartyParamLocationAndValue
+
+	; a = (252-CurEV) >= b ? b : (252-CurEV)
+	ld a, 252
+	sub [hl]
+	cp b
+	jr c, .modified
+	ld a, b
+.modified
+	pop bc
+	ret
+
 GetStatStringAndPlayFullHealSFX:
+	call GetStatString
+	jmp Play_SFX_FULL_HEAL
+
+GetStatString:
 	call GetEVRelativePointer
+_GetStatString:
+	ld de, wStringBuffer2
 	ld hl, StatStrings
 	add hl, bc
 	add hl, bc
+GetStatStringForLyra:
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld de, wStringBuffer2
 	ld bc, ITEM_NAME_LENGTH
 	rst CopyBytes
-	jmp Play_SFX_FULL_HEAL
+	ret
 
-StatStrings:
-	dw .health
-	dw .attack
-	dw .defense
-	dw .speed
-	dw .spcl_atk
-	dw .spcl_def
-
-.health   db "Health@"
-.attack   db "Attack@"
-.defense  db "Defense@"
-.speed    db "Speed@"
-.spcl_atk db "Spcl.Atk@"
-.spcl_def db "Spcl.Def@"
+INCLUDE "data/battle/stat_strings.asm"
 
 GetEVRelativePointer:
 	ld a, [wCurItem]
@@ -1306,6 +1332,11 @@ UseItem_SelectMon2:
 	pop de
 	pop hl
 	jr UseItem_DoSelectMon
+
+WingCase:
+	ld b, PARTYMENUACTION_HEALING_ITEM ; also used for vitamins
+	ld hl, WingCase_MonSelected
+	jr UseItem_SelectMon_Loop
 
 RestoreHPEffect:
 	ld b, PARTYMENUACTION_HEALING_ITEM
@@ -1750,8 +1781,8 @@ PokeDoll:
 	inc a
 	ld [wBattleEnded], a
 	ld a, [wBattleResult]
-	and 3 << 6
-	or $2
+	and BATTLERESULT_BITMASK
+	or DRAW
 	ld [wBattleResult], a
 	jmp UseItemText
 
@@ -1809,6 +1840,237 @@ BlueCard:
 	text_far _BlueCardBalanceText
 	text_end
 
+WingCase_MonSelected:
+; Runs when a mon has been selected.
+	; What wing does the player want to choose?
+	ldh a, [hBGMapMode]
+	push af
+	ld a, [wMenuScrollPosition]
+	push af
+	xor a
+	ld [wMenuScrollPosition], a
+	call LoadStandardMenuHeader
+	ld hl, .WingMenu
+	call CopyMenuHeader
+	call InitScrollingMenu
+	call ScrollingMenu
+	push af
+	call ExitMenu
+	pop af
+	pop af
+	ld [wMenuScrollPosition], a
+	pop af
+	ldh [hBGMapMode], a
+	ld a, [wMenuJoypad]
+	sub B_BUTTON
+	ret z
+
+	; Which wing was chosen? -1 is cancel
+	ld a, [wMenuSelection]
+	ld c, a
+	ld b, 0
+	inc a
+	ret z
+
+	; Check if we have any in the first place.
+	ld hl, wWingAmounts + 1
+	add hl, bc
+	add hl, bc
+	ld a, [hld]
+	or [hl]
+	ld a, 252
+	jr nz, .have_wings
+	hlcoord 1, 16
+	ld de, .YouDontHaveAny
+	rst PlaceString
+	xor a
+	ret
+
+.have_wings
+	; Check how many we can use. Cap at 252, since that's the highest
+	; useful amount.
+	ld a, [hli]
+	and a
+	jr nz, .overflow
+	ld a, [hl]
+	cp 252
+	jr c, .got_amount
+.overflow
+	ld a, 252
+.got_amount
+	ld [wItemQuantityBuffer], a
+
+	push bc
+	; This doubles as a "blank previous text".
+	hlcoord 1, 16
+	ld de, .UseHowManyText
+	rst PlaceString
+	farcall SelectWingQuantity
+	pop bc
+	jr c, .done
+
+	; Compare the given input with the amount we can actually apply.
+	ld a, [wItemQuantityChangeBuffer]
+	call CheckEVCap
+	ld [wItemQuantityChangeBuffer], a
+	ld hl, .XWillBeAppliedText
+	jr nc, .got_apply_str
+	ld hl, .OnlyXWillBeAppliedText
+
+	; If a is zero, return. a=1 will print the "no effect" message.
+	and a
+	ld a, 1
+	ret z
+
+	; Otherwise, a was modified.
+.got_apply_str
+	push bc
+	call PrintText
+	call YesNoBox
+	pop bc
+	jr c, .done
+
+	; Add EVs
+	push bc
+	ld a, MON_EVS
+	add c
+	call GetPartyParamLocationAndValue
+	ld a, [wItemQuantityChangeBuffer]
+	push af
+	add [hl]
+	ld [hl], a
+
+	; Deduct wing amount
+	ld hl, wWingAmounts + 1
+	add hl, bc
+	add hl, bc
+	pop af
+	ld b, a
+	ld a, [hl]
+	sub b
+	ld [hld], a
+	jr nc, .no_underflow
+	dec [hl]
+
+.no_underflow
+	call UpdatePkmnStats
+	call Play_SFX_FULL_HEAL
+	farcall WritePartyMenuTilemap
+	pop bc
+	call _GetStatString
+	ld a, MON_SPECIES
+	call GetPartyParamLocationAndValue
+	ld [wNamedObjectIndex], a
+	ld bc, MON_FORM - MON_SPECIES
+	add hl, bc
+	ld a, [hl]
+	ld [wNamedObjectIndex+1], a
+	call GetPokemonName
+	ld hl, ItemStatRoseText
+	call PrintText
+
+.done
+	xor a
+	ret
+
+.WingMenu:
+	db MENU_BACKUP_TILES
+	menu_coords 7, 1, 18, 14
+	dw .MenuData
+	db 1 ; default option
+
+.MenuData:
+	db $20
+	db 7, 7
+	db SCROLLINGMENU_ITEMS_NORMAL
+	dba .MenuItems
+	dba .DisplayWingName
+	dba .DisplayWingAmount
+	dba .DisplayWingDesc
+
+.MenuItems:
+; Note that the order doesn't match the internal index order,
+; because Swift Wing (Speed) is last.
+	db NUM_WINGS
+	table_width 1
+	db HEALTH_WING
+	db MUSCLE_WING
+	db RESIST_WING
+	db GENIUS_WING
+	db CLEVER_WING
+	db SWIFT_WING
+	assert_table_length NUM_WINGS
+	db -1
+
+.DisplayWingName:
+	ld hl, WingNames
+	; fallthrough
+.DisplayNthString:
+	ld a, [wMenuSelection]
+	call GetNthString
+	call SwapHLDE
+	rst PlaceString
+	ret
+
+.DisplayWingAmount:
+	ld hl, wWingAmounts
+	ld bc, 2
+	ld a, [wMenuSelection]
+	rst AddNTimes
+	call SwapHLDE
+	ld bc, SCREEN_WIDTH
+	add hl, bc
+	ld a, "×"
+	ld [hli], a
+	lb bc, 2, 3
+	jmp PrintNum
+
+.DisplayWingDesc:
+	; This doubles as a "blank previous text".
+	hlcoord 1, 16
+	ld de, .CancelStr
+	rst PlaceString
+
+	; Check if we're hovering over cancel
+	ld a, [wMenuSelection]
+	inc a
+	ret z
+	dec a
+	ld c, a
+	ld b, 0
+	call _GetStatString
+
+	ld hl, .RaisesStat
+.got_str
+	bccoord 1, 16
+	jmp PlaceWholeStringInBoxAtOnce
+
+.RaisesStat:
+	text "Raises "
+	text_ram wStringBuffer2
+	text "."
+	done
+
+.CancelStr:
+	db "Don't use.         @"
+
+.YouDontHaveAny:
+	db "You don't have any."
+	prompt
+
+.UseHowManyText:
+	db "Use how many?     @"
+
+.OnlyXWillBeAppliedText:
+	db "Only "
+.XWillBeAppliedText:
+	text_decimal wItemQuantityChangeBuffer, 1, 3
+	text " will be"
+	line "applied. Proceed?"
+	done
+
+INCLUDE "data/items/wing_names.asm"
+
 CoinCase:
 	ld hl, .coincasetext
 	jmp MenuTextboxWaitButton
@@ -1836,9 +2098,8 @@ ApricornBox:
 	jmp ExitMenu
 
 .MenuDataHeader:
-	db $40 ; flags
-	db 01, 05 ; start coords
-	db 11, 19 ; end coords
+	db MENU_BACKUP_TILES
+	menu_coords 5, 1, 19, 11
 	dw vTiles0
 	db 0 ; default option
 
@@ -2286,6 +2547,13 @@ Ball_ReplacePartyMonCaughtBall:
 	call UseItem_SelectMon
 	jr c, ItemNotUsed_ExitMenu
 
+	ld a, [wInitialOptions]
+	bit TRADED_AS_OT_OPT, a
+	jr nz, .no_trade_restriction
+	farcall CheckIfMonIsYourOT
+	jr c, CantChangeTradedMonBallMessage
+
+.no_trade_restriction
 	ld a, [wCurItem]
 	ld b, a
 	ld a, [wCurPartyMon]
@@ -2318,6 +2586,10 @@ BallReplacedText:
 
 AlreadyInThatBallMessage:
 	ld hl, AlreadyInThatBallText
+	jr CantUseItemMessage
+
+CantChangeTradedMonBallMessage:
+	ld hl, CantChangeTradedMonBallText
 	jr CantUseItemMessage
 
 CantUseOnEggMessage:
@@ -2353,6 +2625,10 @@ CantUseOnEggText:
 
 AlreadyInThatBallText:
 	text_far AlreadyInThatBallTextData
+	text_end
+
+CantChangeTradedMonBallText:
+	text_far CantChangeTradedMonBallTextData
 	text_end
 
 IsntTheTimeText:

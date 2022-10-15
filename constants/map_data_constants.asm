@@ -1,18 +1,28 @@
-GROUP_N_A  EQU -1
-MAP_N_A    EQU -1
-GROUP_NONE EQU 0
-MAP_NONE   EQU 0
+DEF GROUP_N_A  EQU -1
+DEF MAP_N_A    EQU -1
+DEF GROUP_NONE EQU 0
+DEF MAP_NONE   EQU 0
 
 ; map struct members (see data/maps/maps.asm)
 rsreset
-MAP_MAPATTRIBUTES_BANK rb ; 0
-MAP_TILESET            rb ; 1
-MAP_ENVIRONMENT        rb ; 2
-MAP_MAPATTRIBUTES      rw ; 3
-MAP_LOCATION           rb ; 5
-MAP_MUSIC              rb ; 6
-MAP_PALETTE            rb ; 7
-MAP_LENGTH EQU _RS        ; 8
+DEF MAP_TILESET       rb ; 0
+DEF MAP_ENVIRONMENT   rb ; 1
+DEF MAP_MAPATTRIBUTES rw ; 2
+DEF MAP_LOCATION      rb ; 4
+DEF MAP_MUSIC         rb ; 5
+DEF MAP_PALETTE       rb ; 6
+DEF MAP_LENGTH EQU _RS   ; 7
+
+; map landmark name signs
+	const_def
+	const SIGN_WOOD
+	const SIGN_CITY
+	const SIGN_FOREST
+	const SIGN_CAVE
+	const SIGN_ROUTE
+	const SIGN_WATER
+	const SIGN_BUILDING
+DEF NUM_SIGNS EQU const_value
 
 ; map environments (wEnvironment)
 ; EnvironmentColorsPointers indexes (see data/maps/environment_colors.asm)
@@ -24,7 +34,7 @@ MAP_LENGTH EQU _RS        ; 8
 	const ISOLATED
 	const GATE
 	const DUNGEON
-NUM_ENVIRONMENTS EQU const_value - 1
+DEF NUM_ENVIRONMENTS EQU const_value - 1
 
 ; map palettes (wEnvironment)
 	const_def
@@ -33,10 +43,10 @@ NUM_ENVIRONMENTS EQU const_value - 1
 	const PALETTE_NITE
 	const PALETTE_MORN
 	const PALETTE_EVE
-NUM_MAP_PALETTES EQU const_value
+DEF NUM_MAP_PALETTES EQU const_value
 
-IN_DARKNESS EQU %1000
-DARKNESS_PALSET EQU %00011011 ; brightlevel 0, 1, 2, 3
+DEF IN_DARKNESS EQU %1000
+DEF DARKNESS_PALSET EQU %00011011 ; brightlevel 0, 1, 2, 3
 
 ; FishGroup indexes (see data/wild/fish.asm)
 	const_def
@@ -54,8 +64,8 @@ DARKNESS_PALSET EQU %00011011 ; brightlevel 0, 1, 2, 3
 	const FISHGROUP_WHIRL_ISLANDS
 	const FISHGROUP_QWILFISH
 	const FISHGROUP_REMORAID
-	const FISHGROUP_QWILFISH_NO_SWARM
-NUM_FISHGROUPS EQU const_value - 1
+	const FISHGROUP_HISUIAN_QWILFISH
+DEF NUM_FISHGROUPS EQU const_value - 1
 
 ; wMapConnections
 ; connection directions (see data/maps/data.asm)
@@ -107,14 +117,14 @@ NUM_FISHGROUPS EQU const_value - 1
 	const SPAWN_BLACKTHORN
 	const SPAWN_MT_SILVER
 	const SPAWN_FAST_SHIP
-NUM_SPAWNS EQU const_value
+DEF NUM_SPAWNS EQU const_value
 
-SPAWN_N_A EQU -1
+DEF SPAWN_N_A EQU -1
 
 ; Flypoints indexes (see data/maps/flypoints.asm)
 	const_def
 ; johto
-JOHTO_FLYPOINT EQU const_value
+DEF JOHTO_FLYPOINT EQU const_value
 	const FLY_NEW_BARK
 	const FLY_CHERRYGROVE
 	const FLY_VIOLET
@@ -131,7 +141,7 @@ JOHTO_FLYPOINT EQU const_value
 	const FLY_BLACKTHORN
 	const FLY_MT_SILVER
 ; kanto
-KANTO_FLYPOINT EQU const_value
+DEF KANTO_FLYPOINT EQU const_value
 	const FLY_PALLET
 	const FLY_VIRIDIAN
 	const FLY_PEWTER
@@ -146,4 +156,4 @@ KANTO_FLYPOINT EQU const_value
 	const FLY_FUCHSIA
 	const FLY_CINNABAR
 	const FLY_INDIGO
-NUM_FLYPOINTS EQU const_value
+DEF NUM_FLYPOINTS EQU const_value

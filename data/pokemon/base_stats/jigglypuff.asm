@@ -4,10 +4,9 @@
 	db NORMAL, FAIRY ; type
 	db 170 ; catch rate
 	db 76 ; base exp
-	db ORAN_BERRY ; item 1
-	db ORAN_BERRY ; item 2
-	dn GENDER_F75, 1 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/jigglypuff/front.dimensions"
+	db ORAN_BERRY, ORAN_BERRY ; held items
+	dn GENDER_F75, HATCH_FASTER ; gender ratio, step cycles to hatch
+
 if DEF(FAITHFUL)
 	abilities_for JIGGLYPUFF, CUTE_CHARM, COMPETITIVE, FRISK
 else

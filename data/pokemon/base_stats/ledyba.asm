@@ -9,10 +9,9 @@ endc
 	db BUG, FLYING ; type
 	db 255 ; catch rate
 	db 54 ; base exp
-	db NO_ITEM ; item 1
-	db NO_ITEM ; item 2
-	dn GENDER_F50, 2 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/ledyba/front.dimensions"
+	db NO_ITEM, NO_ITEM ; held items
+	dn GENDER_F50, HATCH_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for LEDYBA, SWARM, EARLY_BIRD, RATTLED
 	db GROWTH_FAST ; growth rate
 	dn EGG_BUG, EGG_BUG ; egg groups

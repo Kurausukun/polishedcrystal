@@ -4,8 +4,10 @@ LCDGeneric::
 	jr z, .done
 
 ; At this point it's assumed we're in WRAM bank 5!
-	push bc
 	ldh a, [rLY]
+	cp SCREEN_HEIGHT_PX
+	jr nc, .done
+	push bc
 	ld c, a
 	ld b, HIGH(wLYOverrides)
 	ld a, [bc]
@@ -40,15 +42,17 @@ LCDMusicPlayer::
 	sub SCREEN_HEIGHT_PX
 .ok
 
-	ld h, 0
+	ldh a, [hMPState]
+	inc a
+	assert PIANO_ROLL_HEIGHT_PX + 1 < $80
+	add l
+	add a
 	ld l, a
-	add hl, hl
-	add hl, hl
-
-	assert LOW(wMPNotes) == 0
-	ld a, h
-	add HIGH(wMPNotes)
+	assert wMPNotes & ((1 << 9) - 1) == 0
+	adc wMPNotes >> 9 ; HIGH(wMPNotes) >> 1
+	sub l
 	ld h, a
+	add hl, hl
 
 	ld a, [hli]
 	ld [oamSprite00XCoord], a

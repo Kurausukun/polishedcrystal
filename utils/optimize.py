@@ -30,7 +30,7 @@ def isVolatile(code):
 
 def isNotReallyHram(code):
 	return any(r in code for r in {
-		'rROMB0', 'rROMB1', 'rRAMG', 'rRAMB'
+		'rROMB0', 'rROMB1', 'rRAMG', 'rRAMB', 'rRTCLATCH'
 	})
 
 # Each line has five properties:
@@ -63,11 +63,15 @@ patterns = {
 	(lambda line1, prev: re.match(r'(?:add|adc|sub|sbc|and|xor|or|cp) a,', line1.code)),
 ],
 'nops': [
+	# Bad: nop
+	# Good: omit (unless you need it for timing or halt)
+	(lambda line1, prev: line1.code != 'halt'),
+	(lambda line2, prev: line2.code == 'nop'),
+],
+'no-ops': [
 	# Bad: ld b, b (or other identical registers)
-	# Meh: nop
 	# Good: omit (unless you need it for timing)
-	(lambda line1, prev: re.match(r'ld ([abcdehl]), \1$', line1.code)
-		or line1.code == 'nop'),
+	(lambda line1, prev: re.match(r'ld ([abcdehl]), \1$', line1.code)),
 ],
 'Inefficient HRAM load': [
 	# Bad: ld a, [hFoo] (or [rFoo])
@@ -121,6 +125,13 @@ patterns = {
 	(lambda line2, prev: line2.code in {'inc a', 'dec a'}),
 	(1, lambda line3, prev: line3.code.rstrip(':') == prev[0].code.split(',')[1].strip()),
 ],
+'a++|a-- if not carry': [
+	# Bad: jr c, .ok / { inc|dec a }+ / .ok
+	# Good: adc|sbc -1
+	(lambda line1, prev: re.match(r'(jr|jp|jmp) c,', line1.code)),
+	(lambda line2, prev: line2.code in {'inc a', 'dec a'}),
+	(1, lambda line3, prev: line3.code.rstrip(':') == prev[0].code.split(',')[1].strip()),
+],
 'a = a >> 3': [
 	# Bad: srl a / srl a / srl a
 	# Good: rrca / rrca / rrca / and %00011111
@@ -141,9 +152,9 @@ patterns = {
 	# Good: ld b, a / adc|sbc c|N / sub|add b
 	(lambda line1, prev: re.match(r'ld ([bcdehl]|\[hl\]), a', line1.code)),
 	(lambda line2, prev: re.match(r'ld a, [%\$&]?0+$', line2.code)),
-	(lambda line3, prev: (line3.code.startswith('adc ') or line3.code.startswith('sbc '))
-		and ((not line3.code.startswith('adc [') and not line3.code.startswith('sbc ['))
-			or line3.code == 'adc [hl]' or line3.code == 'sbc [hl]')),
+	(lambda line3, prev: line3.code.startswith(('adc ', 'sbc '))
+		and (not line3.code.startswith(('adc [', 'sbc ['))
+			or line3.code in {'adc [hl]', 'sbc [hl]'})),
 ],
 'a|b|c|d|e|h|l = z|nz|c|nc ? P : Q': [
 	# Bad: jr z|nz|c|nc, .p / ld a|b|c|d|e|h|l, Q / jr .ok / .p / (ld a|b|c|d|e|h|l, P | xor a) / (.ok | jr .ok)
@@ -330,6 +341,12 @@ patterns = {
 	(lambda line1, prev: line1.code.startswith('call ') and ',' not in line1.code),
 	(lambda line2, prev: line2.code == 'ret'),
 ],
+'Tail farcall': [
+	# Bad: farcall Foo / ret (unless Foo messes with the stack)
+	# Good: farjp Foo
+	(lambda line1, prev: line1.code.startswith('farcall ') and ',' not in line1.code),
+	(lambda line2, prev: line2.code == 'ret'),
+],
 'Tail predef': [
 	# Bad: predef Foo / ret
 	# Good: predef_jump Foo
@@ -389,19 +406,18 @@ patterns = {
 'Useless loads': [
 	# Bad: ld P, Q / ld P, R (unless the lds have side effects)
 	# Good: ld P, R
-	(lambda line1, prev: (line1.code.startswith('ld ') or line1.code.startswith('ldh '))
-		and ',' in line1.code and not isVolatile(line1.code)),
-	(lambda line2, prev: (line2.code.startswith('ld ') or line2.code.startswith('ldh '))
-		and ',' in line2.code and line2.code.split(',')[0] == prev[0].code.split(',')[0]
+	(lambda line1, prev: line1.code.startswith(('ld ', 'ldh ')) and ',' in line1.code
+		and not isVolatile(line1.code)),
+	(lambda line2, prev: line2.code.startswith(('ld ', 'ldh ')) and ',' in line2.code
+		and line2.code.split(',')[0] == prev[0].code.split(',')[0]
 		and line2.code not in {'ld h, [hl]', 'ld l, [hl]'}),
 ],
 'Redundant loads': [
 	# Bad: ld P, Q / ld Q, P (unless the lds have side effects)
 	# Good: ld P, Q
-	(lambda line1, prev: (line1.code.startswith('ld ') or line1.code.startswith('ldh '))
-		and ',' in line1.code and not isVolatile(line1.code)),
-	(lambda line2, prev: (line2.code.startswith('ld ') or line2.code.startswith('ldh '))
-		and ',' in line2.code
+	(lambda line1, prev: line1.code.startswith(('ld ', 'ldh ')) and ',' in line1.code
+		and not isVolatile(line1.code)),
+	(lambda line2, prev: line2.code.startswith(('ld ', 'ldh ')) and ',' in line2.code
 		and line2.code[3:].split(',')[0].strip() == prev[0].code.split(',')[1].strip()
 		and line2.code.split(',')[1].strip() == prev[0].code[3:].split(',')[0].strip()
 		and line2.context == prev[0].context),
@@ -409,8 +425,8 @@ patterns = {
 'Similar loads': [
 	# Bad: ld P, X / ld a, X (unless the lds have side effects)
 	# Good: ld a, X / ld P, a (if possible)
-	(lambda line1, prev: (line1.code.startswith('ld ') or line1.code.startswith('ldh '))
-		and ',' in line1.code and not isVolatile(line1.code)
+	(lambda line1, prev: line1.code.startswith(('ld ', 'ldh ')) and ',' in line1.code
+		and not isVolatile(line1.code)
 		and line1.code.split(',')[1].strip() not in 'afbcdehl'),
 	(lambda line2, prev: line2.code.startswith('ld a,')
 		and line2.code.split(',')[1] == prev[0].code.split(',')[1]),
@@ -418,7 +434,7 @@ patterns = {
 'Conditionally load 0': [
 	# Bad: and|or X / jr|jp nz, .foo / ld P, 0
 	# Good: and|or X / jr|jp nz, .foo / ld P, a (if possible)
-	(lambda line1, prev: line1.code.startswith('and ') or line1.code.startswith('or ')),
+	(lambda line1, prev: line1.code.startswith(('and ', 'or '))),
 	(lambda line2, prev: re.match(r'(jr|jp|jmp) nz,', line2.code)),
 	(lambda line3, prev: re.match(r'ld .+, [%\$&]?0+$', line3.code)),
 ],
@@ -430,9 +446,7 @@ patterns = {
 'Redundant and|or': [
 	# Bad: and|or|xor X / and|or a
 	# Good: and|or|xor N
-	(lambda line1, prev: line1.code.startswith('and ')
-		or line1.code.startswith('or ')
-		or line1.code.startswith('xor ')),
+	(lambda line1, prev: line1.code.startswith(('and ', 'or ', 'xor '))),
 	(lambda line2, prev: line2.code in {'and a', 'or a', 'and a, a', 'or a, a'}),
 ],
 'Pointless and|or a': [
@@ -440,16 +454,16 @@ patterns = {
 	# Good: (the instruction that affects z and c)
 	(lambda line1, prev: line1.code in {'and a', 'or a', 'and a, a', 'or a, a'}),
 	(lambda line2, prev: line2.code in {'rlca', 'rrca', 'rla', 'rra', 'daa', 'pop af'}
-		or any(line2.code.startswith(x) for x in
-			{'add ', 'adc ', 'sub ', 'sbc ', 'and ', 'or ', 'xor ', 'cp ',
+		or line2.code.startswith((
+			'add ', 'adc ', 'sub ', 'sbc ', 'and ', 'or ', 'xor ', 'cp ',
 			'rlc ', 'rrc ', 'rl ', 'rr ', 'sla ', 'sra ', 'swap ', 'srl ',
-			'ld hl, sp', 'ldhl sp'})),
+			'ld hl, sp', 'ldhl sp'))),
 ],
 'Redundant inc|dec': [
 	# Bad: ld P, N / inc|dec P (unless the inc|dec flags are needed)
 	# Good: ld P, X+/-1
 	(lambda line1, prev: re.match(r'ld .+, [^afbcdehl\[]', line1.code)),
-	(lambda line2, prev: (line2.code.startswith('inc ') or line2.code.startswith('dec '))
+	(lambda line2, prev: line2.code.startswith(('inc ', 'dec '))
 		and line2.code[4:].strip() == prev[0].code.split(',')[0][2:].strip()),
 ],
 'hl|bc|de = N / bc|de|hl = K / hl|bc|de += bc|de|hl': [
@@ -565,8 +579,9 @@ for filename in filenames:
 		while i < n:
 			text = lines[i]
 			# Remove comments
-			code = text.split(';')[0].rstrip()
-			comment = text.split(';', 1)[1].strip() if ';' in text else ''
+			parts = text.split(';', 1)
+			code = parts[0].rstrip()
+			comment = parts[1].strip() if len(parts) > 1 else ''
 			# Skip blank lines:
 			if not code:
 				i += 1

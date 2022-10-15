@@ -41,7 +41,7 @@ _TypeChart:
 	call ClearSpriteAnims
 
 	ld hl, TypeChartOAMData
-	ld de, wVirtualOAM
+	ld de, wShadowOAM
 	ld bc, 40 * 4
 	rst CopyBytes
 
@@ -56,13 +56,11 @@ _TypeChart:
 
 	ld hl, TypeChartTilemap
 	decoord 0, 0
-	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
-	rst CopyBytes
+	call Decompress
 
 	ld hl, TypeChartAttrmap
 	decoord 0, 0, wAttrmap
-	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
-	rst CopyBytes
+	call Decompress
 
 	call ApplyAttrAndTilemapInVBlank
 
@@ -193,13 +191,13 @@ TypeChartOBGFX:
 INCBIN "gfx/type_chart/ob.2bpp.lz"
 
 TypeChartTilemap:
-INCBIN "gfx/type_chart/type_chart.tilemap"
+INCBIN "gfx/type_chart/type_chart.tilemap.lz"
 
 TypeChartAttrmap:
-INCBIN "gfx/type_chart/type_chart.attrmap"
+INCBIN "gfx/type_chart/type_chart.attrmap.lz"
 
 TypeChartOAMData:
-oamdata: MACRO
+MACRO oamdata
 	; x, y, tile id, attributes
 	db (\2) + 16, (\1) + 8, (\3), (\4)
 ENDM

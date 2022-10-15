@@ -4,10 +4,9 @@
 	db POISON, DARK ; type
 	db 190 ; catch rate
 	db 90 ; base exp
-	db BLACK_SLUDGE ; item 1
-	db NUGGET ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/grimer_alolan/front.dimensions"
+	db BLACK_SLUDGE, NUGGET ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for GRIMER_ALOLAN, POISON_TOUCH, GLUTTONY, CORROSION
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_INDETERMINATE, EGG_INDETERMINATE ; egg groups

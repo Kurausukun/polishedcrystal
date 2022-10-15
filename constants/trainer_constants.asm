@@ -1,8 +1,8 @@
-__trainer_class__ = 0
+DEF __trainer_class__ = 0
 
-trainerclass: MACRO
-\1 EQU __trainer_class__
-__trainer_class__ += 1
+MACRO trainerclass
+	DEF \1 EQU __trainer_class__
+	DEF __trainer_class__ += 1
 	const_def 1
 ENDM
 
@@ -18,7 +18,7 @@ ENDM
 ; - BTTrainerClassSprites (see data/trainers/sprites.asm)
 ; - BTTrainerClassGenders (see data/trainers/genders.asm)
 ; trainer constants are indexes for the sub-tables of TrainerGroups (see data/trainers/parties.asm)
-CHRIS EQU __trainer_class__
+DEF CHRIS EQU __trainer_class__
 	trainerclass TRAINER_NONE ; 0
 	const PHONECONTACT_MOM
 	const PHONECONTACT_BIKESHOP
@@ -27,7 +27,7 @@ CHRIS EQU __trainer_class__
 	const PHONECONTACT_LYRA
 	const PHONECONTACT_BUENA
 
-KRIS EQU __trainer_class__
+DEF KRIS EQU __trainer_class__
 	trainerclass CARRIE ; 1
 
 	trainerclass CAL ; 2
@@ -843,6 +843,9 @@ KRIS EQU __trainer_class__
 	const LANG
 	const HUGO
 	const HOWARD
+	const GRADEN
+	const GUSTAV
+	const NICOLAS
 
 	trainerclass TEACHER ; 58
 	const COLETTE
@@ -1078,13 +1081,13 @@ KRIS EQU __trainer_class__
 
 	trainerclass MAYLENE ; 88
 
-	trainerclass SKYLA ; 89
+	trainerclass MARLON ; 89
 
 	trainerclass VALERIE ; 8a
 
 	trainerclass KUKUI ; 8b
 
-	trainerclass MELONY ; 8c
+	trainerclass PIERS ; 8c
 
 	trainerclass VICTOR  ; 8d
 
@@ -1100,7 +1103,7 @@ KRIS EQU __trainer_class__
 
 	trainerclass REI ; 93
 
-NUM_TRAINER_CLASSES EQU __trainer_class__ - 1
+DEF NUM_TRAINER_CLASSES EQU __trainer_class__ - 1
 
 	trainerclass OMASTAR_FOSSIL ; 94
 
@@ -1114,4 +1117,4 @@ NUM_TRAINER_CLASSES EQU __trainer_class__ - 1
 
 	trainerclass SILHOUETTE ; 99
 
-NUM_TRAINER_CLASS_PICS EQU __trainer_class__ - 1
+DEF NUM_TRAINER_CLASS_PICS EQU __trainer_class__ - 1

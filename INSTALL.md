@@ -22,7 +22,7 @@ cd polishedcrystal
 mkdir rgbds
 ```
 
-Then download [**rgbds**](https://rgbds.gbdev.io/). If you're building Polished Crystal 2.2.0, get rgbds version 0.3.9. If you're building the 3.0.0 beta, you'll need version **0.5.2**. Extract the archive and put all the .exe and .dll files in polishedcrystal/rgbds.
+Then download [**rgbds**](https://rgbds.gbdev.io/). If you're building Polished Crystal 2.2.0, get rgbds version 0.3.9. If you're building the 3.0.0 beta, you'll need version **0.6.0**. Extract the archive and put all the .exe and .dll files in polishedcrystal/rgbds.
 
 To build **polishedcrystal.gbc**:
 
@@ -82,10 +82,7 @@ In **Terminal**, run:
 ```bash
 xcode-select --install
 
-git clone https://github.com/gbdev/rgbds.git
-cd rgbds
-sudo make install
-cd ..
+brew install rgbds
 
 git clone https://github.com/Rangi42/polishedcrystal.git
 cd polishedcrystal

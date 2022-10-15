@@ -265,6 +265,11 @@ ScriptCommandTable:
 	dw Script_givebp                     ; ce
 	dw Script_takebp                     ; cf
 	dw Script_checkbp                    ; d0
+	dw Script_sjumpfwd                   ; d1
+	dw Script_ifequalfwd                 ; d2
+	dw Script_iffalsefwd                 ; d3
+	dw Script_iftruefwd                  ; d4
+	dw Script_scalltable                 ; d5
 	assert_table_length NUM_EVENT_COMMANDS
 
 StartScript:
@@ -385,7 +390,7 @@ JumpTextFacePlayerScript:
 JumpTextScript:
 	opentext
 JumpOpenedTextScript:
-	repeattext -1, -1
+	repeattext
 	waitendtext
 
 _GetTextPointer:
@@ -461,15 +466,6 @@ Script_writethistext:
 	ret
 
 Script_repeattext:
-	call GetScriptByte
-	ld l, a
-	call GetScriptByte
-	ld h, a
-	cp -1
-	ret nz
-	ld a, l
-	cp -1
-	ret nz
 	ld hl, wScriptTextBank
 	ld a, [hli]
 	ld b, a
@@ -585,8 +581,9 @@ Script_verbosegiveitem:
 	jmp ScriptCall
 
 GiveItemScript:
-	farwritetext _ReceivedItemText
-	iffalse .Full
+	farwritetext _GainedItemText
+	special ShowItemIcon
+	iffalsefwd .Full
 	specialsound
 	waitbutton
 	itemnotify
@@ -804,8 +801,6 @@ Script_trainerflagaction:
 	call GetScriptByte
 	ld b, a
 	call EventFlagAction
-	ld a, c
-	and a
 	ret z
 	ld a, TRUE
 	ldh [hScriptVar], a
@@ -1240,7 +1235,7 @@ Script_startbattle:
 	call BufferScreen
 	predef StartBattle
 	ld a, [wBattleResult]
-	and $3f
+	and ~BATTLERESULT_BITMASK
 	ldh [hScriptVar], a
 	ret
 
@@ -1263,8 +1258,8 @@ Script_reloadmapafterbattle:
 	ld hl, wWildBattlePanic
 	ld [hl], d
 	ld a, [wBattleResult]
-	and $3f
-	cp $1
+	and ~BATTLERESULT_BITMASK
+	cp LOSE
 	jr nz, .notblackedout
 	ld b, BANK(Script_BattleWhiteout)
 	ld hl, Script_BattleWhiteout
@@ -1284,7 +1279,7 @@ Script_reloadmapafterbattle:
 	farcall RunPostBattleAbilities
 .skip_pickup
 	ld a, [wBattleResult]
-	bit 7, a
+	bit BATTLERESULT_BOX_FULL_F, a
 	jr z, .done
 	ld b, BANK(Script_SpecialBillCall)
 	ld de, Script_SpecialBillCall
@@ -1370,14 +1365,32 @@ CallCallback::
 	ld [wScriptBank], a
 	jr ScriptCall
 
+Script_scalltable:
+	call GetScriptByte
+	ld l, a
+	call GetScriptByte
+	ld h, a
+	ldh a, [hScriptVar]
+	ld e, a
+	ld d, 0
+	add hl, de
+	add hl, de
+	ld a, [wScriptBank]
+	ld b, a
+	call GetFarByte
+	ld e, a
+	inc hl
+	ld a, [wScriptBank]
+	call GetFarByte
+	ld d, a
+	jr ScriptCall
+
 Script_sjump:
 	call GetScriptByte
 	ld l, a
 	call GetScriptByte
 	ld h, a
-	ld a, [wScriptBank]
-	ld b, a
-	jmp ScriptJump
+	jmp ScriptJumpInCurrentBank
 
 Script_farsjump:
 	call GetScriptByte
@@ -1386,7 +1399,7 @@ Script_farsjump:
 	ld l, a
 	call GetScriptByte
 	ld h, a
-	jr ScriptJump
+	jmp ScriptJump
 
 Script_memjump:
 	call GetScriptByte
@@ -1403,8 +1416,8 @@ Script_memjump:
 Script_iffalse:
 	ldh a, [hScriptVar]
 	and a
-	jr nz, SkipTwoScriptBytes
-	jr Script_sjump
+	jr z, Script_sjump
+	jr SkipTwoScriptBytes
 
 Script_iftrue:
 	ldh a, [hScriptVar]
@@ -1446,6 +1459,25 @@ SkipTwoScriptBytes:
 	call GetScriptByte
 	jmp GetScriptByte
 
+Script_iffalsefwd:
+	ldh a, [hScriptVar]
+	and a
+	jr z, Script_sjumpfwd
+	jmp GetScriptByte
+
+Script_iftruefwd:
+	ldh a, [hScriptVar]
+	and a
+	jr nz, Script_sjumpfwd
+	jmp GetScriptByte
+
+Script_ifequalfwd:
+	call GetScriptByte
+	ld hl, hScriptVar
+	cp [hl]
+	jr z, Script_sjumpfwd
+	jmp GetScriptByte
+
 Script_jumpstd:
 	call StdScript
 	jr ScriptJump
@@ -1463,22 +1495,31 @@ StdScript:
 	ld hl, StdScripts
 	add hl, de
 	add hl, de
-	add hl, de
-	ld a, BANK(StdScripts)
-	call GetFarByte
-	ld b, a
-	inc hl
-	ld a, BANK(StdScripts)
+	ld b, BANK(StdScripts)
+	ld a, b
 	jmp GetFarWord
 
 ScriptJump:
 	ld a, b
 	ld [wScriptBank], a
+ScriptJumpInCurrentBank:
 	ld a, l
 	ld [wScriptPos], a
 	ld a, h
 	ld [wScriptPos + 1], a
 	ret
+
+Script_sjumpfwd:
+	ld hl, wScriptPos
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	inc hl
+	call GetScriptByte
+	ld b, 0
+	ld c, a
+	add hl, bc
+	jr ScriptJumpInCurrentBank
 
 Script_sdefer:
 	ld a, [wScriptBank]
@@ -2118,8 +2159,6 @@ Script_checkevent:
 	ld d, a
 	ld b, CHECK_FLAG
 	call EventFlagAction
-	ld a, c
-	and a
 	jr z, .false
 	ld a, TRUE
 .false
@@ -2466,7 +2505,8 @@ Script_verbosegivetmhm:
 	jmp ScriptCall
 
 GiveTMHMScript:
-	farwritetext _ReceivedItemText
+	farwritetext _GainedItemText
+	special ShowTMHMIcon
 	playsound SFX_GET_TM
 	waitsfx
 	waitbutton
@@ -2527,7 +2567,7 @@ Script_checkunits:
 Script_unowntypeface:
 	ld a, [wOptions2]
 	ld [wOptionsBuffer], a
-	and $ff - FONT_MASK
+	and ~FONT_MASK
 	or UNOWN_FONT
 	ld [wOptions2], a
 	jmp LoadStandardFont
@@ -2573,7 +2613,9 @@ Script_loadgrottomon:
 	call PlayCry
 	ld a, (1 << 7)
 	ld [wBattleScriptFlags], a
+	farcall SetBadgeBaseLevel
 	farcall GetCurHiddenGrottoLevel
+	farcall AdjustLevelForBadges
 	ld [wCurPartyLevel], a
 	ret
 
@@ -2656,8 +2698,10 @@ Script_verbosegivekeyitem:
 	jmp ScriptCall
 
 GiveKeyItemScript:
-	farwritetext _ReceivedItemText
+	farwritetext _GainedItemText
+	special ShowKeyItemIcon
 	playsound SFX_KEY_ITEM
+	waitsfx
 	waitbutton
 	keyitemnotify
 	end

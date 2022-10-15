@@ -462,10 +462,9 @@ CantMove:
 	ld a, [de]
 	dec a
 	push hl
-	call z, HandleRampage_ConfuseUser  ; confuses user on last turn of rampage
+	call z, HandleRampage_ConfuseUser ; confuses user on last turn of rampage
 	pop hl
 .rampage_done
-	ld a, [hl]
 	ld a, ~(1 << SUBSTATUS_RAMPAGE | 1 << SUBSTATUS_CHARGED | 1 << SUBSTATUS_FLYING | 1 << SUBSTATUS_UNDERGROUND | 1 << SUBSTATUS_ROLLOUT)
 	and [hl]
 	ld [hl], a
@@ -1245,7 +1244,7 @@ UserValidBattleItem:
 .done
 	jmp PopBCDEHL
 
-species_battle_item: MACRO
+MACRO species_battle_item
 	db \1
 	shift
 	dp \#
@@ -2264,8 +2263,6 @@ BattleCommand_moveanimnosub:
 	jr z, .pursuit
 	cp EFFECT_MULTI_HIT
 	jr z, .multihit
-	cp EFFECT_FURY_STRIKES
-	jr z, .fury_strikes
 	cp EFFECT_CONVERSION
 	jr z, .conversion
 	cp EFFECT_DOUBLE_HIT
@@ -2299,7 +2296,6 @@ BattleCommand_moveanimnosub:
 	and 1
 	xor 1
 	ld [wKickCounter], a
-.fury_attack
 	ld a, [de]
 	cp $1
 	push af
@@ -2313,29 +2309,6 @@ BattleCommand_moveanimnosub:
 	ld [wNumHits], a
 	jmp PlayFXAnimID
 
-; Fury Swipes and Fury Attack were merged into Fury Strikes, so use the correct
-; animation for the Pokémon that learned each one
-.fury_strikes
-	push de
-	ldh a, [hBattleTurn]
-	and a
-	ld hl, wBattleMonSpecies
-	jr z, .got_user_species
-	ld hl, wEnemyMonSpecies
-.got_user_species
-	ld c, [hl]
-	assert wBattleMonForm - wBattleMonSpecies == wEnemyMonForm - wEnemyMonSpecies
-	ld de, wBattleMonForm - wBattleMonSpecies
-	add hl, de
-	ld b, [hl]
-	ld hl, FuryAttackUsers
-	ld de, 2
-	call IsInWordArray
-	pop de
-	jr nc, .multihit
-	ld a, 2
-	ld [wKickCounter], a
-	jr .fury_attack
 
 StatUpDownAnim:
 	ld a, [wAnimationsDisabled]
@@ -2349,40 +2322,8 @@ StatUpDownAnim:
 
 	xor a
 	ld [wNumHits], a
-
-; Defense Curl, Withdraw, and Harden were merged, so use the correct
-; animation for the Pokémon that learned each one
-	ld a, BATTLE_VARS_MOVE_ANIM
-	call GetBattleVar
-	cp DEFENSE_CURL
-	jr nz, .not_defense_curl
-	ldh a, [hBattleTurn]
-	and a
-	ld hl, wBattleMonSpecies
-	jr z, .got_user_species
-	ld hl, wEnemyMonSpecies
-.got_user_species
-	ld c, [hl]
-	assert wBattleMonForm - wBattleMonSpecies == wEnemyMonForm - wEnemyMonSpecies
-	ld de, wBattleMonForm - wBattleMonSpecies
-	add hl, de
-	ld b, [hl]
-	ld hl, WithdrawUsers
-	ld de, 2
-	call IsInWordArray
-	ld a, 1
-	jr c, .got_kick_counter
-.not_withdraw
-	inc hl ; ld hl, HardenUsers
-	call IsInWordArray
-	jr nc, .not_harden
-	ld a, 2
-	jr .got_kick_counter
-.not_harden
-.not_defense_curl
-	xor a
-.got_kick_counter
 	ld [wKickCounter], a
+
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
 	ld e, a
@@ -2430,8 +2371,6 @@ BattleCommand_failuretext:
 	cp EFFECT_MULTI_HIT
 	jr z, .multihit
 	cp EFFECT_DOUBLE_HIT
-	jr z, .multihit
-	cp EFFECT_FURY_STRIKES
 	jmp nz, EndMoveEffect
 
 .multihit
@@ -2819,12 +2758,12 @@ BattleCommand_supereffectivetext:
 
 .weakness_policy
 	call SwitchTurn
+	ld b, 0
+	push bc
 	ld a, STAT_SKIPTEXT
 	ld b, $10 | ATTACK
 	call _RaiseStat
 	ld a, [wFailedMessage]
-	ld b, 0
-	push bc
 	and a
 	jr nz, .atk_done
 	farcall UseStatItemText
@@ -3880,8 +3819,6 @@ BattleCommand_damagecalc:
 	; Variable-hit moves and Conversion can have a power of 0.
 	cp EFFECT_MULTI_HIT
 	jr z, .skip_zero_damage_check
-	cp EFFECT_FURY_STRIKES
-	jr z, .skip_zero_damage_check
 	cp EFFECT_CONVERSION
 	jr z, .skip_zero_damage_check
 
@@ -4295,9 +4232,7 @@ PlayFXAnimID:
 	ld c, 3
 	call DelayFrames
 
-	farcall PlayBattleAnim
-
-	ret
+	farjp PlayBattleAnim
 
 TakeOpponentDamage:
 ; user takes damage, doesn't apply berserk so don't run the regular damage func
@@ -4405,8 +4340,6 @@ SelfInflictDamageToSubstitute:
 	cp EFFECT_MULTI_HIT
 	jr z, .ok
 	cp EFFECT_DOUBLE_HIT
-	jr z, .ok
-	cp EFFECT_FURY_STRIKES
 	jr z, .ok
 	xor a
 	ld [hl], a
@@ -5097,7 +5030,7 @@ DisplayStatusProblem:
 	ld l, a
 	jmp StdBattleTextbox
 
-status_problem: MACRO
+MACRO status_problem
 	db \1 ; status mask
 	dw \2 ; animation
 	dw \3 ; text
@@ -5317,8 +5250,8 @@ CheckIfTrappedByAbility:
 
 SetBattleDraw:
 	ld a, [wBattleResult]
-	and $c0
-	or $2
+	and BATTLERESULT_BITMASK
+	or DRAW
 	ld [wBattleResult], a
 	ret
 
@@ -5328,15 +5261,14 @@ BattleCommand_switchout:
 	ld a, 1 << SWITCH_DEFERRED | 1 << SWITCH_PURSUIT
 	; fallthrough
 SetDeferredSwitch:
-	push af
-	ld a, [wDeferredSwitch]
-	and a
+	push hl
+	ld hl, wDeferredSwitch
+	inc [hl]
+	dec [hl]
 	jr nz, .done
-	pop af
-	ld [wDeferredSwitch], a
-	push af
+	ld [hl], a
 .done
-	pop af
+	pop hl
 	ret
 
 InvertDeferredSwitch:
@@ -5584,12 +5516,6 @@ BattleCommand_traptarget:
 	ret nz
 	push bc
 	push de
-	call CheckIfTargetIsGhostType
-	pop de
-	pop bc
-	ret z
-	push bc
-	push de
 	push hl
 	call GetUserItem
 	ld a, b
@@ -5829,7 +5755,7 @@ BattleCommand_resetstats:
 
 BattleCommand_heal:
 	farcall CheckFullHP
-	jmp z, .hp_full
+	jr z, .hp_full
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
 	cp REST
@@ -5837,7 +5763,7 @@ BattleCommand_heal:
 	ld a, BATTLE_VARS_STATUS
 	call GetBattleVar
 	and SLP
-	jmp nz, BattleEffect_ButItFailed
+	jr nz, BattleEffect_ButItFailed
 	call GetTrueUserAbility
 	cp INSOMNIA
 	jr z, .ability_prevents_rest
@@ -5861,28 +5787,6 @@ BattleCommand_heal:
 .not_rest
 	call GetHalfMaxHP
 .finish
-
-; Softboiled and Milk Drink were merged into Fresh Snack, so use the correct
-; animation for the Pokémon that learned each one
-	ld a, BATTLE_VARS_MOVE_ANIM
-	call GetBattleVar
-	cp FRESH_SNACK
-	ld a, 0
-	jr nz, .not_fresh_snack
-	ldh a, [hBattleTurn]
-	and a
-	ld a, [wBattleMonSpecies]
-	jr z, .got_user_species
-	ld a, [wEnemyMonSpecies]
-.got_user_species
-	cp MILTANK
-	ld a, 0
-	jr nz, .got_kick_counter
-	inc a
-.got_kick_counter
-	ld [wKickCounter], a
-.not_fresh_snack
-
 	call AnimateCurrentMove
 	farcall RestoreHP
 	call UpdateUserInParty
@@ -6526,6 +6430,56 @@ AppearUserLowerSub:
 
 AppearUserRaiseSub:
 	farjp _AppearUserRaiseSub
+
+CheckBattleAnimSubstitution:
+; Checks the animation ID and possibly change it based on species.
+	assert !HIGH(NUM_ATTACKS), "This function is now obsolete."
+
+	; Moves are 1-255.
+	ld a, [wFXAnimIDHi]
+	and a
+	ret nz
+
+	ld a, [wFXAnimIDLo]
+	cp FRESH_SNACK
+	ld de, ANIM_MILK_DRINK
+	ld hl, .MilkDrinkUsers
+	jr z, .check_species_list
+	cp FURY_STRIKES
+	ld de, ANIM_FURY_ATTACK
+	ld hl, FuryAttackUsers
+	jr z, .check_species_list
+	cp DEFENSE_CURL
+	ret nz
+
+	; Defense Curl has 3 variations
+	ld de, ANIM_WITHDRAW
+	ld hl, WithdrawUsers
+	call .check_species_list
+	ld de, ANIM_HARDEN
+	ld hl, HardenUsers
+	; fallthrough
+.check_species_list
+	push hl
+	ld hl, wBattleMonSpecies
+	call GetUserMonAttr
+	ld a, [hl]
+	ld bc, wBattleMonForm - wBattleMonSpecies
+	add hl, bc
+	ld c, a
+	ld b, [hl]
+	pop hl
+	call GetSpeciesAndFormIndexFromHL
+	ret nc
+	ld a, e
+	ld [wFXAnimIDLo], a
+	ld a, d
+	ld [wFXAnimIDHi], a
+	ret
+
+.MilkDrinkUsers:
+	dp MILTANK
+	db 0
 
 _CheckBattleEffects:
 ; Checks the options. Returns carry if battle animations are disabled.

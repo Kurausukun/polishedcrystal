@@ -40,6 +40,7 @@ DoAnimFrame:
 	dw AnimSeq_PcMode             ; SPRITE_ANIM_SEQ_PC_MODE
 	dw AnimSeq_PcPack             ; SPRITE_ANIM_SEQ_PC_PACK
 	dw AnimSeq_DexCursor          ; SPRITE_ANIM_SEQ_DEX_CURSOR
+	dw AnimSeq_TownMapFly         ; SPRITE_ANIM_SEQ_TOWN_MAP_FLY
 	assert_table_length NUM_SPRITE_ANIM_SEQS
 
 AnimSeq_PartyMon:
@@ -601,6 +602,16 @@ AnimSeq_MaxStatSparkle:
 	ret
 
 AnimSeq_PcCursor:
+	; Switch frameset ID depending on item mode setting.
+	farcall BillsPC_CheckBagDisplay
+	ld a, SPRITE_ANIM_FRAMESET_PC_CURSOR_ITEM
+	jr z, .got_frameset
+	assert SPRITE_ANIM_FRAMESET_PC_CURSOR == SPRITE_ANIM_FRAMESET_PC_CURSOR_ITEM - 1
+	dec a
+.got_frameset
+	ld hl, SPRITEANIMSTRUCT_FRAMESET_ID
+	add hl, bc
+	ld [hl], a
 	push de
 	push bc
 	farcall BillsPC_GetCursorSlot
@@ -782,6 +793,9 @@ AnimSeq_DexCursor:
 .done
 	pop bc
 	ret
+
+AnimSeq_TownMapFly:
+	farjp AnimateTownMapFly
 
 AnimSeqs_IncAnonJumptableIndex:
 	ld hl, SPRITEANIMSTRUCT_JUMPTABLE_INDEX

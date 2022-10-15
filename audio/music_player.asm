@@ -1,11 +1,9 @@
 ; Written by Sanqui
 ; https://github.com/froggestspirit/CrystalComplete/blob/master/misc/musicplayer.asm
 
-INCLUDE "constants.asm"
-
-MP_METER0 EQU $20
-MP_METER8 EQU $28
-MP_DUTY0 EQU $29
+DEF MP_METER0 EQU $20
+DEF MP_METER8 EQU $28
+DEF MP_DUTY0 EQU $29
 
 
 SECTION "Music Player Graphics", ROMX
@@ -19,21 +17,21 @@ INCBIN "gfx/music_player/note_lines.2bpp.lz"
 
 SECTION "Music Player", ROMX
 
-jrbutton: MACRO
+MACRO jrbutton
 ; assumes hl == hJoyPressed
 	ld a, [hl]
 	and \1
 	jr nz, \2
 ENDM
 
-jpbutton: MACRO
+MACRO jpbutton
 ; assumes hl == hJoyPressed
 	ld a, [hl]
 	and \1
 	jmp nz, \2
 ENDM
 
-jrheldbutton: MACRO
+MACRO jrheldbutton
 ; assumes hl == hJoyDown
 	ld a, [wTextDelayFrames]
 	and a
@@ -47,7 +45,7 @@ jrheldbutton: MACRO
 .no\@:
 ENDM
 
-jpheldbutton: MACRO
+MACRO jpheldbutton
 ; assumes hl == hJoyDown
 	ld a, [wTextDelayFrames]
 	and a
@@ -205,7 +203,7 @@ RenderMusicPlayer:
 
 	ld bc, 4 * 3
 	ld hl, NoteOAM
-	ld de, wVirtualOAM
+	ld de, wShadowOAM
 	rst CopyBytes
 	call DelayFrame
 	xor a
@@ -534,8 +532,7 @@ SongEditor:
 	or b
 	ld [wChannel3Intensity], a
 	ld [wCurTrackIntensity], a
-	farcall ReloadWaveform
-	ret
+	farjp ReloadWaveform
 
 .up_noise:
 ; next noise set
@@ -1363,7 +1360,7 @@ AddNoteToOld:
 	add a
 	ld c, a
 	ld b, 0
-	ld hl, wVirtualOAM + 3 * 4
+	ld hl, wShadowOAM + 3 * 4
 	add hl, bc
 	push hl
 	pop de
@@ -1763,7 +1760,7 @@ MPLPlaceString:
 MPTilemap:
 INCBIN "gfx/music_player/music_player.tilemap"
 
-ch_name: MACRO
+MACRO ch_name
 	dwcoord \1, \2 ; x, y
 	db \3, \4, \5 ; tile ids
 ENDM

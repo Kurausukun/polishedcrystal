@@ -264,6 +264,11 @@ Move00Description:
 	text "?"
 	done
 
+LowKickDescription:
+	text "Deals more damage"
+	next "to heavier foes."
+	done
+
 KarateChopDescription:
 RazorLeafDescription:
 CrabhammerDescription:
@@ -290,9 +295,13 @@ AbsorbDescription:
 MegaDrainDescription:
 LeechLifeDescription:
 GigaDrainDescription:
-DrainKissDescription:
 DrainPunchDescription:
 	text "Steals 1/2 of the"
+	next "damage inflicted."
+	done
+
+DrainKissDescription:
+	text "Steals 3/4 of the"
 	next "damage inflicted."
 	done
 
@@ -337,7 +346,6 @@ BraveBirdDescription:
 StompDescription:
 HeadbuttDescription:
 BiteDescription:
-LowKickDescription:
 WaterfallDescription:
 RockSlideDescription:
 HyperFangDescription:

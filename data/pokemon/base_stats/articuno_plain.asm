@@ -4,10 +4,9 @@
 	db ICE, FLYING ; type
 	db 3 ; catch rate
 	db 215 ; base exp
-	db ALWAYS_ITEM_2 ; item 1
-	db LUM_BERRY ; item 2
-	dn GENDER_UNKNOWN, 15 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/articuno_plain/front.dimensions"
+	db ALWAYS_ITEM_2, LUM_BERRY ; held items
+	dn GENDER_UNKNOWN, HATCH_UNKNOWN ; gender ratio, step cycles to hatch
+
 if DEF(FAITHFUL)
 	abilities_for ARTICUNO, PRESSURE, PRESSURE, SNOW_CLOAK
 else

@@ -259,6 +259,7 @@ ItemIconPointers:
 
 KeyItemIconPointers:
 	table_width 3, KeyItemIconPointers
+	dba NoItemIcon
 	dba BicycleIcon
 	dba OldRodIcon
 	dba GoodRodIcon
@@ -266,6 +267,7 @@ KeyItemIconPointers:
 	dba ItemfinderIcon
 	dba CoinCaseIcon
 	dba ApricornBoxIcon
+	dba WingCaseIcon
 	dba TypeChartIcon
 	dba BlueCardIcon
 	dba SquirtBottleIcon
@@ -290,4 +292,4 @@ KeyItemIconPointers:
 	dba ShinyCharmIcon
 	dba OvalCharmIcon
 	dba CatchCharmIcon
-	assert_table_length NUM_KEY_ITEMS
+	assert_table_length NUM_KEY_ITEMS + 1

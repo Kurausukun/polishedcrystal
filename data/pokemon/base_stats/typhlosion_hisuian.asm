@@ -4,10 +4,9 @@
 	db FIRE, GHOST ; type
 	db 45 ; catch rate
 	db 209 ; base exp
-	db NO_ITEM ; item 1
-	db NO_ITEM ; item 2
-	dn GENDER_F12_5, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/typhlosion_hisuian/front.dimensions"
+	db NO_ITEM, NO_ITEM ; held items
+	dn GENDER_F12_5, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 if DEF(FAITHFUL)
 	abilities_for TYPHLOSION_HISUIAN, BLAZE, BLAZE, FLASH_FIRE
 else

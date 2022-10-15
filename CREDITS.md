@@ -46,39 +46,41 @@ Pokémon Polished Crystal would never have been finished without the help of man
 
 * Blue Emerald, solo993, Chamber, Lake, Neslug, and Pikachu25 for many sprites and icons.
 * metalflygon08 for the many Pokémon and trainer sprites.
-* JaceDeane for the Goldenrod Museum paintings, many Pokémon and trainer sprites, Prof. Ivy's overworld sprite, and some tiles.
-* bloodless for sprites of Buck, Maylene, Skyla, Veteran♂, some variant Pikachu, Diglett, and Dugtrio.
+* JaceDeane for the Goldenrod Museum paintings, many Pokémon and trainer sprites, Prof. Ivy's overworld sprite, map name signs, and some tiles.
+* bloodless for sprites of Buck, Maylene, Veteran♂, some variant Pikachu, Diglett, and Dugtrio.
 * Kuroko Aizawa for sprites of Prof. Ivy, Looker, Cheryl, Officer♀, Aroma Lady, Artist.
 * SCMidna for animations of Alolan Diglett and Dugtrio, Munchlax, Unown ! and ?, and Surfing Pikachu, and the stat trainers' overworld sprites.
 * Acrozz for many HGSS Pokémon palettes, and sprites and animations of Magikarp forms.
 * Freeline for animations of Honchkrow and Munchlax, and the Rocket Executives' and stat trainers' overworld sprites.
 * Megaman-Omega for some of Prism's overworld sprites.
-* SoupPotato (aka SourApple) for some move animations, sprites of Red Gyarados and Ace Duo, and Berry tree tiles.
+* SoupPotato (aka SourApple) for many Pokémon sprites, move animations, and the Ace Duo sprite.
 * flempa for some Pokémon sprites and move animations and for Galarian Articuno and Galarian Zapdos animations.
-* ShockSlayer for the mini icons and Yellow's overworld sprite.
+* ShockSlayer for the Gen 1 and 2 mini icons and for Yellow's overworld sprite.
 * Scarlax for many new Pokémon animations.
-* ShadowOne333 for many new Pokémon animations.
+* ShadowOne333 for the Alolan, Galarian, and Hisuian mini icons, and many new Pokémon animations.
 * octorox for Galarian Rapidash and Galarian Slowking's backpics.
 * spritershawn for sprites of Red, Blue, and Green.
 * isamuakai01 for sprites of Steven and Cynthia.
 * Maddalena for sprites of Imakuni and the Ghost.
 * EeveeEe1999 for 8th gen menu icons and Lickilicky and Galarian Slowking animations.
 * Luna for some sprites and tiles.
+* SteppoBlazer for Flying and Surfing Pikachu's mini icons.
 * Twilir for Lyra's back sprite.
 * Danny-E for Lorelei's sprite.
 * Nic7C5 for Yellow's sprite.
-* PomPomKing and Jace for Melony's sprite.
+* Emi Monserrate for Piers' sprite.
 * Kage for Walker's sprite.
 * Pyro for Tamer's sprite.
 * Constantine for Nurse's sprite.
 * Paps for Twins' sprite.
-* coraldev for rowboat and sakura petal tiles.
+* coraldev for the sailboat spritr, and rowboat and sakura petal tiles.
 * lilbluedemon for some bridge tiles.
 * WhoaMan for some MICR font characters.
 * BettyNewbie for elements of Green's sprite (combined with spritershawn's by me).
 * Fo0xerz for Lawrence III's sprite (devamped by me).
 * Bronzeswagger for the Grunt♂ and Grunt♀ sprite palettes.
 * SteppoBlazer, bloodless, and JaceDeane for Kiyo's sprite.
+* ShadowOne333 and JaceDeane for Jessie & James' sprite.
 * Mmmmmm, bloodless, and Kuroko Aizawa for help with Valerie's sprite.
 * Kuroko Aizawa, bloodless, and metalflygon08 for help with Pikachu's sprites.
 * jpmac26 for editing the Pokémon Center signs and fixing a typo.

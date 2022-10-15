@@ -4,10 +4,9 @@
 	db ELECTRIC, ELECTRIC ; type
 	db 235 ; catch rate
 	db 59 ; base exp
-	db NO_ITEM ; item 1
-	db NO_ITEM ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/mareep/front.dimensions"
+	db NO_ITEM, NO_ITEM ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 if DEF(FAITHFUL)
 	abilities_for MAREEP, STATIC, STATIC, STATIC
 else

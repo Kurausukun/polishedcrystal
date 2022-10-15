@@ -1,6 +1,3 @@
-INCLUDE "constants.asm"
-
-
 SECTION "Events", ROMX
 
 OverworldLoop::
@@ -647,8 +644,6 @@ BGEventJumptable:
 	ld d, a
 	ld b, CHECK_FLAG
 	call EventFlagAction
-	ld a, c
-	and a
 	jr nz, .dontread
 	call PlayTalkObject
 	ld hl, wHiddenItemEvent
@@ -719,8 +714,6 @@ CheckBGEventFlag:
 	ld d, h
 	ld b, CHECK_FLAG
 	call EventFlagAction
-	ld a, c
-	and a
 	pop hl
 	ret
 
@@ -816,17 +809,17 @@ CheckMenuOW:
 
 StartMenuScript:
 	callasm StartMenu
-	sjump StartMenuCallback
+	sjumpfwd StartMenuCallback
 
 SelectMenuScript:
 	callasm SelectMenu
-	sjump SelectMenuCallback
+	sjumpfwd SelectMenuCallback
 
 StartMenuCallback:
 SelectMenuCallback:
 	readmem hMenuReturn
-	ifequal HMENURETURN_SCRIPT, .Script
-	ifequal HMENURETURN_ASM, .Asm
+	ifequalfwd HMENURETURN_SCRIPT, .Script
+	ifequalfwd HMENURETURN_ASM, .Asm
 	end
 
 .Script:
@@ -1115,6 +1108,25 @@ RandomEncounter::
 	farcall TryWildEncounter
 	jr nz, .nope
 .ok
+	ld a, [wTempWildMonSpecies]
+	cp SUICUNE
+	jr nz, .notroamingsuicune
+	ld a, BANK(RoamingSuicuneBattleScript)
+	ld hl, RoamingSuicuneBattleScript
+	jr .done
+.notroamingsuicune
+	cp RAIKOU
+	jr nz, .notroamingraikou
+	ld a, BANK(RoamingRaikouBattleScript)
+	ld hl, RoamingRaikouBattleScript
+	jr .done
+.notroamingraikou
+	cp ENTEI
+	jr nz, .notroaming
+	ld a, BANK(RoamingEnteiBattleScript)
+	ld hl, RoamingEnteiBattleScript
+	jr .done
+.notroaming
 	ld a, BANK(WildBattleScript)
 	ld hl, WildBattleScript
 .done
@@ -1145,6 +1157,36 @@ WildBattleScript:
 	randomwildmon
 	startbattle
 	reloadmapafterbattle
+	end
+
+RoamingSuicuneBattleScript:
+	randomwildmon
+	startbattle
+	reloadmapafterbattle
+	special CheckBattleCaughtResult
+	iffalsefwd .nocatch
+	setflag ENGINE_PLAYER_CAUGHT_SUICUNE
+.nocatch
+	end
+
+RoamingRaikouBattleScript:
+	randomwildmon
+	startbattle
+	reloadmapafterbattle
+	special CheckBattleCaughtResult
+	iffalsefwd .nocatch
+	setflag ENGINE_PLAYER_CAUGHT_RAIKOU
+.nocatch
+	end
+
+RoamingEnteiBattleScript:
+	randomwildmon
+	startbattle
+	reloadmapafterbattle
+	special CheckBattleCaughtResult
+	iffalsefwd .nocatch
+	setflag ENGINE_PLAYER_CAUGHT_ENTEI
+.nocatch
 	end
 
 CanUseSweetHoney::
@@ -1225,6 +1267,7 @@ _TryWildEncounter_BugContest:
 ; Form
 	ld a, [hli]
 	ld [wCurForm], a
+	ld [wWildMonForm], a
 ; Min level
 	ld a, [hli]
 	ld d, a

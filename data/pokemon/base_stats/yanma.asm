@@ -4,10 +4,9 @@
 	db BUG, FLYING ; type
 	db 75 ; catch rate
 	db 147 ; base exp
-	db NO_ITEM ; item 1
-	db WIDE_LENS ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/yanma/front.dimensions"
+	db NO_ITEM, WIDE_LENS ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for YANMA, SPEED_BOOST, COMPOUND_EYES, FRISK
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_BUG, EGG_BUG ; egg groups

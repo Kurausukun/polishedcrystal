@@ -103,8 +103,8 @@ DoBattle:
 WildFled_EnemyFled_LinkBattleCanceled:
 	call Call_LoadTempTileMapToTileMap
 	ld a, [wBattleResult]
-	and $c0
-	add $2
+	and BATTLERESULT_BITMASK
+	add DRAW
 	ld [wBattleResult], a
 
 	ld hl, BattleText_LegendaryFled
@@ -120,7 +120,7 @@ WildFled_EnemyFled_LinkBattleCanceled:
 	jr z, .print_text
 
 	ld a, [wBattleResult]
-	and $c0
+	and BATTLERESULT_BITMASK
 	ld [wBattleResult], a
 	ld hl, BattleText_EnemyFled
 
@@ -409,8 +409,8 @@ CheckContestBattleOver:
 	and a
 	jr nz, .contest_not_over
 	ld a, [wBattleResult]
-	and $c0
-	add $2
+	and BATTLERESULT_BITMASK
+	add DRAW
 	ld [wBattleResult], a
 	scf
 	ret
@@ -424,8 +424,8 @@ CheckSafariBattleOver:
 	and a
 	ret nz
 	ld a, [wBattleResult]
-	and $c0
-	add $2
+	and BATTLERESULT_BITMASK
+	add DRAW
 	ld [wBattleResult], a
 	scf
 	ret
@@ -999,11 +999,13 @@ GetPlayerSwitchTarget:
 	ld a, [wCurPartyMon]
 	inc a
 	ld [wPlayerSwitchTarget], a
+	call LoadTileMapToTempTileMap
 	ld a, [wLinkMode]
 	and a
 	ld a, 1
 	ld [wBattlePlayerAction], a
 	call nz, LinkBattleSendReceiveAction
+	call Call_LoadTempTileMapToTileMap
 	xor a
 	ld [wBattlePlayerAction], a
 	ld a, [wPlayerSwitchTarget]
@@ -1052,9 +1054,11 @@ GetUserSwitchTarget:
 	jr z, GetPlayerSwitchTarget
 
 .enemy_switch
+	call LoadTileMapToTempTileMap
 	ld a, [wLinkMode]
 	and a
 	call nz, LinkBattleSendReceiveAction
+	call Call_LoadTempTileMapToTileMap
 	jr GetEnemySwitchTarget
 
 .random_select
@@ -1230,10 +1234,18 @@ endr
 	pop hl
 	ld bc, MON_FORM - MON_SPECIES
 	add hl, bc
+	ldh a, [hBattleTurn]
+	and a
 	ld a, [hl]
 	ld [wCurForm], a
 
 	push de
+	ld de, wTempBattleMonForm
+	jr z, .got_temp_form
+	ld de, wTempEnemyMonForm
+.got_temp_form
+	ld [de], a
+
 	call GetBaseData
 	ld de, wBattleMonType1
 	call GetUserMonAttr_de
@@ -1340,7 +1352,7 @@ endr
 .got_pikachu_move
 	ld c, a
 	ld a, b
-	and $ff - FORM_MASK
+	and ~FORM_MASK
 	or c
 	ld [wCurForm], a
 	ld [wOTPartyMon1Form], a
@@ -2297,6 +2309,8 @@ PlayVictoryMusic:
 	ld hl, wPayDayMoney
 	ld a, [hli]
 	or [hl]
+	inc hl
+	or [hl]
 	jr nz, .play_music
 	push de
 	push bc
@@ -2537,8 +2551,8 @@ LostBattle:
 	jr nz, .not_tied
 	ld hl, TiedAgainstText
 	ld a, [wBattleResult]
-	and $c0
-	add 2
+	and BATTLERESULT_BITMASK
+	add DRAW
 	ld [wBattleResult], a
 	jr .text
 
@@ -2804,6 +2818,9 @@ Function_SetEnemyPkmnAndSendOutAnimation:
 	ld a, $f
 	ld [wCryTracks], a
 	ld a, [wTempEnemyMonSpecies]
+	ld c, a
+	ld a, [wTempEnemyMonForm]
+	ld b, a
 	call PlayStereoCry
 
 .skip_cry
@@ -2917,16 +2934,6 @@ BattleCheckShininess:
 	ld b, h
 	ld c, l
 	farjp CheckShininess
-
-GetPartyMonDVs:
-	ld hl, wPartyMon1DVs
-	ld a, [wCurBattleMon]
-	jmp GetPartyLocation
-
-GetEnemyMonDVs:
-	ld hl, wOTPartyMon1DVs
-	ld a, [wCurOTMon]
-	jmp GetPartyLocation
 
 GetPartyMonPersonality:
 	ld hl, wPartyMon1Personality
@@ -3276,11 +3283,8 @@ PursuitSwitch:
 	farcall CheckOpponentWentFirst
 	ret z
 
-	ld a, BATTLE_VARS_MOVE
+	ld a, BATTLE_VARS_MOVE_EFFECT
 	call GetBattleVar
-	ld b, a
-	call GetMoveEffect
-	ld a, b
 	cp EFFECT_PURSUIT
 	ret nz
 	call PerformMove
@@ -3455,7 +3459,7 @@ ItemRecoveryAnim::
 	push de
 	push bc
 	call EmptyBattleTextbox
-	ld a, RECOVER
+	ld a, ANIM_HELD_ITEM_TRIGGER
 	ld [wFXAnimIDLo], a
 	xor a
 	ld [wNumHits], a
@@ -3758,7 +3762,7 @@ DrawEnemyHUD:
 	ld l, c
 	dec hl
 
-	call GetEnemyMonDVs
+	farcall GetEnemyMonDVs
 	ld de, wTempMonDVs
 .ok
 rept 4
@@ -4160,7 +4164,7 @@ BattleMenu_SafariBall:
 	xor a
 	ld [wWildMon], a
 	ld a, [wBattleResult]
-	and $c0
+	and BATTLERESULT_BITMASK
 	ld [wBattleResult], a
 	call ClearWindowData
 	call SetPalettes
@@ -4270,8 +4274,7 @@ BattleMenuPKMN_Loop:
 
 .MenuHeader:
 	db $00 ; flags
-	db 9, 11 ; start coords
-	db 17, 19 ; end coords
+	menu_coords 11, 9, 19, 17
 	dw .MenuData
 	db 1 ; default option
 
@@ -4285,8 +4288,7 @@ BattleMenuPKMN_Loop:
 
 .EggMenuHeader:
 	db $00 ; flags
-	db 11, 11 ; start coords
-	db 17, 19 ; end coords
+	menu_coords 11, 11, 19, 17
 	dw .EggMenuData
 	db 1 ; default option
 
@@ -4624,14 +4626,14 @@ endr
 	jmp LostBattle
 
 .can_escape
+	call LoadTileMapToTempTileMap
 	ld a, [wLinkMode]
 	and a
 	ld a, DRAW
 	jr z, .fled
-	call LoadTileMapToTempTileMap
 	xor a
 	ld [wBattlePlayerAction], a
-	ld a, $f
+	ld a, BATTLEACTION_FORFEIT
 	ld [wCurMoveNum], a
 	xor a
 	ld [wCurPlayerMove], a
@@ -4647,7 +4649,7 @@ endr
 .fled
 	ld b, a
 	ld a, [wBattleResult]
-	and $c0
+	and BATTLERESULT_BITMASK
 	add b
 	ld [wBattleResult], a
 	call StopDangerSound
@@ -5437,9 +5439,11 @@ ParseEnemyAction:
 	call ClearSprites
 
 	; Unconditionally perform at least one link exchange
+	call LoadTileMapToTempTileMap
 	ld a, [wLinkMode]
 	and a
 	call nz, LinkBattleSendReceiveAction
+	call Call_LoadTempTileMapToTileMap
 	call SetEnemyTurn
 	call CheckLockedIn
 	ret nz
@@ -6668,6 +6672,10 @@ GiveBattleEVs:
 .check_item
 	; check held item
 	push bc
+
+	; This is a bug. The correct behaviour is to consider the item of the mon
+	; getting EVs, not the item of the mon currently in battle.
+	; WONTFIX because this has helpful synergy with EXP Share.
 	ld hl, wBattleMonItem
 	ld b, [hl]
 	farcall GetItemHeldEffect
@@ -7718,6 +7726,14 @@ HandleNuzlockeFlags:
 	dec a
 	ret nz
 
+	; Roaming mons don't count
+	ld a, [wBattleType]
+	cp BATTLETYPE_ROAMING
+	ret z
+	; Uncatchable ghosts don't count
+	cp BATTLETYPE_GHOST
+	ret z
+
 	; Dupes clause: don't count duplicate encounters
 	ld a, [wOTPartyMon1Species]
 	ld c, a
@@ -7835,7 +7851,7 @@ DisplayLinkRecord:
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	rst ByteFill
 	call ApplyAttrAndTilemapInVBlank
-	ld a, CGB_DIPLOMA
+	ld a, CGB_PLAIN
 	call GetCGBLayout
 	call SetPalettes
 	ld c, 8
@@ -8041,7 +8057,6 @@ DoGetRoamMonData:
 	ld hl, wRoamMon2Species
 	cp [hl]
 	jr z, .get_data
-	ret z
 	ld hl, wRoamMon3Species
 .get_data
 	add hl, de
@@ -8352,7 +8367,7 @@ CopyBackpic:
 	predef_jump PlaceGraphic
 
 .LoadTrainerBackpicAsOAM:
-	ld hl, wVirtualOAM
+	ld hl, wShadowOAM
 	xor a
 	ldh [hMapObjectIndexBuffer], a
 	ld b, $6
@@ -8554,7 +8569,7 @@ LoadWeatherIconSprite:
 	ld de, vTiles0 tile $00
 	call DecompressRequest2bpp
 	pop bc
-	ld hl, wVirtualOAM
+	ld hl, wShadowOAM
 	ld de, .WeatherIconOAMData
 .loop
 	ld a, [de]

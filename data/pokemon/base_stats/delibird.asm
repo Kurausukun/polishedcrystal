@@ -14,10 +14,9 @@ else
 	db 35 ; catch rate
 	db 193 ; base exp
 endc
-	db NO_ITEM ; item 1
-	db NEVERMELTICE ; item 2
-	dn GENDER_F50, 2 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/delibird/front.dimensions"
+	db NO_ITEM, NEVERMELTICE ; held items
+	dn GENDER_F50, HATCH_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for DELIBIRD, VITAL_SPIRIT, HUSTLE, INSOMNIA
 	db GROWTH_FAST ; growth rate
 	dn EGG_WATER_1, EGG_GROUND ; egg groups

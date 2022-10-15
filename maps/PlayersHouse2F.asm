@@ -67,7 +67,7 @@ if DEF(DEBUG)
 	; judge machine
 	setflag ENGINE_JUDGE_MACHINE
 	; all key items
-for x, NUM_KEY_ITEMS
+for x, 1, NUM_KEY_ITEMS + 1
 if x != MACHINE_PART
 	givekeyitem x
 endc
@@ -119,6 +119,7 @@ endr
 	giveitem MINT_LEAF, 99
 	giveitem BOTTLE_CAP, 99
 	giveitem BIG_NUGGET, 99
+	giveitem ARMOR_SUIT, 1
 	; all decorations except Diploma
 for x, EVENT_DECO_BED_1, EVENT_DECO_BIG_LAPRAS_DOLL + 1
 	setevent x
@@ -229,31 +230,25 @@ endr
 	loadmem wPartyMon1Stats+7, LOW(999)
 	loadmem wPartyMon1Stats+8, HIGH(999)
 	loadmem wPartyMon1Stats+9, LOW(999)
-	; hm slaves
-	givepoke MEW, PLAIN_FORM, 100, LEFTOVERS
+	; hm slave
 	givepoke MEW, PLAIN_FORM, 100, LEFTOVERS
 	loadmem wPartyMon2Moves+0, FLY
-	loadmem wPartyMon2Moves+1, SURF
-	loadmem wPartyMon2Moves+2, STRENGTH
-	loadmem wPartyMon2Moves+3, CUT
+	loadmem wPartyMon2Moves+1, HEADBUTT
+	loadmem wPartyMon2Moves+2, DIG
+	loadmem wPartyMon2Moves+3, FRESH_SNACK
 	loadmem wPartyMon2PP+0, 15
 	loadmem wPartyMon2PP+1, 15
-	loadmem wPartyMon2PP+2, 15
-	loadmem wPartyMon2PP+3, 30
-	loadmem wPartyMon3Moves+0, FLASH
-	loadmem wPartyMon3Moves+1, ROCK_SMASH
-	loadmem wPartyMon3Moves+2, HEADBUTT
-	loadmem wPartyMon3Moves+3, WATERFALL
-	loadmem wPartyMon3PP+0, 20
-	loadmem wPartyMon3PP+1, 15
-	loadmem wPartyMon3PP+2, 15
-	loadmem wPartyMon3PP+3, 15
+	loadmem wPartyMon2PP+2, 10
+	loadmem wPartyMon2PP+3, 10
 	; variant form test
-	givepoke GRAVELER, ALOLAN_FORM, 50
 	givepoke WEEZING, GALARIAN_FORM, 50
+	loadmem wPartyMon3Shiny, SHINY_MASK
+	; ext species test
+	givepoke KLEAVOR, 50
 	givepoke DITTO, 50
+	loadmem wPartyMon5Personality, HIDDEN_ABILITY | QUIRKY
 	; fill pokedex
-;	callasm FillPokedex
+	callasm FillPokedex
 	; intro events
 	addcellnum PHONE_MOM
 	setmapscene PLAYERS_HOUSE_1F, $1
@@ -279,17 +274,19 @@ FillPokedex:
 	ld hl, wPokedexCaught
 .Fill:
 	ld a, %11111111
-	ld bc, 31 ; 001-248
+	ld bc, NUM_UNIQUE_POKEMON / 8
 	rst ByteFill
-	ld [hl], %00111111 ; 249-254
+if NUM_UNIQUE_POKEMON % 8
+	ld [hl], 2**(NUM_UNIQUE_POKEMON % 8) - 1
+endc
 	ret
 
 else
 
 	checkevent EVENT_GOT_A_POKEMON_FROM_ELM
-	iftrue .NormalRadio
+	iftruefwd .NormalRadio
 	checkevent EVENT_LISTENED_TO_INITIAL_RADIO
-	iftrue .AbbreviatedRadio
+	iftruefwd .AbbreviatedRadio
 	playmusic MUSIC_POKEMON_TALK
 	opentext
 	writetext PlayerRadioText1
@@ -337,7 +334,7 @@ PokemonJournalProfElmScript:
 PlayersHousePC:
 	opentext
 	special Special_PlayersHousePC
-	iftrue .Warp
+	iftruefwd .Warp
 	endtext
 .Warp:
 	warp NONE, 0, 0

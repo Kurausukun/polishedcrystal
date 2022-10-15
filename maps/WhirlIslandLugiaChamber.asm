@@ -19,10 +19,10 @@ WhirlIslandLugiaChamber_MapScriptHeader:
 
 WhirlIslandLugiaChamberLugia:
 	checkevent EVENT_FOUGHT_LUGIA
-	iftrue .NoAppear
+	iftruefwd .NoAppear
 	checkkeyitem SILVER_WING
-	iftrue .Appear
-	sjump .NoAppear
+	iftruefwd .Appear
+	sjumpfwd .NoAppear
 
 .Appear:
 	appear WHIRLISLANDLUGIACHAMBER_LUGIA
@@ -45,6 +45,10 @@ Lugia:
 	startbattle
 	disappear WHIRLISLANDLUGIACHAMBER_LUGIA
 	reloadmapafterbattle
+	special CheckBattleCaughtResult
+	iffalsefwd .nocatch
+	setflag ENGINE_PLAYER_CAUGHT_LUGIA
+.nocatch
 	end
 
 LugiaText:

@@ -1,6 +1,6 @@
-CARDFLIP_LIGHT_OFF EQU $f3
-CARDFLIP_LIGHT_ON  EQU $f4
-CARDFLIP_DECK_SIZE EQU 4 * 6
+DEF CARDFLIP_LIGHT_OFF EQU $f3
+DEF CARDFLIP_LIGHT_ON  EQU $f4
+DEF CARDFLIP_DECK_SIZE EQU 4 * 6
 
 _CardFlip:
 	ld hl, wOptions1
@@ -13,7 +13,7 @@ _CardFlip:
 	call DelayFrame
 	call DisableLCD
 	call LoadStandardFont
-	call LoadFontsExtra
+	call LoadFrame
 
 	ld hl, CardFlipLZ01
 	ld de, vTiles2 tile $00
@@ -321,32 +321,14 @@ _CardFlip:
 	ret
 
 CardFlip_ShuffleDeck:
-	ld hl, wDeck
-	ld bc, CARDFLIP_DECK_SIZE
-	xor a
-	rst ByteFill
-	ld de, wDeck
-	ld c, CARDFLIP_DECK_SIZE - 1
-.loop
-	call Random
-	and $1f
-	cp CARDFLIP_DECK_SIZE
-	jr nc, .loop
-	ld l, a
-	ld h, $0
-	add hl, de
-	ld a, [hl]
-	and a
-	jr nz, .loop
-	ld [hl], c
-	dec c
-	jr nz, .loop
 	xor a
 	ld [wCardFlipNumCardsPlayed], a
 	ld hl, wDiscardPile
 	ld bc, CARDFLIP_DECK_SIZE
 	rst ByteFill
-	ret
+	ld hl, wDeck
+	ld c, CARDFLIP_DECK_SIZE
+	farjp ShuffleRange
 
 CollapseCursorPosition:
 	ld hl, 0
@@ -518,7 +500,7 @@ CardFlip_CopyToBox:
 	ret
 
 CardFlip_CopyOAM:
-	ld de, wVirtualOAM
+	ld de, wShadowOAM
 	ld a, [hli]
 .loop
 	push af
@@ -1257,14 +1239,14 @@ CardFlip_UpdateCursorOAM:
 	jmp CardFlip_CopyOAM
 
 .OAMData:
-cardflip_cursor: MACRO
-if _NARG >= 5
-	dbpixel \1, \2, \3, \4
-	dw \5
-else
-	dbpixel \1, \2
-	dw \3
-endc
+MACRO cardflip_cursor
+	if _NARG >= 5
+		dbpixel \1, \2, \3, \4
+		dw \5
+	else
+		dbpixel \1, \2
+		dw \3
+	endc
 ENDM
 
 	cardflip_cursor 11,  2,       .Impossible

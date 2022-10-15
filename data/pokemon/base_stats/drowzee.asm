@@ -4,10 +4,9 @@
 	db PSYCHIC, PSYCHIC ; type
 	db 190 ; catch rate
 	db 102 ; base exp
-	db NO_ITEM ; item 1
-	db NO_ITEM ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/drowzee/front.dimensions"
+	db NO_ITEM, NO_ITEM ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for DROWZEE, INSOMNIA, FOREWARN, INNER_FOCUS
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_HUMANSHAPE, EGG_HUMANSHAPE ; egg groups

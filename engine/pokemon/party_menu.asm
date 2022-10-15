@@ -297,8 +297,7 @@ BT_PartySelect:
 
 .EggMenuHeader:
 	db $00 ; flags
-	db 13, 11 ; start coords
-	db 17, 19 ; end coords
+	menu_coords 11, 13, 19, 17
 	dw .EggMenuData
 	db 1 ; default option
 
@@ -310,8 +309,7 @@ BT_PartySelect:
 
 .MenuHeader:
 	db $00 ; flags
-	db 9, 11 ; start coords
-	db 17, 19 ; end coords
+	menu_coords 11, 9, 19, 17
 	dw .MenuData
 	db 1 ; default option
 
@@ -325,8 +323,7 @@ BT_PartySelect:
 
 .BannedMenuHeader:
 	db $00 ; flags
-	db 11, 11 ; start coords
-	db 17, 19 ; end coords
+	menu_coords 11, 11, 19, 17
 	dw .BannedMenuData
 	db 1 ; default option
 
@@ -365,8 +362,7 @@ BT_ConfirmPartySelection:
 .YesNoMenuHeader:
 ; the regular yes/no prompt position is unsuitable, so make our own here
 	db $00 ; flags
-	db 13, 14 ; start coords
-	db 17, 19 ; end coords
+	menu_coords 14, 13, 19, 17
 	dw .YesNoMenuData
 	db 1 ; default option
 
@@ -880,7 +876,7 @@ PlacePartyMonEvoStoneCompatibility:
 	; bc = index
 	predef GetEvosAttacksPointer
 ; Reads up to 10 EVOLVE_ITEM entries
-	ld de, wStringBuffer1
+	ld de, wStringBuffer3
 	ld a, BANK(EvosAttacks)
 	ld bc, 10 * 4 + 1
 	push de
@@ -1108,7 +1104,7 @@ InitPartyMenuGFX:
 	ldh [hObjectStructIndexBuffer], a
 .loop
 	push bc
-	farcall LoadPartyMenuMonIcon
+	farcall LoadPartyMenuMonMini
 	ldh a, [hObjectStructIndexBuffer]
 	inc a
 	ldh [hObjectStructIndexBuffer], a

@@ -8,6 +8,7 @@ KeyItemNames::
 	li "Itemfinder"
 	li "Coin Case"
 	li "Apricorn Box"
+	li "Wing Case"
 	li "Type Chart"
 	li "Blue Card"
 	li "SquirtBottle"

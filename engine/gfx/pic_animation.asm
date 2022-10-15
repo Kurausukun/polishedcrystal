@@ -1,9 +1,9 @@
 ; Pic animation arrangement.
 
-POKEANIM: MACRO
-for i, 1, _NARG + 1
-	db (PokeAnim_\<i>_ - PokeAnim_SetupCommands) / 2
-endr
+MACRO POKEANIM
+	for i, 1, _NARG + 1
+		db (PokeAnim_\<i>_ - PokeAnim_SetupCommands) / 2
+	endr
 	db (PokeAnim_Finish_ - PokeAnim_SetupCommands) / 2
 ENDM
 
@@ -126,7 +126,7 @@ SetUpPokeAnim:
 	ret
 
 PokeAnim_SetupCommands:
-setup_command: MACRO
+MACRO setup_command
 \1_: dw \1
 ENDM
 	setup_command PokeAnim_Finish
@@ -603,12 +603,12 @@ PokeAnim_ConvertAndApplyBitmask:
 	add 13
 	ret
 
-poke_anim_box: MACRO
-for y, 7, 7 * (\1 + 1), 7
-for x, 7 - \1, 7
-	db x + y
-endr
-endr
+MACRO poke_anim_box
+	for y, 7, 7 * (\1 + 1), 7
+		for x, 7 - \1, 7
+			db x + y
+		endr
+	endr
 ENDM
 
 ._5by5:
@@ -796,11 +796,14 @@ PokeAnim_GetFrontpicDims:
 	push af
 	ld a, $1
 	ldh [rSVBK], a
+
+	; This is no longer needed for the pic size, but do it just
+	; in case subsequent code expects base data available
 	ld a, [wCurPartySpecies]
 	ld [wCurSpecies], a
 	call GetBaseData ; [wCurForm] is already set
-	ld a, [wBasePicSize]
-	and $f
+
+	call GetPicSize
 	ld c, a
 	pop af
 	ldh [rSVBK], a

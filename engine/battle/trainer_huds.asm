@@ -19,7 +19,7 @@ ShowPlayerMonsRemaining:
 	ld [hl], a
 	ld a, 8
 	ld [wPlaceBallsDirection], a
-	ld hl, wVirtualOAM
+	ld hl, wShadowOAM
 	jmp LoadTrainerHudOAM
 
 EnemySwitch_TrainerHud:
@@ -39,7 +39,7 @@ ShowOTTrainerMonsRemaining:
 	ld [hl], 4 * 8
 	ld a, -8
 	ld [wPlaceBallsDirection], a
-	ld hl, wVirtualOAM + PARTY_LENGTH * 4
+	ld hl, wShadowOAM + PARTY_LENGTH * 4
 	jmp LoadTrainerHudOAM
 
 StageBallTilesData:
@@ -170,7 +170,7 @@ LinkBattle_TrainerHuds:
 	ld [hl], 8 * 8
 	ld a, $8
 	ld [wPlaceBallsDirection], a
-	ld hl, wVirtualOAM
+	ld hl, wShadowOAM
 	call LoadTrainerHudOAM
 
 	ld hl, wOTPartyCount
@@ -179,7 +179,7 @@ LinkBattle_TrainerHuds:
 	ld a, 10 * 8
 	ld [hli], a
 	ld [hl], 13 * 8
-	ld hl, wVirtualOAM + PARTY_LENGTH * 4
+	ld hl, wShadowOAM + PARTY_LENGTH * 4
 	; fallthrough
 
 LoadTrainerHudOAM:
@@ -215,7 +215,7 @@ INCBIN "gfx/battle/balls.2bpp"
 
 _ShowLinkBattleParticipants:
 	call ClearBGPalettes
-	call LoadFontsExtra
+	call LoadFrame
 	hlcoord 2, 3
 	lb bc, 9, 14
 	call Textbox
@@ -230,7 +230,7 @@ _ShowLinkBattleParticipants:
 	ld [hli], a
 	ld [hl], "S"
 	call LinkBattle_TrainerHuds
-	ld a, CGB_DIPLOMA
+	ld a, CGB_PLAIN
 	call GetCGBLayout
 	call SetPalettes
 	ld a, $e4

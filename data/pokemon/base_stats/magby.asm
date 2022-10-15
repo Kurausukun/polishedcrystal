@@ -9,10 +9,9 @@ endc
 	db FIRE, FIRE ; type
 	db 45 ; catch rate
 	db 117 ; base exp
-	db ASPEAR_BERRY ; item 1
-	db MAGMARIZER ; item 2
-	dn GENDER_F25, 4 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/magby/front.dimensions"
+	db ASPEAR_BERRY, MAGMARIZER ; held items
+	dn GENDER_F25, HATCH_MEDIUM_SLOW ; gender ratio, step cycles to hatch
+
 	abilities_for MAGBY, FLAME_BODY, FLAME_BODY, VITAL_SPIRIT
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_NONE, EGG_NONE ; egg groups

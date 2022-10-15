@@ -29,6 +29,7 @@ RuinsOfAlphOutside_MapScriptHeader:
 	bg_event 18, 14, BGEVENT_JUMPTEXT, RuinsOfAlphOutsideMysteryChamberSignText
 	bg_event 14, 22, BGEVENT_JUMPTEXT, RuinsOfAlphSignText
 	bg_event 20, 18, BGEVENT_JUMPTEXT, RuinsOfAlphResearchCenterSignText
+	bg_event  3,  9, BGEVENT_JUMPTEXT, RuinsOfAlphAdvancedTipsSignText
 	bg_event 10,  9, BGEVENT_IFNOTSET, MapRuinsofAlphOutsideSealedCaveSign
 	bg_event  4, 13, BGEVENT_ITEM + RARE_CANDY, EVENT_RUINS_OF_ALPH_OUTSIDE_HIDDEN_RARE_CANDY
 	bg_event 11, 35, BGEVENT_JUMPSTD, cavegrotto, HIDDENGROTTO_RUINS_OF_ALPH
@@ -54,7 +55,7 @@ RuinsOfAlphOutside_MapScriptHeader:
 
 RuinsofAlphOutsideTrigger0:
 	checkevent EVENT_DO_RUINS_OF_ALPH_CLIMAX
-	iffalse .End
+	iffalsefwd .End
 	showtext RuinsofAlphScientistClimax1Text
 	follow RUINSOFALPHOUTSIDE_SCIENTIST2, PLAYER
 	applymovement RUINSOFALPHOUTSIDE_SCIENTIST2, RuinsofAlphScientistClimaxApproachMovementData
@@ -72,22 +73,22 @@ RuinsofAlphOutsideTrigger0:
 
 RuinsofAlphOutsideTileScript:
 	checkevent EVENT_DOOR_OPENED_IN_RUINS_OF_ALPH
-	iffalse .locked
+	iffalsefwd .locked
 	changeblock 10, 8, $9f
 .locked
 	endcallback
 
 RuinsOfAlphOutsideScientistCallback:
 	checkflag ENGINE_UNOWN_DEX
-	iftrue .NoScientist
+	iftruefwd .NoScientist
 	checkevent EVENT_MADE_UNOWN_APPEAR_IN_RUINS
-	iftrue .MaybeScientist
-	sjump .NoScientist
+	iftruefwd .MaybeScientist
+	sjumpfwd .NoScientist
 
 .MaybeScientist:
 	readvar VAR_UNOWNCOUNT
 	ifgreater $0, .YesScientist
-	sjump .NoScientist
+	sjumpfwd .NoScientist
 
 .YesScientist:
 	appear RUINSOFALPHOUTSIDE_SCIENTIST1
@@ -278,6 +279,20 @@ RuinsOfAlphResearchCenterSignText:
 
 	para "The Authority On"
 	line "The Ruins of Alph"
+	done
+
+RuinsOfAlphAdvancedTipsSignText:
+	text "Advanced Tips!"
+
+	para "The #dex is a"
+	line "powerful tool!"
+
+	para "Its Area map shows"
+	line "a yellow icon if a"
+
+	para "#mon can be"
+	line "found right where"
+	cont "you are!"
 	done
 
 MapRuinsofAlphOutsideSealedCaveSign:

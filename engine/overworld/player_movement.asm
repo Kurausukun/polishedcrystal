@@ -352,8 +352,25 @@ DoPlayerMovement::
 	ld hl, .ledge_table
 	add hl, de
 	ld a, [wFacingDirection]
+	ld e, a
 	and [hl]
 	jr z, .DontJump
+
+	ld a, [wPlayerStandingMapX]
+	ld d, a
+	ld a, [wWalkingX]
+	add a
+	add d
+	ld d, a
+	ld a, [wPlayerStandingMapY]
+	ld e, a
+	ld a, [wWalkingY]
+	add a
+	add e
+	ld e, a
+	call GetCoordTile
+	call .CheckWalkable
+	jr c, .DontJump
 
 	ld de, SFX_JUMP_OVER_LEDGE
 	call PlaySFX
@@ -623,11 +640,14 @@ DoPlayerMovement::
 ; Standing
 	jr .update
 
-.d_down 	add hl, de
-.d_up   	add hl, de
-.d_left 	add hl, de
-.d_right	add hl, de
-
+.d_down
+	add hl, de
+.d_up
+	add hl, de
+.d_left
+	add hl, de
+.d_right
+	add hl, de
 .update
 	ld a, [hli]
 	ld [wWalkingDirection], a

@@ -299,7 +299,14 @@ ReadObjectEvents::
 	ld l, e
 	ret
 
-CopyMapAttributes::
+CopyMapPartialAndAttributes::
+; Copy map tileset, environment, and attributes
+; from the current map's entry within its group.
+	call CopyMapPartial
+	call SwitchToMapAttributesBank
+	call GetMapAttributesPointer
+	ld l, c
+	ld h, b
 	ld de, wMapAttributes
 	ld c, wMapAttributesEnd - wMapAttributes
 .loop
@@ -308,15 +315,6 @@ CopyMapAttributes::
 	inc de
 	dec c
 	jr nz, .loop
-	ret
-
-CopyMapPartialAndAttributes::
-; Copy map data bank, tileset, environment, and map data address
-; from the current map's entry within its group.
-	call CopyMapPartial
-	call SwitchToMapAttributesBank
-	call GetMapAttributesPointer
-	call CopyMapAttributes
 	; fallthrough
 GetMapConnections::
 	ld a, $ff
@@ -1048,7 +1046,7 @@ _LoadTilesetGFX2:
 	ld a, 1
 	ldh [rVBK], a
 	ld hl, wTilesetGFX2Address
-	ld a, [wTilesetGFX2Bank]
+	ld a, [wTilesetDataBank]
 	ld de, vTiles4
 	jr _DoLoadTilesetGFX
 
@@ -1062,29 +1060,17 @@ _LoadTilesetGFX0:
 
 	; Check roof tiles
 	ld a, [wMapTileset]
-	cp TILESET_JOHTO_TRADITIONAL
-	jr z, .load_roof
-	cp TILESET_JOHTO_MODERN
-	jr z, .load_roof
-	cp TILESET_JOHTO_OVERCAST
-	jr nz, .skip_roof
-
-.load_roof
+	cp NO_ROOF_TILESETS
+	ld c, $7f
+	jr nc, .skip_roof
 	farcall LoadMapGroupRoof
-	ld hl, wTilesetGFX0Address
-	ld a, [wTilesetGFX0Bank]
-	ld de, vTiles2
 	ld c, $ff
-	call _DoLoadTilesetGFX0
-	jr .done
 
 .skip_roof
 	ld hl, wTilesetGFX0Address
-	ld a, [wTilesetGFX0Bank]
+	ld a, [wTilesetDataBank]
 	ld de, vTiles2
-	ld c, $7f
 	call _DoLoadTilesetGFX0
-.done
 	pop af
 	ldh [rSVBK], a
 	ret
@@ -1093,7 +1079,7 @@ _LoadTilesetGFX1:
 	ld a, 1
 	ldh [rVBK], a
 	ld hl, wTilesetGFX1Address
-	ld a, [wTilesetGFX1Bank]
+	ld a, [wTilesetDataBank]
 	ld de, vTiles5
 	; fallthrough
 
@@ -1540,6 +1526,19 @@ CheckIfFacingTileCoordIsBGEvent::
 	jr nz, .next
 	ld a, [hli]
 	cp d
+	jr nz, .next
+	ld a, [hli]
+	cp BGEVENT_ITEM
+	jr c, .copysign
+	push bc
+	push de
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+	ld b, CHECK_FLAG
+	call EventFlagAction
+	pop de
+	pop bc
 	jr z, .copysign
 
 .next
@@ -1664,14 +1663,10 @@ ReloadTilesetAndPalettes::
 	call ClearSprites
 	farcall RefreshSprites
 	call LoadStandardFont
-	call LoadFontsExtra
+	call LoadFrame
 	ldh a, [hROMBank]
 	push af
-	ld a, [wMapGroup]
-	ld b, a
-	ld a, [wMapNumber]
-	ld c, a
-	call SwitchToAnyMapAttributesBank
+	call SwitchToMapAttributesBank
 	farcall UpdateTimeOfDayPal
 	call LoadMapPart
 	call LoadTilesetGFX
@@ -1723,6 +1718,10 @@ GetAnyMapPointer::
 	rst AddNTimes
 	ret
 
+GetMapAttributesPointer::
+; returns the current map's attributes pointer in bc.
+	ld de, MAP_MAPATTRIBUTES
+	; fallthrough
 GetMapField::
 ; Extract data from the current map's group entry.
 
@@ -1737,6 +1736,7 @@ GetMapField::
 	ld b, a
 	ld a, [wMapNumber]
 	ld c, a
+	; fallthrough
 GetAnyMapField::
 	anonbankpush MapGroupPointers
 
@@ -1753,31 +1753,26 @@ SwitchToMapAttributesBank::
 	ld b, a
 	ld a, [wMapNumber]
 	ld c, a
-SwitchToAnyMapAttributesBank::
-	call GetAnyMapAttributesBank
+	ld a, BANK("Map Attributes")
 	rst Bankswitch
 	ret
 
-GetAnyMapAttributesBank::
-	push hl
-	push de
-	ld de, MAP_MAPATTRIBUTES_BANK
-	call GetAnyMapField
-	ld a, c
-	pop de
-	pop hl
-	ret
-
 CopyMapPartial::
-; Copy map data bank, tileset, permission, and map data address
-; from the current map's entry within its group.
+; Copy map tileset and environment for the current map.
 	anonbankpush MapGroupPointers
 
 .Function:
 	call GetMapPointer
-	ld de, wMapAttributesBank
-	ld bc, wMapPartialEnd - wMapPartial
-	rst CopyBytes
+	assert MAP_TILESET == 0 && MAP_ENVIRONMENT == 1
+	ld a, [hli]
+	ld [wMapTileset], a
+	ld a, [hl]
+	and $f
+	ld [wEnvironment], a
+	ld a, [hl]
+	swap a
+	and $f
+	ld [wSign], a
 	ret
 
 GetAnyMapBlocksBank::
@@ -1792,15 +1787,10 @@ GetAnyMapBlocksBank::
 	ld h, b
 	pop bc
 
-	push hl
-	ld de, MAP_MAPATTRIBUTES_BANK
-	call GetAnyMapField
-	pop hl
-
 	inc hl
 	inc hl
 	inc hl
-	ld a, c
+	ld a, BANK("Map Attributes")
 	rst Bankswitch
 	ld a, [hli]
 	ld c, a
@@ -1814,26 +1804,13 @@ GetAnyMapBlocksBank::
 	pop de
 	ret
 
-GetMapAttributesPointer::
-; returns the current map's data pointer in hl.
-	push bc
-	push de
-	ld de, MAP_MAPATTRIBUTES
-	call GetMapField
-	ld l, c
-	ld h, b
-	pop de
-	pop bc
-	ret
-
 GetMapEnvironment::
 	push hl
 	push de
 	push bc
 	ld de, MAP_ENVIRONMENT
 	call GetMapField
-	ld a, c
-	jmp PopBCDEHL
+	jr GetAnyMapEnvironment.done
 
 GetAnyMapEnvironment::
 	push hl
@@ -1841,7 +1818,9 @@ GetAnyMapEnvironment::
 	push bc
 	ld de, MAP_ENVIRONMENT
 	call GetAnyMapField
+.done
 	ld a, c
+	and $f
 	jmp PopBCDEHL
 
 GetAnyMapTileset::
@@ -1972,13 +1951,13 @@ LoadMapTileset::
 	push bc
 
 	ld hl, Tilesets
-	ld bc, wTilesetEnd - wTileset
+	ld bc, TILESET_LENGTH
 	ld a, [wMapTileset]
 	dec a
 	rst AddNTimes
 
-	ld de, wTilesetBank
-	ld bc, wTilesetEnd - wTileset
+	ld de, wTileset
+	ld bc, TILESET_LENGTH
 
 	ld a, BANK(Tilesets)
 	call FarCopyBytes

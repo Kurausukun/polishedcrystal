@@ -38,7 +38,7 @@ BugCatchingContestBattleScript::
 	startbattle
 	reloadmapafterbattle
 	readmem wParkBallsRemaining
-	iffalse .OutOfBalls
+	iffalsefwd .OutOfBalls
 	end
 
 .OutOfBalls:
@@ -46,7 +46,7 @@ BugCatchingContestBattleScript::
 	opentext
 	farwritetext _BugCatchingContestIsOverText
 	waitbutton
-	sjump BugCatchingContestReturnToGateScript
+	sjumpfwd BugCatchingContestReturnToGateScript
 
 BugCatchingContestOverScript::
 	playsound SFX_ELEVATOR_END
@@ -60,7 +60,7 @@ BugCatchingContestReturnToGateScript:
 
 Script_AbortBugContest:
 	checkflag ENGINE_BUG_CONTEST_TIMER
-	iffalse .finish
+	iffalsefwd .finish
 	setflag ENGINE_DAILY_BUG_CONTEST
 	special ContestReturnMons
 .finish
@@ -515,8 +515,6 @@ Special_SelectRandomBugContestContestants:
 	ld b, CHECK_FLAG
 	call EventFlagAction
 	pop de
-	ld a, c
-	and a
 	jr nz, .next
 ; Set the flag.  This will cause that sprite to not be visible in the contest.
 	ld b, SET_FLAG

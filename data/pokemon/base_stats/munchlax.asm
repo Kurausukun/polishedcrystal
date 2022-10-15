@@ -4,10 +4,9 @@
 	db NORMAL, NORMAL ; type
 	db 50 ; catch rate
 	db 94 ; base exp
-	db NO_ITEM ; item 1
-	db LEFTOVERS ; item 2
-	dn GENDER_F12_5, 7 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/munchlax/front.dimensions"
+	db NO_ITEM, LEFTOVERS ; held items
+	dn GENDER_F12_5, HATCH_SLOWEST ; gender ratio, step cycles to hatch
+
 	abilities_for MUNCHLAX, PICKUP, THICK_FAT, GLUTTONY
 	db GROWTH_SLOW ; growth rate
 	dn EGG_NONE, EGG_NONE ; egg groups

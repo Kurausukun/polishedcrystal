@@ -4,10 +4,9 @@
 	db GRASS, POISON ; type
 	db 45 ; catch rate
 	db 208 ; base exp
-	db NO_ITEM ; item 1
-	db NO_ITEM ; item 2
-	dn GENDER_F12_5, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/venusaur/front.dimensions"
+	db NO_ITEM, NO_ITEM ; held items
+	dn GENDER_F12_5, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for VENUSAUR, OVERGROW, CHLOROPHYLL, THICK_FAT
 	db GROWTH_MEDIUM_SLOW ; growth rate
 	dn EGG_MONSTER, EGG_PLANT ; egg groups

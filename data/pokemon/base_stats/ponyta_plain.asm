@@ -4,10 +4,9 @@
 	db FIRE, FIRE ; type
 	db 190 ; catch rate
 	db 152 ; base exp
-	db NO_ITEM ; item 1
-	db MARANGABERRY ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/ponyta_plain/front.dimensions"
+	db NO_ITEM, MARANGABERRY ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for PONYTA, RUN_AWAY, FLASH_FIRE, FLAME_BODY
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_GROUND, EGG_GROUND ; egg groups

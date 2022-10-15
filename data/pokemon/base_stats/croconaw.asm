@@ -4,10 +4,9 @@
 	db WATER, WATER ; type
 	db 45 ; catch rate
 	db 143 ; base exp
-	db NO_ITEM ; item 1
-	db NO_ITEM ; item 2
-	dn GENDER_F12_5, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/croconaw/front.dimensions"
+	db NO_ITEM, NO_ITEM ; held items
+	dn GENDER_F12_5, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 if DEF(FAITHFUL)
 	abilities_for CROCONAW, TORRENT, TORRENT, SHEER_FORCE
 else

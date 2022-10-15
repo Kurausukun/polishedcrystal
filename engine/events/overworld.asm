@@ -63,46 +63,83 @@ CheckBadge:
 	text_end
 
 CheckPartyMove:
-; Check if a monster in your party has move d.
+; Check if a monster in your party has move d, or
+; can have move d and you have TM/HM e.
 
-	ld e, 0
 	xor a
 	ld [wCurPartyMon], a
-.loop
+
+	ld a, e
+	ld [wCurTMHM], a
+
+	ld e, 0
+.loop1
 	ld a, [wPartyCount]
 	cp e
-	jr z, .no
-
+	jr z, .maybe
 	ld hl, wPartyMon1IsEgg
 	ld a, e
 	call GetPartyLocation
 	bit MON_IS_EGG_F, [hl]
-	jr nz, .next
+	jr nz, .next1
 	ld bc, MON_MOVES - MON_FORM
 	add hl, bc
 	ld b, NUM_MOVES
-.check
+.check1
 	ld a, [hli]
 	cp d
 	jr z, .yes
 	dec b
-	jr nz, .check
-
-.next
+	jr nz, .check1
+.next1
 	inc e
-	jr .loop
+	jr .loop1
+
+.maybe
+	ld a, d
+	ld [wPutativeTMHMMove], a
+	ld a, [wCurTMHM]
+	inc a
+	jr z, .no
+	call CheckTMHM
+	jr nc, .no
+	ld e, 0
+.loop2
+	ld a, [wPartyCount]
+	cp e
+	jr z, .no
+	ld hl, wPartyMon1IsEgg
+	ld a, e
+	call GetPartyLocation
+	bit MON_IS_EGG_F, [hl]
+	jr nz, .next2
+	ld a, [hl]
+	and SPECIESFORM_MASK
+	ld [wCurForm], a
+	ld bc, MON_SPECIES - MON_FORM
+	add hl, bc
+	ld a, [hl]
+	ld [wCurPartySpecies], a
+	predef CanLearnTMHMMove
+	ld a, c
+	and a
+	jr nz, .yes
+.next2
+	inc e
+	jr .loop2
 
 .yes
 	ld a, e
 	ld [wCurPartyMon], a ; which mon has the move
 	xor a
 	ret
+
 .no
 	scf
 	ret
 
 CheckForSurfingPikachu:
-	ld d, SURF
+	lb de, SURF, HM_SURF
 	call CheckPartyMove
 	jr c, .no
 	ld a, MON_SPECIES
@@ -113,7 +150,7 @@ CheckForSurfingPikachu:
 	ld de, MON_EXTSPECIES - MON_SPECIES
 	add hl, de
 	ld a, [hl]
-	and MON_EXTSPECIES_F
+	and 1 << MON_EXTSPECIES_F
 	jr nz, .no
 	ld a, TRUE
 	ldh [hScriptVar], a
@@ -242,7 +279,7 @@ Script_CutFromMenu:
 	reloadmappart
 	special UpdateTimePals
 	callasm GetBuffer6
-	ifequal $0, Script_CutTree
+	ifequalfwd $0, Script_CutTree
 ;Script_CutGrass:
 	callasm PrepareOverworldMove
 	farwritetext _UseCutText
@@ -345,7 +382,7 @@ TryFlashOW::
 	ld a, [wTimeOfDayPalset]
 	cp DARKNESS_PALSET
 	jr nz, .quit
-	ld d, FLASH
+	lb de, FLASH, TM_FLASH
 	call CheckPartyMove
 	jr c, .quit
 	call GetPartyNickname
@@ -363,7 +400,7 @@ AskFlashScript:
 	opentext
 	farwritetext _AskFlashText
 	yesorno
-	iftrue Script_UseFlash
+	iftruefwd Script_UseFlash
 	endtext
 
 OWFlash:
@@ -527,7 +564,7 @@ GetSurfType:
 	ld de, MON_EXTSPECIES - MON_SPECIES
 	add hl, de
 	ld a, [hl]
-	and MON_EXTSPECIES_F
+	and 1 << MON_EXTSPECIES_F
 	ld a, PLAYER_SURF_PIKA
 	ret z
 .not_pikachu
@@ -590,7 +627,7 @@ TrySurfOW::
 	call CheckEngineFlag
 	jr c, .quit
 
-	ld d, SURF
+	lb de, SURF, HM_SURF
 	call CheckPartyMove
 	jr c, .quit
 
@@ -624,34 +661,41 @@ AskSurfScript:
 
 CheckFlyAllowedOnMap:
 ; returns z is fly is allowed
+	call RegionCheck
+	ld a, e
+	cp ORANGE_REGION
+	jr nz, .not_orange
+	assert ORANGE_REGION != 0
+	and a ; nz
+	ret
+.not_orange
 	call GetMapEnvironment
 	call CheckOutdoorMap
 	ret z
-; assumes all special roof maps are in different groups
 	ld a, [wMapGroup]
-	cp GROUP_GOLDENROD_DEPT_STORE_ROOF
-	jr z, .goldenrod_dept_store_roof_group
-	cp GROUP_CELADON_MANSION_ROOF
-	jr z, .celadon_mansion_roof_group
-	cp GROUP_TIN_TOWER_ROOF
-	jr z, .tin_tower_roof_group
-	cp GROUP_OLIVINE_LIGHTHOUSE_ROOF
-	ret nz
+	ld d, a
 	ld a, [wMapNumber]
-	cp MAP_OLIVINE_LIGHTHOUSE_ROOF
+	ld e, a
+	ld hl, IndoorFlyMaps
+.loop
+	ld a, [hli]
+	and a
+	jr z, .no_fly
+	cp d
+	jr nz, .skip
+	ld a, [hli]
+	cp e
+	ret z
+	jr .loop
+.skip
+	inc hl
+	jr .loop
+.no_fly
+	inc a
+	and a ; nz
 	ret
-.goldenrod_dept_store_roof_group
-	ld a, [wMapNumber]
-	cp MAP_GOLDENROD_DEPT_STORE_ROOF
-	ret
-.celadon_mansion_roof_group
-	ld a, [wMapNumber]
-	cp MAP_CELADON_MANSION_ROOF
-	ret
-.tin_tower_roof_group
-	ld a, [wMapNumber]
-	cp MAP_TIN_TOWER_ROOF
-	ret
+
+INCLUDE "data/maps/indoor_fly_maps.asm"
 
 FlyFunction:
 	call FieldMoveJumptableReset
@@ -676,18 +720,6 @@ FlyFunction:
 	call CheckFlyAllowedOnMap
 	jr nz, .indoors
 
-	ld a, [wMapGroup]
-	cp GROUP_SHAMOUTI_ISLAND
-	jr z, .indoors
-	cp GROUP_VALENCIA_ISLAND
-	jr z, .indoors
-	cp GROUP_SHAMOUTI_SHRINE_RUINS
-	jr nz, .outdoors
-	ld a, [wMapNumber]
-	cp MAP_SHAMOUTI_SHRINE_RUINS
-	jr z, .indoors
-
-.outdoors
 	xor a
 	ldh [hMapAnims], a
 	call LoadStandardMenuHeader
@@ -827,7 +859,7 @@ Script_AutoWaterfall:
 	step_end
 
 TryWaterfallOW::
-	ld d, WATERFALL
+	lb de, WATERFALL, HM_WATERFALL
 	call CheckPartyMove
 	jr c, .failed
 	ld de, ENGINE_RISINGBADGE
@@ -953,7 +985,7 @@ EscapeRopeOrDig:
 	farwritetext _UseEscapeRopeText
 	waitbutton
 	closetext
-	sjump .UsedDigOrEscapeRopeScript
+	sjumpfwd .UsedDigOrEscapeRopeScript
 
 .UsedDigScript:
 	reloadmappart
@@ -1108,9 +1140,9 @@ Script_UsedStrength:
 
 AskStrengthScript:
 	callasm TryStrengthOW
-	iffalse .AskStrength
-	ifequal $1, .DontMeetRequirements
-	sjump .AlreadyUsedStrength
+	iffalsefwd .AskStrength
+	ifequalfwd $1, .DontMeetRequirements
+	sjumpfwd .AlreadyUsedStrength
 
 .DontMeetRequirements:
 	farjumptext _BouldersMayMoveText
@@ -1126,7 +1158,7 @@ AskStrengthScript:
 	endtext
 
 TryStrengthOW:
-	ld d, STRENGTH
+	lb de, STRENGTH, HM_STRENGTH
 	call CheckPartyMove
 	jr c, .nope
 
@@ -1237,9 +1269,9 @@ Script_UsedWhirlpool:
 Script_AutoWhirlpool:
 	playsound SFX_SURF
 	readvar VAR_FACING
-	ifequal UP, .Up
-	ifequal DOWN, .Down
-	ifequal RIGHT, .Right
+	ifequalfwd UP, .Up
+	ifequalfwd DOWN, .Down
+	ifequalfwd RIGHT, .Right
 	applymovement PLAYER, .LeftMovementData
 	end
 
@@ -1276,7 +1308,7 @@ Script_AutoWhirlpool:
 	step_end
 
 TryWhirlpoolOW::
-	ld d, WHIRLPOOL
+	lb de, WHIRLPOOL, HM_WHIRLPOOL
 	call CheckPartyMove
 	jr c, .failed
 	ld de, ENGINE_GLACIERBADGE
@@ -1347,7 +1379,7 @@ AutoHeadbuttScript:
 	callasm ShakeHeadbuttTree
 
 	callasm TreeMonEncounter
-	iffalse .no_battle
+	iffalsefwd .no_battle
 	randomwildmon
 	startbattle
 	reloadmapafterbattle
@@ -1355,16 +1387,30 @@ AutoHeadbuttScript:
 
 .no_battle
 	callasm TreeItemEncounter
-	iffalse .no_item
+	iffalsefwd .no_item
 	opentext
-	verbosegiveitem ITEM_FROM_MEM
+	farwritetext _FoundWingsText
+	callasm .ShowWingIcon
+	specialsound
+	waitbutton
 	endtext
 
 .no_item
 	farjumptext _HeadbuttNothingText
 
+.ShowWingIcon:
+	ld a, [wCurWing]
+	push af
+	ld hl, WingIcon
+	lb bc, BANK(WingIcon), 9
+	farcall DecompressItemIconForOverworld
+	pop af
+	ld bc, WingIconPalettes
+	farcall LoadIconPalette
+	farjp PrintOverworldItemIcon
+
 TryHeadbuttOW::
-	ld d, HEADBUTT
+	lb de, HEADBUTT, -1 ; you need the tutor for Headbutt
 	call CheckPartyMove
 	jr c, .no
 
@@ -1451,7 +1497,7 @@ AutoRockSmashScript:
 
 	callasm RockMonEncounter
 	readmem wTempWildMonSpecies
-	iffalse .no_battle
+	iffalsefwd .no_battle
 	randomwildmon
 	startbattle
 	reloadmapafterbattle
@@ -1459,7 +1505,7 @@ AutoRockSmashScript:
 
 .no_battle
 	callasm RockItemEncounter
-	iffalse .no_item
+	iffalsefwd .no_item
 	opentext
 	verbosegiveitem ITEM_FROM_MEM
 	closetext
@@ -1472,7 +1518,7 @@ MovementData_RockSmash:
 
 AskRockSmashScript:
 	callasm HasRockSmash
-	ifequal 1, .no
+	ifequalfwd 1, .no
 
 	checkflag ENGINE_ROCK_SMASH_ACTIVE
 	iftrue AutoRockSmashScript
@@ -1486,7 +1532,7 @@ AskRockSmashScript:
 	farjumptext _MaySmashText
 
 HasRockSmash:
-	ld d, ROCK_SMASH
+	lb de, ROCK_SMASH, TM_ROCK_SMASH
 	call CheckPartyMove
 	; a = carry ? 1 : 0
 	sbc a
@@ -1518,14 +1564,14 @@ FishFunction:
 
 .TryFish:
 	ld a, [wPlayerState]
-	cp PLAYER_SURF
-	jr z, .fail
 	cp PLAYER_SURF_PIKA
 	jr z, .fail
 	call GetFacingTileCoord
 	call GetTileCollision
 	dec a ; cp WATER_TILE
-	jr z, .facingwater
+	jr nz, .fail
+	farcall CheckFacingObject
+	jr nc, .facingwater
 .fail
 	ld a, $3
 	ret
@@ -1635,9 +1681,9 @@ Script_NotEvenANibble:
 Script_GotAnItem:
 	scall Script_FishCastRod
 	callasm Fishing_CheckFacingUp
-	iffalse .NotFacingUp
+	iffalsefwd .NotFacingUp
 	applymovement PLAYER, Movement_HookedItemFacingUp
-	sjump .GetTheHookedItem
+	sjumpfwd .GetTheHookedItem
 .NotFacingUp:
 	applymovement PLAYER, Movement_HookedItemNotFacingUp
 .GetTheHookedItem:
@@ -1652,9 +1698,9 @@ Script_GotAnItem:
 Script_GotABite:
 	scall Script_FishCastRod
 	callasm Fishing_CheckFacingUp
-	iffalse .NotFacingUp
+	iffalsefwd .NotFacingUp
 	applymovement PLAYER, Movement_BiteFacingUp
-	sjump .FightTheHookedPokemon
+	sjumpfwd .FightTheHookedPokemon
 .NotFacingUp:
 	applymovement PLAYER, Movement_BiteNotFacingUp
 .FightTheHookedPokemon:
@@ -1806,6 +1852,10 @@ BikeFunction:
 	scf
 	ret
 
+Script_GetOnBike_Register:
+	loadvar VAR_MOVEMENT, PLAYER_BIKE
+	sjumpfwd FinishGettingOnBike
+
 Script_GetOnBike:
 	reloadmappart
 	special UpdateTimePals
@@ -1817,9 +1867,9 @@ FinishGettingOnBike:
 	special UpdatePlayerSprite
 	end
 
-Script_GetOnBike_Register:
-	loadvar VAR_MOVEMENT, PLAYER_BIKE
-	sjump FinishGettingOnBike
+Script_GetOffBike_Register:
+	loadvar VAR_MOVEMENT, PLAYER_NORMAL
+	sjumpfwd FinishGettingOffBike
 
 Script_GetOffBike:
 	reloadmappart
@@ -1833,16 +1883,12 @@ FinishGettingOffBike:
 	playmapmusic
 	end
 
-Script_GetOffBike_Register:
-	loadvar VAR_MOVEMENT, PLAYER_NORMAL
-	sjump FinishGettingOffBike
-
 Script_CantGetOffBike:
 	farwritetext _CantGetOffBikeText
 	waitendtext
 
 HasCutAvailable::
-	ld d, CUT
+	lb de, CUT, HM_CUT
 	call CheckPartyMove
 	jr c, .no
 
@@ -1862,7 +1908,7 @@ HasCutAvailable::
 
 AskCutTreeScript:
 	callasm HasCutAvailable
-	ifequal 1, .no
+	ifequalfwd 1, .no
 
 	checkflag ENGINE_AUTOCUT_ACTIVE
 	iftrue AutoCutTreeScript

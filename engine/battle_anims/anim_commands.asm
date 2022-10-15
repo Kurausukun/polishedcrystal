@@ -1,6 +1,7 @@
 ; Battle animation command interpreter.
 
 PlayBattleAnim:
+	farcall CheckBattleAnimSubstitution
 	ld hl, rIE
 	set LCD_STAT, [hl]
 
@@ -52,10 +53,17 @@ _PlayBattleAnim:
 	jmp WaitSFX
 
 BattleAnimRunScript:
+	; Check if we should play this animation unconditionally.
+	; If not, the "battle effects" option can disable it.
 	ld a, [wFXAnimIDHi]
-	and a
-	jr nz, .hi_byte
+	cp HIGH(FIRST_UNCONDITIONAL_ANIM)
+	jr c, .conditional
+	jr nz, .unconditional
+	ld a, [wFXAnimIDLo]
+	cp LOW(FIRST_UNCONDITIONAL_ANIM)
+	jr nc, .unconditional
 
+.conditional
 	farcall CheckBattleEffects
 	jr c, .disabled
 
@@ -85,7 +93,7 @@ BattleAnimRunScript:
 	ld a, h
 	ld [wFXAnimIDHi], a
 
-.hi_byte
+.unconditional
 	call WaitSFX
 	call PlayHitSound
 	call RunBattleAnimScript
@@ -134,8 +142,8 @@ RunBattleAnimScript:
 	ret nz
 
 	; clear oam
-	ld hl, wVirtualOAM
-	ld c, wVirtualOAMEnd - wVirtualOAM
+	ld hl, wShadowOAM
+	ld c, wShadowOAMEnd - wShadowOAM
 	xor a
 .loop2
 	ld [hli], a
@@ -269,8 +277,8 @@ BattleAnimCommands::
 	dw BattleAnimCmd_IncObj
 	dw BattleAnimCmd_SetObj
 	dw BattleAnimCmd_IncBGEffect
-	dw BattleAnimCmd_EnemyFeetObj
-	dw BattleAnimCmd_PlayerHeadObj
+	dw BattleAnimCmd_BattlerGFX_1Row
+	dw BattleAnimCmd_BattlerGFX_2Row
 	dw BattleAnimCmd_CheckPokeball
 	dw BattleAnimCmd_Transform
 	dw BattleAnimCmd_RaiseSub
@@ -285,8 +293,8 @@ BattleAnimCommands::
 	dw BattleAnimCmd_BeatUp
 	dw DoNothing
 	dw BattleAnimCmd_UpdateActorPic
-	dw DoNothing
-	dw DoNothing
+	dw BattleAnimCmd_SetBgPal
+	dw BattleAnimCmd_SetObjPal
 	dw DoNothing
 	dw DoNothing
 	dw DoNothing
@@ -610,7 +618,7 @@ endr
 	ld de, vTiles0 tile BATTLEANIM_BASE_TILE
 	add hl, de
 	ld a, [wBattleAnimByte]
-	call LoadBattleAnimObj
+	call LoadBattleAnimGFX
 	ld a, [wBattleAnimTemp0]
 	add c
 	ld [wBattleAnimTemp0], a
@@ -696,7 +704,7 @@ BattleAnimCmd_SetObj:
 	ld [hl], a
 	ret
 
-BattleAnimCmd_EnemyFeetObj:
+BattleAnimCmd_BattlerGFX_1Row:
 	ld hl, wBattleAnimTileDict
 .loop
 	ld a, [hl]
@@ -707,11 +715,11 @@ BattleAnimCmd_EnemyFeetObj:
 	jr .loop
 
 .okay
-	ld a, $28
+	ld a, ANIM_GFX_PLAYERHEAD
 	ld [hli], a
 	ld a, $42
 	ld [hli], a
-	ld a, $29
+	ld a, ANIM_GFX_ENEMYFEET
 	ld [hli], a
 	ld [hl], $49
 
@@ -731,7 +739,7 @@ BattleAnimCmd_EnemyFeetObj:
 	push af
 	push hl
 	push de
-	lb bc, BANK(BattleAnimCmd_EnemyFeetObj), 1
+	lb bc, BANK(BattleAnimCmd_BattlerGFX_1Row), 1
 	call Request2bpp
 	pop de
 	ld a, [wBattleAnimTemp0]
@@ -748,7 +756,7 @@ BattleAnimCmd_EnemyFeetObj:
 	jr nz, .LoadFootprint
 	ret
 
-BattleAnimCmd_PlayerHeadObj:
+BattleAnimCmd_BattlerGFX_2Row:
 	ld hl, wBattleAnimTileDict
 .loop
 	ld a, [hl]
@@ -759,11 +767,11 @@ BattleAnimCmd_PlayerHeadObj:
 	jr .loop
 
 .okay
-	ld a, $28
+	ld a, ANIM_GFX_PLAYERHEAD
 	ld [hli], a
 	ld a, $35
 	ld [hli], a
-	ld a, $29
+	ld a, ANIM_GFX_ENEMYFEET
 	ld [hli], a
 	ld [hl], $43
 
@@ -783,7 +791,7 @@ BattleAnimCmd_PlayerHeadObj:
 	push af
 	push hl
 	push de
-	lb bc, BANK(BattleAnimCmd_EnemyFeetObj), 2
+	lb bc, BANK(BattleAnimCmd_BattlerGFX_2Row), 2
 	call Request2bpp
 	pop de
 	ld a, [wBattleAnimTemp0]
@@ -856,6 +864,105 @@ BattleAnimCmd_UpdateActorPic:
 	ld hl, vTiles2 tile $31
 	lb bc, 0, $24
 	jmp Request2bpp
+
+BattleAnimCmd_SetBgPal:
+	xor a
+	jr SetBattleAnimPal
+BattleAnimCmd_SetObjPal:
+	ld a, 1
+SetBattleAnimPal:
+	; This denotes whether to reference bg pals or obj pals.
+	ld b, a
+
+	call GetBattleAnimByte
+	ld d, a
+	call GetBattleAnimByte
+	ld e, a
+	ld a, d
+	cp PAL_BATTLE_BG_USER
+	assert PAL_BATTLE_BG_USER + 1 == PAL_BATTLE_BG_TARGET
+	ld a, b
+
+	; User/Target pal handling should always index based on bg pal.
+	ld b, 0
+	jr z, .UserPal
+	jr nc, .TargetPal
+	ld b, a
+.finish
+	call .SetPaletteData
+	jmp SetPalettes
+
+.UserPal:
+	ldh a, [hBattleTurn]
+	and a
+	jr nz, .EnemyPal
+.PlayerPal:
+	; Backpic.
+	ld d, PAL_BATTLE_BG_PLAYER
+	call .SetPaletteData
+
+	; This is needed because part of the user pic reuses move info pals.
+	ld d, PAL_BATTLE_BG_TYPE_CAT
+	call .SetPaletteData
+
+	; Head. + 8 to reference object palettes.
+	ld d, PAL_BATTLE_OB_PLAYER + 8
+	jr .finish
+
+.TargetPal:
+	ldh a, [hBattleTurn]
+	and a
+	jr nz, .PlayerPal
+.EnemyPal:
+	; Frontpic.
+	ld d, PAL_BATTLE_BG_ENEMY
+	call .SetPaletteData
+
+	; Feet.
+	ld d, PAL_BATTLE_OB_ENEMY + 8
+	jr .finish
+
+.SetPaletteData:
+	push de
+	push bc
+
+	; Check if we should reference BG or OBJ pals.
+	dec b
+	jr nz, .got_pal_target
+	ld a, d
+	add 8 ; wBGPals + 8 palettes == wOBPals1
+	ld d, a
+
+.got_pal_target
+	; Get palette to change.
+	ld hl, wBGPals1
+	ld bc, 1 palettes
+	ld a, d
+	rst AddNTimes
+
+	; Get palette to set.
+	call SwapHLDE
+	ld a, l
+	inc l
+	jr z, .SetDefaultPal
+	ld hl, CustomBattlePalettes
+	rst AddNTimes
+
+	; Write the palette.
+	call FarCopyColorWRAM
+.done_setpal
+	pop bc
+	pop de
+	ret
+
+.SetDefaultPal:
+	farcall GetDefaultBattlePalette
+	jr .done_setpal
+
+CustomBattlePalettes:
+	table_width 1 palettes, CustomBattlePalettes
+INCLUDE "gfx/battle_anims/custom.pal"
+	assert_table_length NUM_CUSTOM_BATTLE_PALETTES
 
 BattleAnimCmd_RaiseSub:
 	ldh a, [rSVBK]
@@ -1091,12 +1198,12 @@ endr
 
 PlayHitSound:
 	ld a, [wNumHits]
-	cp $1
-	jr z, .okay
-	cp $4
+	dec a ; BATTLEANIM_ENEMY_DAMAGE
+	jr z, .ok
+	dec a ; BATTLEANIM_PLAYER_DAMAGE
 	ret nz
 
-.okay
+.ok
 	ld a, [wTypeModifier]
 	and a
 	ret z
@@ -1271,10 +1378,10 @@ BattleAnim_UpdateOAM_All:
 	jr nz, .loop
 	ld a, [wBattleAnimOAMPointerLo]
 	ld l, a
-	ld h, HIGH(wVirtualOAM)
+	ld h, HIGH(wShadowOAM)
 .loop2
 	ld a, l
-	cp LOW(wVirtualOAMEnd)
+	cp LOW(wShadowOAMEnd)
 	ret nc
 	xor a
 	ld [hli], a

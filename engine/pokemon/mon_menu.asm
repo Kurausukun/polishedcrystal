@@ -136,6 +136,9 @@ SwitchPartyMons:
 	call SetPalettes
 	call DelayFrame
 
+	ld a, A_BUTTON | B_BUTTON | SELECT
+	ld [wMenuJoypadFilter], a
+
 	farcall PartyMenuSelect
 	bit 1, b
 	jr c, .DontSwitch
@@ -472,9 +475,8 @@ _UpdateMewtwoForm:
 	ret
 
 GiveTakeItemMenuData:
-	db %01010000
-	db 10, 13 ; start coords
-	db 17, 19 ; end coords
+	db MENU_BACKUP_TILES | MENU_SPRITE_ANIMS
+	menu_coords 13, 10, 19, 17
 	dw .Items
 	db 1 ; default option
 
@@ -603,9 +605,8 @@ MonMailAction:
 	ret
 
 .MenuDataHeader:
-	db $40 ; flags
-	db 10, 12 ; start coords
-	db 17, 19 ; end coords
+	db MENU_BACKUP_TILES
+	menu_coords 12, 10, 19, 17
 	dw .MenuData2
 	db 1 ; default option
 
@@ -1404,7 +1405,7 @@ SetUpMoveScreenBG:
 	ld [wTempIconSpecies], a
 	ld a, [wTempMonForm]
 	ld [wCurForm], a
-	farcall LoadMoveMenuMonIcon
+	farcall LoadMoveMenuMonMini
 	hlcoord 0, 1
 	lb bc, 9, 18
 	call Textbox

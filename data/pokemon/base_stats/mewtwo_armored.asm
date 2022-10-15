@@ -8,16 +8,15 @@ else
 endc
 	db 3 ; catch rate
 	db 220 ; base exp
-	db ALWAYS_ITEM_2 ; item 1
-	db PETAYA_BERRY ; item 2
-	dn GENDER_UNKNOWN, 15 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/mewtwo_armored/front.dimensions"
+	db ALWAYS_ITEM_2, PETAYA_BERRY ; held items
+	dn GENDER_UNKNOWN, HATCH_UNKNOWN ; gender ratio, step cycles to hatch
+
 	abilities_for MEWTWO, PRESSURE, INSOMNIA, UNNERVE
 	; assumes identical abilities to non-armored
 	db GROWTH_SLOW ; growth rate
 	dn EGG_NONE, EGG_NONE ; egg groups
 
-	ev_yield   0,   0,   0,   0,   3,   0
+	ev_yield   0,   0,   1,   0,   3,   0
 	;         hp  atk  def  spd  sat  sdf
 
 	; tm/hm learnset

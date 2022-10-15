@@ -4,10 +4,9 @@
 	db PSYCHIC, FAIRY ; type
 	db 145 ; catch rate
 	db 78 ; base exp
-	db NO_ITEM ; item 1
-	db LEPPA_BERRY ; item 2
-	dn GENDER_F50, 4 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/mime_jr_/front.dimensions"
+	db NO_ITEM, LEPPA_BERRY ; held items
+	dn GENDER_F50, HATCH_MEDIUM_SLOW ; gender ratio, step cycles to hatch
+
 	abilities_for MIME_JR_, SOUNDPROOF, FILTER, TECHNICIAN
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_NONE, EGG_NONE ; egg groups

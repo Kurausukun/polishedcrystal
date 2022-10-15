@@ -4,10 +4,9 @@
 	db NORMAL, FLYING ; type
 	db 255 ; catch rate
 	db 58 ; base exp
-	db NO_ITEM ; item 1
-	db NO_ITEM ; item 2
-	dn GENDER_F50, 2 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/hoothoot/front.dimensions"
+	db NO_ITEM, NO_ITEM ; held items
+	dn GENDER_F50, HATCH_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for HOOTHOOT, INSOMNIA, KEEN_EYE, TINTED_LENS
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_FLYING, EGG_FLYING ; egg groups

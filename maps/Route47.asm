@@ -11,6 +11,7 @@ Route47_MapScriptHeader:
 	warp_event 53, 29, CLIFF_CAVE, 3
 	warp_event 11, 23, QUIET_CAVE_1F, 1
 	warp_event  8, 23, EMBEDDED_TOWER, 1
+	warp_event  8,  4, HIDDEN_CAVE_GROTTO, 1
 
 	def_coord_events
 	coord_event 42, 24, 1, Route47Bridge1OverheadTrigger
@@ -49,8 +50,10 @@ Route47_MapScriptHeader:
 	def_bg_events
 	bg_event  8, 23, BGEVENT_IFNOTSET, Route47SealedCaveSign
 	bg_event 36, 32, BGEVENT_JUMPTEXT, Route47QuietCaveSignText
+	bg_event 23,  4, BGEVENT_JUMPTEXT, Route47AdvancedTipsSignText
 	bg_event 34, 33, BGEVENT_ITEM + PEARL, EVENT_ROUTE_47_HIDDEN_PEARL
 	bg_event  5, 32, BGEVENT_ITEM + STARDUST, EVENT_ROUTE_47_HIDDEN_STARDUST
+	bg_event  8,  3, BGEVENT_JUMPSTD, cavegrotto, HIDDENGROTTO_ROUTE_47
 
 	def_object_events
 	object_event 59, 26, SPRITE_HIKER, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, OBJECTTYPE_GENERICTRAINER, 3, GenericTrainerHikerDevin, EVENT_YELLOW_FOREST_ROCKET_TAKEOVER
@@ -71,11 +74,11 @@ Route47_MapScriptHeader:
 
 Route47TileScript:
 	checkevent EVENT_DOOR_OPENED_IN_RUINS_OF_ALPH
-	iffalse .locked
+	iffalsefwd .locked
 	changeblock 8, 22, $9b
 .locked
 	checkscene
-	iftrue .underfoot
+	iftruefwd .underfoot
 	callasm .overhead_asm
 	endcallback
 
@@ -422,4 +425,21 @@ Route47QuietCaveSignText:
 
 	para "West to"
 	line "Quiet Cave"
+	done
+
+Route47AdvancedTipsSignText:
+	text "Advanced Tips!"
+
+	para "Some #mon found"
+	line "in certain areas"
+
+	para "may know a move"
+	line "unique to that"
+	cont "area!"
+
+	para "But these moves"
+	line "can't be remembered"
+
+	para "or inherited via"
+	line "breeding!"
 	done

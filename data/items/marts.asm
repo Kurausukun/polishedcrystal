@@ -36,10 +36,14 @@ Marts:
 	dw SilphCoMart
 	dw FuchsiaMart
 	dw ShamoutiMart1
+	dw ShamoutiMart1Souvenir
 	dw ShamoutiMart2
 	dw BattleTowerMart1
 	dw BattleTowerMart2
 	dw BattleTowerMart3
+	dw BattleFactoryMart1
+	dw BattleFactoryMart2
+	dw BattleFactoryMart3
 	assert_table_length NUM_MARTS
 
 CherrygroveMart:
@@ -271,7 +275,7 @@ BlackthornMart:
 	db -1
 
 IndigoPlateauMart:
-	db 7 ; # items
+	db 8 ; # items
 	db ULTRA_BALL
 	db MAX_REPEL
 	db HYPER_POTION
@@ -279,6 +283,7 @@ IndigoPlateauMart:
 	db FULL_RESTORE
 	db REVIVE
 	db FULL_HEAL
+	db EXP_SHARE
 	db -1
 
 ViridianMart:
@@ -456,6 +461,15 @@ ShamoutiMart1:
 	db BIG_ROOT
 	db -1
 
+ShamoutiMart1Souvenir:
+	db 5 ; # items
+	db ODD_SOUVENIR
+	db MENTAL_HERB
+	db POWER_HERB
+	db WHITE_HERB
+	db BIG_ROOT
+	db -1
+
 ShamoutiMart2:
 	db 6 ; # items
 	db DAMP_ROCK
@@ -480,11 +494,12 @@ BattleTowerMart1:
 	db -1
 
 BattleTowerMart2:
-	db 8 ; # items
+	db 9 ; # items
 	db RARE_CANDY,   64
 	db PP_MAX,       64
 	db ABILITY_CAP,  32
 	db WEAK_POLICY,  48
+	db BLUNDRPOLICY, 48
 	db LIFE_ORB,     48
 	db FLAME_ORB,    32
 	db TOXIC_ORB,    32
@@ -494,10 +509,43 @@ BattleTowerMart2:
 BattleTowerMart3:
 	db 7 ; # items
 	db MACHO_BRACE,  16
+	db POWER_WEIGHT, 24
+	db POWER_BRACER, 24
+	db POWER_BELT,   24
+	db POWER_LENS,   24
+	db POWER_BAND,   24
+	db POWER_ANKLET, 24
+	db -1
+
+; TODO: Battle Factory items
+
+BattleFactoryMart1:
+	db 7 ; # items
 	db FOCUS_BAND,   16
 	db FOCUS_SASH,   48
 	db ASSAULT_VEST, 48
 	db PROTECT_PADS, 16
 	db ROCKY_HELMET, 48
 	db SAFE_GOGGLES, 32
+	db HEAVY_BOOTS,  48
+	db -1
+
+BattleFactoryMart2:
+	db 7 ; # items
+	db IRON_BALL,    32
+	db LAGGING_TAIL, 24
+	db RING_TARGET,  24
+	db EJECT_BUTTON, 32
+	db EJECT_PACK,   32
+	db RED_CARD,     24
+	db ROOM_SERVICE, 24
+	db -1
+
+BattleFactoryMart3:
+	db 5 ; # items
+	db ABSORB_BULB,  16
+	db CELL_BATTERY, 16
+	db LUMINOUSMOSS, 16
+	db SNOWBALL,     16
+	db THROAT_SPRAY, 24
 	db -1

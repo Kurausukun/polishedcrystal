@@ -1,3 +1,13 @@
+Gen1Palette:
+if !DEF(MONOCHROME)
+	RGB 31, 31, 31
+	RGB 30, 22, 17
+	RGB 16, 14, 19
+	RGB 00, 00, 00
+else
+	MONOCHROME_RGB_FOUR
+endc
+
 BattleObjectPals:
 INCLUDE "gfx/battle_anims/battle_anims.pal"
 
@@ -5,6 +15,9 @@ PartyMenuBGPals:
 INCLUDE "gfx/stats/party_menu_bg.pal"
 HPBarPals:
 INCLUDE "gfx/stats/hp_bars.pal"
+
+PartyMenuOBPals:
+INCLUDE "gfx/stats/party_menu_ob.pal"
 
 HPBarInteriorPals:
 INCLUDE "gfx/battle/hp_bar.pal"
@@ -32,6 +45,7 @@ INCLUDE "gfx/battle/types.pal"
 
 ItemIconPalettes:
 CaughtBallPals:
+ParkBallIconPalette:
 INCLUDE "gfx/items/items.pal"
 
 CancelPalette:
@@ -59,13 +73,24 @@ else
 endc
 
 KeyItemIconPalettes:
+	table_width PAL_COLOR_SIZE * 2, KeyItemIconPalettes
 INCLUDE "gfx/items/key_items.pal"
+	assert_table_length NUM_KEY_ITEMS
 
 TMHMTypeIconPals:
+	table_width PAL_COLOR_SIZE * 2, TMHMTypeIconPals
 INCLUDE "gfx/items/tm_hm_types.pal"
+	assert_table_length NUM_TYPES
 
 ApricornIconPalettes:
+	table_width PAL_COLOR_SIZE * 2, ApricornIconPalettes
 INCLUDE "gfx/items/apricorns.pal"
+	assert_table_length NUM_APRICORNS
+
+WingIconPalettes:
+	table_width PAL_COLOR_SIZE * 2, WingIconPalettes
+INCLUDE "gfx/items/wings.pal"
+	assert_table_length NUM_WINGS
 
 PokegearPals:
 INCLUDE "gfx/pokegear/pokegear.pal"
@@ -87,9 +112,22 @@ INCLUDE "gfx/trainer_card/trainer_card.pal"
 
 DiplomaPals:
 INCLUDE "gfx/diploma/diploma.pal"
-PartyMenuOBPals:
+
 PokegearOBPals:
 INCLUDE "gfx/icons/icons.pal"
+
+PokegearFlyPalette:
+if !DEF(MONOCHROME)
+	RGB 31, 31, 31
+	RGB 31, 31, 31
+	RGB 08, 26, 31
+	RGB 00, 00, 00
+else
+	RGB_MONOCHROME_WHITE
+	RGB_MONOCHROME_WHITE
+	RGB_MONOCHROME_LIGHT
+	RGB_MONOCHROME_BLACK
+endc
 
 BodyColorPalsIncludingNull:
 if !DEF(MONOCHROME)

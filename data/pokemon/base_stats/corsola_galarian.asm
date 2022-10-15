@@ -4,10 +4,9 @@
 	db GHOST, GHOST ; type
 	db 60 ; catch rate
 	db 113 ; base exp
-	db NO_ITEM ; item 1
-	db LUMINOUSMOSS ; item 2
-	dn GENDER_F75, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/corsola_galarian/front.dimensions"
+	db NO_ITEM, LUMINOUSMOSS ; held items
+	dn GENDER_F75, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for CORSOLA_GALARIAN, WEAK_ARMOR, WEAK_ARMOR, CURSED_BODY
 	db GROWTH_FAST ; growth rate
 	dn EGG_WATER_1, EGG_WATER_3 ; egg groups

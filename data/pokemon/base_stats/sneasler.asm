@@ -4,10 +4,9 @@
 	db POISON, FIGHTING ; type
 	db 45 ; catch rate
 	db 199 ; base exp
-	db GRIP_CLAW ; item 1
-	db QUICK_CLAW ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/sneasler/front.dimensions"
+	db GRIP_CLAW, QUICK_CLAW ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 if DEF(FAITHFUL)
 	abilities_for SNEASLER, PRESSURE, PRESSURE, POISON_TOUCH
 else

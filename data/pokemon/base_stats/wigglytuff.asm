@@ -13,10 +13,9 @@ if DEF(FAITHFUL)
 else
 	db 129 ; base exp
 endc
-	db ORAN_BERRY ; item 1
-	db ORAN_BERRY ; item 2
-	dn GENDER_F75, 1 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/wigglytuff/front.dimensions"
+	db ORAN_BERRY, ORAN_BERRY ; held items
+	dn GENDER_F75, HATCH_FASTER ; gender ratio, step cycles to hatch
+
 if DEF(FAITHFUL)
 	abilities_for WIGGLYTUFF, CUTE_CHARM, COMPETITIVE, FRISK
 else

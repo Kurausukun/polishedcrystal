@@ -13,10 +13,9 @@ if DEF(FAITHFUL)
 else
 	db 179 ; base exp
 endc
-	db ORAN_BERRY ; item 1
-	db LIGHT_BALL ; item 2
-	dn GENDER_F50, 1 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/raichu_alolan/front.dimensions"
+	db ORAN_BERRY, LIGHT_BALL ; held items
+	dn GENDER_F50, HATCH_FASTER ; gender ratio, step cycles to hatch
+
 	abilities_for RAICHU_ALOLAN, STATIC, STATIC, MOTOR_DRIVE
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_GROUND, EGG_FAIRY ; egg groups

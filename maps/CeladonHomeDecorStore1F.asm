@@ -51,16 +51,16 @@ CeladonHomeDecorStore1FClerkScript:
 	loadmenu .MenuData
 	verticalmenu
 	closewindow
-	ifequal $1, .BulbasaurDoll
-	ifequal $2, .CharmanderDoll
-	ifequal $3, .SquirtleDoll
+	ifequalfwd $1, .BulbasaurDoll
+	ifequalfwd $2, .CharmanderDoll
+	ifequalfwd $3, .SquirtleDoll
 	endtext
 
 .BulbasaurDoll:
 	checkmoney $0, 16000
-	ifequal $2, .NotEnoughMoney
+	ifequalfwd $2, .NotEnoughMoney
 	checkevent EVENT_DECO_BULBASAUR_DOLL
-	iftrue .AlreadyBought
+	iftruefwd .AlreadyBought
 	takemoney $0, 16000
 	setevent EVENT_DECO_BULBASAUR_DOLL
 	writetext BoughtBulbasaurDollText
@@ -72,9 +72,9 @@ CeladonHomeDecorStore1FClerkScript:
 
 .CharmanderDoll:
 	checkmoney $0, 16000
-	ifequal $2, .NotEnoughMoney
+	ifequalfwd $2, .NotEnoughMoney
 	checkevent EVENT_DECO_CHARMANDER_DOLL
-	iftrue .AlreadyBought
+	iftruefwd .AlreadyBought
 	takemoney $0, 16000
 	setevent EVENT_DECO_CHARMANDER_DOLL
 	writetext BoughtCharmanderDollText
@@ -86,9 +86,9 @@ CeladonHomeDecorStore1FClerkScript:
 
 .SquirtleDoll:
 	checkmoney $0, 16000
-	ifequal $2, .NotEnoughMoney
+	ifequalfwd $2, .NotEnoughMoney
 	checkevent EVENT_DECO_SQUIRTLE_DOLL
-	iftrue .AlreadyBought
+	iftruefwd .AlreadyBought
 	takemoney $0, 16000
 	setevent EVENT_DECO_SQUIRTLE_DOLL
 	writetext BoughtSquirtleDollText
@@ -109,9 +109,8 @@ CeladonHomeDecorStore1FClerkScript:
 	sjump .Start
 
 .MenuData:
-	db $40 ; flags
-	db 02, 00 ; start coords
-	db 11, 19 ; end coords
+	db MENU_BACKUP_TILES
+	menu_coords 0, 2, 19, 11
 	dw .MenuData2
 	db 1 ; default option
 

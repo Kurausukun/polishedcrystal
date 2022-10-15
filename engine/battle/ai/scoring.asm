@@ -751,7 +751,7 @@ AI_Smart_Haze:
 	ret
 
 ; Discourage this move if neither:
-; Any of enemy's stat levels is	lower than -2.
+; Any of enemy's stat levels is lower than -2.
 ; Any of player's stat levels is higher than +2.
 .asm_38a1b
 	pop hl
@@ -2077,7 +2077,7 @@ AICheckPlayerMaxHP:
 	push bc
 	ld de, wBattleMonHP
 	ld hl, wBattleMonMaxHP
-	jr AICheckMaxHP
+	jr _AICheckMaxHP
 
 AICheckEnemyMaxHP:
 	push hl
@@ -2087,7 +2087,7 @@ AICheckEnemyMaxHP:
 	ld hl, wEnemyMonMaxHP
 	; fallthrough
 
-AICheckMaxHP:
+_AICheckMaxHP:
 ; Return carry if hp at de matches max hp at hl.
 
 	ld a, [de]
@@ -2469,8 +2469,6 @@ AIDamageCalc:
 	ld a, 1
 	ldh [hBattleTurn], a
 	ld a, [wEnemyMoveStruct + MOVE_EFFECT]
-	cp EFFECT_FURY_STRIKES
-	jr z, .multihit
 	cp EFFECT_MULTI_HIT
 	jr z, .multihit
 	cp EFFECT_DOUBLE_HIT

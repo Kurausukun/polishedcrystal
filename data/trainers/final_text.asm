@@ -98,11 +98,11 @@ FinalText_SinglePhrases:
 	dw SparkFinalPkmnText
 	dw FlanneryFinalPkmnText
 	dw MayleneFinalPkmnText
-	dw SkylaFinalPkmnText
+	dw MarlonFinalPkmnText
 	dw ValerieFinalPkmnText
-	dw KukuiFinalPkmnText ; Kukui
+	dw KukuiFinalPkmnText
+	dw PiersFinalPkmnText
 	dw NULL ; Victor
-	dw NULL ; Melony
 	dw BillFinalPkmnText
 	dw YellowFinalPkmnText
 	dw WalkerFinalPkmnText

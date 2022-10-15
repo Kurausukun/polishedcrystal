@@ -1,6 +1,3 @@
-INCLUDE "constants.asm"
-
-
 SECTION "BulbasaurPokedexEntry", ROMX
 BulbasaurPokedexEntry::
 	db "Seed@"
@@ -83,7 +80,11 @@ WartortlePokedexEntry::
 
 SECTION "BlastoisePokedexEntry", ROMX
 BlastoisePokedexEntry::
+if DEF(FAITHFUL)
 	db "Shellfish@"
+else
+	db "Shell@"
+endc
 	db   "It firmly plants"
 	next "its feet on the"
 	next "ground before"

@@ -19,6 +19,7 @@ CherrygroveCity_MapScriptHeader:
 	def_bg_events
 	bg_event 30,  8, BGEVENT_JUMPTEXT, CherrygroveCitySignText
 	bg_event 23,  9, BGEVENT_JUMPTEXT, GuideGentsHouseSignText
+	bg_event 13,  5, BGEVENT_JUMPTEXT, CherrygroveCityAdvancedTipsSignText
 	bg_event 35,  2, BGEVENT_ITEM + NUGGET, EVENT_CHERRYGROVE_CITY_HIDDEN_NUGGET
 
 	def_object_events
@@ -52,6 +53,9 @@ CherrygroveCityGuideGent:
 	applymovement CHERRYGROVECITY_GRAMPS, GuideGentMovement3
 	turnobject PLAYER, UP
 	showtext GuideGentRoute30Text
+	applymovement CHERRYGROVECITY_GRAMPS, GuideGentMovement3_5
+	turnobject PLAYER, LEFT
+	showtext GuideGentAdvancedTipsText
 	applymovement CHERRYGROVECITY_GRAMPS, GuideGentMovement4
 	turnobject PLAYER, LEFT
 	showtext GuideGentSeaText
@@ -98,9 +102,9 @@ CherrygroveSilverTriggerNorth:
 	playmusic MUSIC_RIVAL_ENCOUNTER
 	showtext CherrygroveRivalText_Seen
 	checkevent EVENT_GOT_TOTODILE_FROM_ELM
-	iftrue .Totodile
+	iftruefwd .Totodile
 	checkevent EVENT_GOT_CHIKORITA_FROM_ELM
-	iftrue .Chikorita
+	iftruefwd .Chikorita
 	winlosstext SilverCherrygroveWinText, SilverCherrygroveLossText
 	setlasttalked CHERRYGROVECITY_SILVER
 	loadtrainer RIVAL0, 3
@@ -108,7 +112,7 @@ CherrygroveSilverTriggerNorth:
 	startbattle
 	setevent EVENT_RIVAL_CHERRYGROVE_CITY
 	reloadmap
-	sjump .FinishRival
+	sjumpfwd .FinishRival
 
 .Totodile:
 	winlosstext SilverCherrygroveWinText, SilverCherrygroveLossText
@@ -119,7 +123,7 @@ CherrygroveSilverTriggerNorth:
 	dontrestartmapmusic
 	setevent EVENT_RIVAL_CHERRYGROVE_CITY
 	reloadmap
-	sjump .FinishRival
+	sjumpfwd .FinishRival
 
 .Chikorita:
 	winlosstext SilverCherrygroveWinText, SilverCherrygroveLossText
@@ -173,19 +177,17 @@ MysticWaterGuyTextAfter:
 	line "for me, then."
 	done
 
+GuideGentMovement1:
+	step_left
+	step_left
+	step_up
 GuideGentPlayerMovement:
 	step_left
 	turn_head_up
 	step_end
 
-GuideGentMovement1:
+GuideGentMovement3:
 	step_left
-	step_left
-	step_up
-	step_left
-	turn_head_up
-	step_end
-
 GuideGentMovement2:
 	step_left
 	step_left
@@ -196,22 +198,15 @@ GuideGentMovement2:
 	turn_head_up
 	step_end
 
-GuideGentMovement3:
+GuideGentMovement3_5:
 	step_left
 	step_left
-	step_left
-	step_left
-	step_left
-	step_left
+	step_down
 	step_left
 	turn_head_up
 	step_end
 
 GuideGentMovement4:
-	step_left
-	step_left
-	step_left
-	step_down
 	step_left
 	step_left
 	step_left
@@ -320,6 +315,15 @@ GuideGentRoute30Text:
 
 	para "prized #mon"
 	line "there."
+	done
+
+GuideGentAdvancedTipsText:
+	text "Advanced Tips"
+	line "signs have this"
+	cont "unusual look."
+
+	para "They're full of"
+	line "helpful advice."
 	done
 
 GuideGentSeaText:
@@ -448,4 +452,15 @@ CherrygroveCitySignText:
 
 GuideGentsHouseSignText:
 	text "Guide Gent's House"
+	done
+
+CherrygroveCityAdvancedTipsSignText:
+	text "Advanced Tips!"
+
+	para "# Marts will"
+	line "give you a free"
+
+	para "Premier Ball with"
+	line "every purchase of"
+	cont "ten # Balls!"
 	done

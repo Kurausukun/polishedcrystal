@@ -5,9 +5,11 @@
 ; - ItemDescriptions (see data/items/descriptions.asm)
 ; - ItemAttributes (see data/items/attributes.asm)
 ; - ItemIconPointers (see data/items/icon_pointers.asm)
+; - ItemIconPalettes (see gfx/items/items.pal)
 ; - ItemEffects (see engine/items/item_effects.asm)
 	const_def
 	const NO_ITEM      ; 00
+DEF PARK_BALL EQU NO_ITEM
 
 	const POKE_BALL    ; 01
 	const GREAT_BALL   ; 02
@@ -37,6 +39,7 @@
 
 	const PREMIER_BALL ; 17
 	const CHERISH_BALL ; 18
+DEF NUM_POKE_BALLS EQU const_value ; PARK_BALL counts
 
 	const POTION       ; 19
 	const SUPER_POTION ; 1a
@@ -83,6 +86,7 @@
 
 	const SACRED_ASH   ; 3d
 
+DEF FIRST_BERRY EQU const_value
 	const CHERI_BERRY  ; 3e
 	const CHESTO_BERRY ; 3f
 	const PECHA_BERRY  ; 40
@@ -120,6 +124,7 @@
 
 	const KEE_BERRY    ; 5a
 	const MARANGABERRY ; 5b
+DEF NUM_BERRIES EQU const_value - FIRST_BERRY
 
 	const BERRY_JUICE  ; 5c
 
@@ -146,6 +151,7 @@
 	const ABILITY_CAP  ; 6c
 	const ABILITYPATCH ; 6d
 
+DEF FIRST_STONE EQU const_value
 	const LEAF_STONE   ; 6e
 	const FIRE_STONE   ; 6f
 	const WATER_STONE  ; 70
@@ -156,6 +162,7 @@
 	const DUSK_STONE   ; 75
 	const SHINY_STONE  ; 76
 	const EVERSTONE    ; 77
+DEF NUM_STONES EQU const_value - FIRST_STONE
 
 	const EXP_SHARE    ; 78
 
@@ -302,6 +309,7 @@
 	const DOME_FOSSIL  ; f3
 	const OLD_AMBER    ; f4
 
+DEF FIRST_MAIL EQU const_value
 	const FLOWER_MAIL  ; f5
 	const SURF_MAIL    ; f6
 	const LITEBLUEMAIL ; f7
@@ -312,12 +320,12 @@
 	const BLUESKY_MAIL ; fc
 	const MUSIC_MAIL   ; fd
 	const MIRAGE_MAIL  ; fe
-NUM_ITEMS EQU const_value - 1
+DEF NUM_MAILS EQU const_value - FIRST_MAIL
+DEF NUM_ITEMS EQU const_value - 1
 
-PARK_BALL      EQU $00
-USE_SCRIPT_VAR EQU $00
-ITEM_FROM_MEM  EQU $ff
-ALWAYS_ITEM_2  EQU $ff
+DEF USE_SCRIPT_VAR EQU $00
+DEF ITEM_FROM_MEM  EQU $ff
+DEF ALWAYS_ITEM_2  EQU $ff
 
 ; Alphabetical order (see data/items/name_order.asm)
 	const_def
@@ -586,6 +594,7 @@ endc
 	const NAM_X_SPEED
 	const NAM_ZINC
 	const NAM_ZOOM_LENS
+	assert const_value - 1 == NUM_ITEMS
 
 ; APRICORN_BOX contents
 	const_def 1
@@ -596,13 +605,25 @@ endc
 	const WHT_APRICORN ; 5
 	const BLK_APRICORN ; 6
 	const PNK_APRICORN ; 7
-NUM_APRICORNS EQU const_value - 1
+DEF NUM_APRICORNS EQU const_value - 1
+
+; WING_CASE contents
+	const_def
+	const HEALTH_WING ; 0
+	const MUSCLE_WING ; 1
+	const RESIST_WING ; 2
+	const SWIFT_WING  ; 3
+	const GENIUS_WING ; 4
+	const CLEVER_WING ; 5
+DEF NUM_WINGS EQU const_value
 
 ; key item ids
 ; indexes for:
 ; - KeyItemNames (see data/items/key_names.asm)
 ; - KeyItemDescriptions (see data/items/descriptions.asm)
 ; - KeyItemAttributes (see data/items/attributes.asm)
+; - KeyItemIconPointers (see data/items/icon_pointers.asm)
+; - KeyItemIconPalettes (see gfx/items/key_items.pal)
 ; - KeyItemEffects (see engine/items/item_effects.asm)
 	const_def 1
 	const BICYCLE      ; 01
@@ -612,28 +633,65 @@ NUM_APRICORNS EQU const_value - 1
 	const ITEMFINDER   ; 05
 	const COIN_CASE    ; 06
 	const APRICORN_BOX ; 07
-	const TYPE_CHART   ; 08
-	const BLUE_CARD    ; 09
-	const SQUIRTBOTTLE ; 0a
-	const SILPHSCOPE2  ; 0b
-	const MYSTERY_EGG  ; 0c
-	const SECRETPOTION ; 0d
-	const GO_GOGGLES   ; 0e
-	const RED_SCALE    ; 0f
-	const CARD_KEY     ; 10
-	const BASEMENT_KEY ; 11
-	const LOST_ITEM    ; 12
-	const MACHINE_PART ; 13
-	const RAINBOW_WING ; 14
-	const SILVER_WING  ; 15
-	const CLEAR_BELL   ; 16
-	const GS_BALL      ; 17
-	const S_S_TICKET   ; 18
-	const PASS         ; 19
-	const ORANGETICKET ; 1a
-	const MYSTICTICKET ; 1b
-	const OLD_SEA_MAP  ; 1c
-	const SHINY_CHARM  ; 1d
-	const OVAL_CHARM   ; 1e
-	const CATCH_CHARM  ; 1f
-NUM_KEY_ITEMS EQU const_value - 1
+	const WING_CASE    ; 08
+	const TYPE_CHART   ; 09
+	const BLUE_CARD    ; 0a
+	const SQUIRTBOTTLE ; 0b
+	const SILPHSCOPE2  ; 0c
+	const MYSTERY_EGG  ; 0d
+	const SECRETPOTION ; 0e
+	const GO_GOGGLES   ; 0f
+	const RED_SCALE    ; 10
+	const CARD_KEY     ; 11
+	const BASEMENT_KEY ; 12
+	const LOST_ITEM    ; 13
+	const MACHINE_PART ; 14
+	const RAINBOW_WING ; 15
+	const SILVER_WING  ; 16
+	const CLEAR_BELL   ; 17
+	const GS_BALL      ; 18
+	const S_S_TICKET   ; 19
+	const PASS         ; 1a
+	const ORANGETICKET ; 1b
+	const MYSTICTICKET ; 1c
+	const OLD_SEA_MAP  ; 1d
+	const SHINY_CHARM  ; 1e
+	const OVAL_CHARM   ; 1f
+	const CATCH_CHARM  ; 20
+DEF NUM_KEY_ITEMS EQU const_value - 1
+
+; Alphabetical order (see data/items/name_order.asm)
+	const_def 1
+	const NAM_APRICORN_BOX
+	const NAM_BASEMENT_KEY
+	const NAM_BICYCLE
+	const NAM_BLUE_CARD
+	const NAM_CARD_KEY
+	const NAM_CATCH_CHARM
+	const NAM_CLEAR_BELL
+	const NAM_COIN_CASE
+	const NAM_GO_GOGGLES
+	const NAM_GOOD_ROD
+	const NAM_GS_BALL
+	const NAM_ITEMFINDER
+	const NAM_LOST_ITEM
+	const NAM_MACHINE_PART
+	const NAM_MYSTERY_EGG
+	const NAM_MYSTICTICKET
+	const NAM_OLD_ROD
+	const NAM_OLD_SEA_MAP
+	const NAM_ORANGETICKET
+	const NAM_OVAL_CHARM
+	const NAM_PASS
+	const NAM_RAINBOW_WING
+	const NAM_RED_SCALE
+	const NAM_S_S_TICKET
+	const NAM_SECRETPOTION
+	const NAM_SHINY_CHARM
+	const NAM_SILPHSCOPE2
+	const NAM_SILVER_WING
+	const NAM_SQUIRTBOTTLE
+	const NAM_SUPER_ROD
+	const NAM_TYPE_CHART
+	const NAM_WING_CASE
+	assert const_value - 1 == NUM_KEY_ITEMS

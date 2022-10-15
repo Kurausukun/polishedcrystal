@@ -4,10 +4,9 @@
 	db WATER, WATER ; type
 	db 190 ; catch rate
 	db 78 ; base exp
-	db NO_ITEM ; item 1
-	db NO_ITEM ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/remoraid/front.dimensions"
+	db NO_ITEM, NO_ITEM ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for REMORAID, HUSTLE, SNIPER, MOODY
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_WATER_1, EGG_WATER_2 ; egg groups

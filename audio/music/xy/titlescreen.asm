@@ -470,7 +470,7 @@ Music_TitleScreenXY_Ch2_b3:
 	note __, 1
 	note C_, 1
 	note __, 1
-	octave 4 
+	octave 4
 	note B_, 1
 	note __, 1
 	notetype $c, $C7 ; measure 32
@@ -856,8 +856,8 @@ Music_TitleScreenXY_Ch3_b3:
 	note A#, 2
 	endchannel
 
-SNARE EQU 3
-SNARE2 EQU 3
+DEF SNARE EQU 3
+DEF SNARE2 EQU 3
 
 Music_TitleScreenXY_Ch4:
 	togglenoise $3

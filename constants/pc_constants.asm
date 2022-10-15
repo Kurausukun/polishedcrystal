@@ -30,11 +30,34 @@
 	const THEME_DRAGON
 	const THEME_DARK
 	const THEME_FAIRY
-NUM_BILLS_PC_THEMES EQU const_value
+DEF NUM_BILLS_PC_THEMES EQU const_value
+
+; BillsPC_CanReleaseMon constants
+	const_def
+	const RELEASE_OK
+	const RELEASE_LAST_HEALTHY
+	const RELEASE_EGG
+	const RELEASE_HM
+	const RELEASE_EMPTY
+
+	const_def
+	; SwapStorageBoxSlots return values
+	const PCSWAP_OK
+	const PCSWAP_SAVE_REQUIRED
+	const PCSWAP_PARTY_FULL
+	const PCSWAP_BOX_FULL
+	const PCSWAP_LAST_HEALTHY
+	const PCSWAP_HOLDING_MAIL
+
+	; an extension to the above for items in BillsPC_SwapStorage
+	const PCSWAP_CANT_STORE_MAIL
+	const PCSWAP_EGGS_CANT_HOLD
+	const PCSWAP_CANT_POCKET_MAIL
+	const PCSWAP_PACK_FULL
 
 ; sprite animation parameters
-PCANIM_STATIC      EQU  0 ; used when holding stuff, we don't want to bop then
-PCANIM_ANIMATE     EQU 90 ; baseline
-PCANIM_PICKUP      EQU 91 ; we're picking up/placing down something
-PCANIM_PICKUP_NEXT EQU 98 ; cursor is at the bottom, ready for pickup
-PCANIM_QUICKFRAMES EQU  9
+DEF PCANIM_STATIC      EQU  0 ; used when holding stuff, we don't want to bop then
+DEF PCANIM_ANIMATE     EQU 90 ; baseline
+DEF PCANIM_PICKUP      EQU 91 ; we're picking up/placing down something
+DEF PCANIM_PICKUP_NEXT EQU 98 ; cursor is at the bottom, ready for pickup
+DEF PCANIM_QUICKFRAMES EQU  9

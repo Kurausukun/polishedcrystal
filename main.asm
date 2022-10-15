@@ -1,6 +1,3 @@
-INCLUDE "constants.asm"
-
-
 SECTION "bank1", ROMX
 
 INCLUDE "engine/gfx/load_push_oam.asm"
@@ -51,8 +48,8 @@ INCLUDE "engine/math/print_num.asm"
 
 SECTION "Bill's PC", ROMX
 
-INCLUDE "engine/pokemon/bills_pc.asm"
-INCLUDE "engine/pokemon/bills_pc_ui.asm"
+INCLUDE "engine/pc/bills_pc.asm"
+INCLUDE "engine/pc/bills_pc_ui.asm"
 
 
 SECTION "Poke Ball Effects", ROMX
@@ -160,7 +157,6 @@ INCLUDE "data/trainers/class_names.asm"
 INCLUDE "engine/battle/ai/redundant.asm"
 INCLUDE "engine/events/move_deleter.asm"
 INCLUDE "engine/items/tmhm2.asm"
-INCLUDE "engine/items/key_items.asm"
 INCLUDE "data/moves/descriptions.asm"
 INCLUDE "engine/events/pokerus/pokerus.asm"
 INCLUDE "engine/battle/start_battle.asm"
@@ -184,6 +180,11 @@ SECTION "Enemy Trainer Parties", ROMX
 INCLUDE "engine/battle/read_trainer_party.asm"
 
 
+SECTION "Psychic Inver", ROMX
+
+INCLUDE "engine/battle/pick_psychic_inver_party.asm"
+
+
 SECTION "Battle Core", ROMX
 
 INCLUDE "engine/battle/core.asm"
@@ -204,6 +205,7 @@ INCLUDE "engine/pokedex/unown_dex.asm"
 
 SECTION "Pokédex Footprints", ROMX
 
+INCLUDE "data/pokemon/footprint_pointers.asm"
 INCLUDE "gfx/pokemon/footprints.asm"
 
 
@@ -307,7 +309,6 @@ INCLUDE "engine/battle/abilities.asm"
 
 SECTION "bank21", ROMX
 
-INCLUDE "gfx/battle_anims.asm"
 INCLUDE "engine/events/halloffame.asm"
 INCLUDE "engine/gfx/copy_tilemap_at_once.asm"
 INCLUDE "engine/pokemon/abilities.asm"
@@ -330,11 +331,10 @@ INCLUDE "engine/tilesets/timeofday_pals.asm"
 INCLUDE "engine/battle/battle_transition.asm"
 INCLUDE "engine/events/field_moves.asm"
 INCLUDE "engine/events/magnet_train.asm"
-; The 2 below files assume they're within the same bank.
+; The three files below assume they're within the same bank.
 INCLUDE "engine/gfx/sprites.asm"
 INCLUDE "engine/gfx/mon_icons.asm"
-INCLUDE "data/pokemon/menu_icon_pointers.asm"
-INCLUDE "data/pokemon/mini_pointers.asm"
+INCLUDE "data/pokemon/mini_icon_pointers.asm"
 
 
 SECTION "bank24", ROMX
@@ -389,7 +389,44 @@ SECTION "Phone Scripts 2", ROMX
 
 INCLUDE "engine/events/std_scripts.asm"
 INCLUDE "engine/events/initialize_events.asm"
-INCLUDE "engine/phone/phone_scripts.asm"
+INCLUDE "engine/phone/scripts/unused.asm"
+INCLUDE "engine/phone/scripts/mom.asm"
+INCLUDE "engine/phone/scripts/bill.asm"
+INCLUDE "engine/phone/scripts/elm.asm"
+INCLUDE "engine/phone/scripts/jack.asm"
+INCLUDE "engine/phone/scripts/beverly.asm"
+INCLUDE "engine/phone/scripts/huey.asm"
+INCLUDE "engine/phone/scripts/gaven.asm"
+INCLUDE "engine/phone/scripts/beth.asm"
+INCLUDE "engine/phone/scripts/jose.asm"
+INCLUDE "engine/phone/scripts/reena.asm"
+INCLUDE "engine/phone/scripts/joey.asm"
+INCLUDE "engine/phone/scripts/wade.asm"
+INCLUDE "engine/phone/scripts/ralph.asm"
+INCLUDE "engine/phone/scripts/liz.asm"
+INCLUDE "engine/phone/scripts/anthony.asm"
+INCLUDE "engine/phone/scripts/todd.asm"
+INCLUDE "engine/phone/scripts/gina.asm"
+INCLUDE "engine/phone/scripts/irwin.asm"
+INCLUDE "engine/phone/scripts/arnie.asm"
+INCLUDE "engine/phone/scripts/alan.asm"
+INCLUDE "engine/phone/scripts/dana.asm"
+INCLUDE "engine/phone/scripts/chad.asm"
+INCLUDE "engine/phone/scripts/derek.asm"
+INCLUDE "engine/phone/scripts/tully.asm"
+INCLUDE "engine/phone/scripts/brent.asm"
+INCLUDE "engine/phone/scripts/tiffany.asm"
+INCLUDE "engine/phone/scripts/vance.asm"
+INCLUDE "engine/phone/scripts/wilton.asm"
+INCLUDE "engine/phone/scripts/kenji.asm"
+INCLUDE "engine/phone/scripts/parry.asm"
+INCLUDE "engine/phone/scripts/erin.asm"
+INCLUDE "engine/phone/scripts/generic_callee.asm"
+
+
+SECTION "Lyra Phone Scripts", ROMX
+
+INCLUDE "engine/phone/scripts/lyra.asm"
 
 
 SECTION "bank32", ROMX
@@ -480,7 +517,6 @@ INCLUDE "engine/events/wonder_trade.asm"
 SECTION "bank41", ROMX
 
 INCLUDE "engine/gfx/dma_transfer.asm"
-INCLUDE "gfx/emotes.asm"
 INCLUDE "engine/overworld/warp_connection.asm"
 INCLUDE "engine/battle/used_move_text.asm"
 
@@ -570,6 +606,11 @@ SECTION "Crystal Events", ROMX
 
 INCLUDE "engine/events/battle_tower/load_trainer.asm"
 INCLUDE "engine/events/odd_egg.asm"
+
+
+SECTION "Painting Pic Pointers", ROMX
+
+INCLUDE "data/events/paintings/pic_pointers.asm"
 
 
 SECTION "Type Chart", ROMX

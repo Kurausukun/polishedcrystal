@@ -1,4 +1,4 @@
-treemon_map: MACRO
+MACRO treemon_map
 	map_id \1
 	db  \2 ; treemon set
 ENDM
@@ -43,8 +43,9 @@ TreeMonMaps:
 	treemon_map YELLOW_FOREST, TREEMON_SET_FOREST
 	treemon_map ROUTE_32_COAST, TREEMON_SET_KANTO
 	treemon_map ROUTE_34_COAST, TREEMON_SET_ROUTE
-	treemon_map ROUTE_35_COAST, TREEMON_SET_ROUTE
-	treemon_map NOISY_FOREST, TREEMON_SET_ROUTE
+	treemon_map ROUTE_35_COAST_NORTH, TREEMON_SET_ROUTE
+	treemon_map ROUTE_35_COAST_SOUTH, TREEMON_SET_ROUTE
+	treemon_map NOISY_FOREST, TREEMON_SET_NOISY_FOREST
 	db -1
 
 RockMonMaps:

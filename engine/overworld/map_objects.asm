@@ -554,7 +554,7 @@ endr
 	dw .MovementBigGyarados          ; SPRITEMOVEFN_BIG_GYARADOS
 	dw .StandingFlip                 ; SPRITEMOVEFN_STANDING_FLIP
 	dw .MovementPokecomNews          ; SPRITEMOVEFN_POKECOM_NEWS
-	dw .MovementArchTree             ; SPRITEMOVEFN_ARCH_TREE
+	dw .MovementMuseumDrill          ; SPRITEMOVEFN_MUSEUM_DRILL
 	dw .MovementSailboatTop          ; SPRITEMOVEFN_SAILBOAT_TOP
 	dw .MovementSailboatBottom       ; SPRITEMOVEFN_SAILBOAT_BOTTOM
 	assert_table_length NUM_SPRITEMOVEFN
@@ -754,8 +754,8 @@ endr
 	ld a, OBJECT_ACTION_FRUIT
 	jr ._ActionA_StepFunction_Standing
 
-.MovementArchTree:
-	ld a, OBJECT_ACTION_ARCH_TREE
+.MovementMuseumDrill:
+	ld a, OBJECT_ACTION_MUSEUM_DRILL
 	jr ._ActionA_StepFunction_Standing
 
 .MovementSailboatTop:
@@ -1917,6 +1917,8 @@ ApplyMovementToFollower:
 	cp d
 	ret nz
 	ld a, e
+	cp movement_paired_step_right
+	jr z, .step_left
 	cp movement_step_sleep_1
 	ret z
 	cp movement_step_end
@@ -1925,6 +1927,7 @@ ApplyMovementToFollower:
 	ret z
 	cp movement_turn_step_right + 1
 	ret c
+.queue_movement
 	push af
 	ld hl, wFollowerMovementQueueLength
 	inc [hl]
@@ -1935,6 +1938,13 @@ ApplyMovementToFollower:
 	pop af
 	ld [hl], a
 	ret
+
+; Jessie is "followed" by James on Route 48 when they
+; walk in and teleport out from opposite sides.
+; Jessie's movements need to be inverted for James.
+.step_left
+	ld a, movement_step_left
+	jr .queue_movement
 
 GetFollowerNextMovementByte:
 	ld hl, wFollowerMovementQueueLength
@@ -2662,7 +2672,7 @@ _UpdateSprites::
 .fill
 	ld a, [wVramState]
 	bit 1, a
-	ld b, LOW(wVirtualOAMEnd)
+	ld b, LOW(wShadowOAMEnd)
 	jr z, .ok
 	ld b, 28 * SPRITEOAMSTRUCT_LENGTH
 .ok
@@ -2670,7 +2680,7 @@ _UpdateSprites::
 	cp b
 	ret nc
 	ld l, a
-	ld h, HIGH(wVirtualOAM)
+	ld h, HIGH(wShadowOAM)
 	ld de, 4
 	ld a, b
 	ld c, SCREEN_HEIGHT_PX + 2 * TILE_WIDTH
@@ -2718,9 +2728,9 @@ ApplyBGMapAnchorToObjects:
 	ld [wPlayerBGMapOffsetY], a
 	jmp PopBCDEHL
 
-PRIORITY_LOW  EQU $10
-PRIORITY_NORM EQU $20
-PRIORITY_HIGH EQU $30
+DEF PRIORITY_LOW  EQU $10
+DEF PRIORITY_NORM EQU $20
+DEF PRIORITY_HIGH EQU $30
 
 InitSprites:
 	call .DeterminePriorities
@@ -2877,11 +2887,11 @@ InitSprites:
 	ld l, a
 	ldh a, [hUsedSpriteIndex]
 	ld c, a
-	ld b, HIGH(wVirtualOAM)
+	ld b, HIGH(wShadowOAM)
 	ld a, [hli]
 	ldh [hUsedSpriteTile], a
 	add c
-	cp LOW(wVirtualOAMEnd)
+	cp LOW(wShadowOAMEnd)
 	jr nc, .full
 .addsprite
 	ldh a, [hCurSpriteYPixel]

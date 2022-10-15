@@ -4,10 +4,9 @@
 	db POISON, POISON ; type
 	db 190 ; catch rate
 	db 114 ; base exp
-	db NO_ITEM ; item 1
-	db SMOKE_BALL ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/koffing/front.dimensions"
+	db NO_ITEM, SMOKE_BALL ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for KOFFING, LEVITATE, NEUTRALIZING_GAS, STENCH
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_INDETERMINATE, EGG_INDETERMINATE ; egg groups

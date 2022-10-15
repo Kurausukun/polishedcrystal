@@ -31,14 +31,14 @@ HallOfFameEntranceTrigger:
 	writetext .LanceText1
 	waitbutton
 	readvar VAR_BADGES
-	ifequal 16, .CheckGoldTrophy
+	ifequalfwd 16, .CheckGoldTrophy
 	checkevent EVENT_DECO_SILVER_TROPHY
-	iftrue .NoTrophy
-	sjump .SilverTrophy
+	iftruefwd .NoTrophy
+	sjumpfwd .SilverTrophy
 .CheckGoldTrophy
 	checkevent EVENT_DECO_GOLD_TROPHY
-	iftrue .NoTrophy
-	sjump .GoldTrophy
+	iftruefwd .NoTrophy
+	sjumpfwd .GoldTrophy
 .SilverTrophy
 	writetext .LanceTrophyText
 	waitbutton
@@ -49,7 +49,7 @@ HallOfFameEntranceTrigger:
 	waitbutton
 	writetext .SilverTrophySentText
 	waitbutton
-	sjump .NoTrophy
+	sjumpfwd .NoTrophy
 .GoldTrophy
 	writetext .LanceTrophyText
 	waitbutton
@@ -75,7 +75,6 @@ HallOfFameEntranceTrigger:
 	setevent EVENT_BEAT_ELITE_FOUR_AGAIN
 .NotATrueRematch
 	setevent EVENT_BEAT_ELITE_FOUR
-	setevent EVENT_TELEPORT_GUY
 	setevent EVENT_RIVAL_SPROUT_TOWER
 	setevent EVENT_OLIVINE_PORT_SPRITES_BEFORE_HALL_OF_FAME
 	clearevent EVENT_OLIVINE_PORT_SPRITES_AFTER_HALL_OF_FAME
@@ -83,7 +82,7 @@ HallOfFameEntranceTrigger:
 	setmapscene SPROUT_TOWER_3F, $1
 	special HealParty
 	checkevent EVENT_GOT_SS_TICKET_FROM_ELM
-	iftrue .SkipPhoneCall
+	iftruefwd .SkipPhoneCall
 	specialphonecall SPECIALCALL_SSTICKET
 	setevent EVENT_BATTLE_TOWER_OPEN
 	clearevent EVENT_BATTLE_TOWER_CLOSED

@@ -4,10 +4,9 @@
 	db GROUND, GROUND ; type
 	db 90 ; catch rate
 	db 163 ; base exp
-	db NO_ITEM ; item 1
-	db QUICK_CLAW ; item 2
-	dn GENDER_F50, 3 ; gender ratio, step cycles to hatch
-	INCBIN "gfx/pokemon/sandslash_plain/front.dimensions"
+	db NO_ITEM, QUICK_CLAW ; held items
+	dn GENDER_F50, HATCH_MEDIUM_FAST ; gender ratio, step cycles to hatch
+
 	abilities_for SANDSLASH, SAND_VEIL, SAND_VEIL, SAND_RUSH
 	db GROWTH_MEDIUM_FAST ; growth rate
 	dn EGG_GROUND, EGG_GROUND ; egg groups

@@ -137,10 +137,10 @@ TrainerClassNames::
 	li "<PK><MN> Trainer" ; SPARK_T
 	li "Trainer"          ; FLANNERY
 	li "Fighter"          ; MAYLENE
-	li "Pilot"            ; SKYLA
+	li "Swimmer"          ; MARLON
 	li "Designer"         ; VALERIE
 	li "<PK><MN> Trainer" ; KUKUI
-	li "Tourist"          ; MELONY
+	li "Vocalist"         ; PIERS
 	li "Surfer"           ; VICTOR
 	li "#Maniac"          ; BILL_T
 	li "<PK><MN> Trainer" ; YELLOW
