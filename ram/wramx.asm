@@ -525,10 +525,10 @@ wTileset::
 wTilesetDataBank:: db
 wTilesetGFX0Address:: dw
 wTilesetGFX1Address:: dw
-wTilesetGFX2Address:: dw
 wTilesetBlocksAddress:: dw
 wTilesetCollisionAddress:: dw
 wTilesetAttributesAddress:: dw
+wTilesetGFX2Address:: dw ; BANK("Tileset GFX2 Data")
 wTilesetAnim:: dw ; BANK(_AnimateTileset)
 wTilesetEnd::
 
@@ -992,7 +992,7 @@ wTMsHMsEnd::
 wKeyItems:: ds NUM_KEY_ITEMS + 1
 wKeyItemsEnd::
 
-	ds 4 ; unused
+	ds 1 ; unused
 
 wNumItems:: db
 wItems:: ds MAX_ITEMS * 2 + 1
@@ -1047,7 +1047,8 @@ wAlways0SceneID:: db
 wAzaleaTownSceneID:: db
 wBattleFacilitySceneID:: db
 wRoute39RuggedRoadGateSceneID:: db
-	ds 2 ; unused
+wRuggedRoadSouthSceneID:: db
+	ds 1 ; unused
 wBattleTowerOutsideSceneID:: db
 wBellchimeTrailSceneID:: db
 wBrunosRoomSceneID:: db
@@ -1182,7 +1183,7 @@ wCleverWingAmount:: dw
 
 wCelebiEvent:: db
 
-	ds 1 ; unused
+wDailyTrainerHouseOpponent:: db
 
 wOWState:: dw
 

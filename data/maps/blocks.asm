@@ -634,9 +634,13 @@ SECTION "BurnedTowerB1F_BlockData", ROMX
 BurnedTowerB1F_BlockData:
 	INCBIN "maps/BurnedTowerB1F.ablk.lz"
 
-SECTION "RuggedRoad_BlockData", ROMX
-RuggedRoad_BlockData:
-	INCBIN "maps/RuggedRoad.ablk.lz"
+SECTION "RuggedRoadNorth_BlockData", ROMX
+RuggedRoadNorth_BlockData:
+	INCBIN "maps/RuggedRoadNorth.ablk.lz"
+
+SECTION "RuggedRoadSouth_BlockData", ROMX
+RuggedRoadSouth_BlockData:
+	INCBIN "maps/RuggedRoadSouth.ablk.lz"
 
 SECTION "SnowtopMountain_BlockData", ROMX
 SnowtopMountain_BlockData:
@@ -1176,10 +1180,6 @@ SECTION "CeladonCity_BlockData", ROMX
 CeladonCity_BlockData:
 	INCBIN "maps/CeladonCity.ablk.lz"
 
-SECTION "CeladonOutskirts_BlockData", ROMX
-CeladonOutskirts_BlockData:
-	INCBIN "maps/CeladonOutskirts.ablk.lz"
-
 SECTION "CeladonGameCorner_BlockData", ROMX
 CeladonGameCorner_BlockData:
 	INCBIN "maps/CeladonGameCorner.ablk.lz"
@@ -1309,6 +1309,10 @@ CeladonUniversityWestwoodsOffice_BlockData:
 SECTION "CeladonUniversityWillowsOffice_BlockData", ROMX
 CeladonUniversityWillowsOffice_BlockData:
 	INCBIN "maps/CeladonUniversityWillowsOffice.ablk.lz"
+
+SECTION "CeladonUniversityNursesOffice_BlockData", ROMX
+CeladonUniversityNursesOffice_BlockData:
+	INCBIN "maps/CeladonUniversityNursesOffice.ablk.lz"
 
 SECTION "CeladonUniversityClassroom1_BlockData", ROMX
 CeladonUniversityClassroom1_BlockData:

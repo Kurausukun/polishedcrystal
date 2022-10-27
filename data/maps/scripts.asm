@@ -309,7 +309,8 @@ INCLUDE "maps/BurnedTowerB1F.asm"
 
 SECTION "Rugged Road + Snowtop Mountain Scripts", ROMX
 
-INCLUDE "maps/RuggedRoad.asm"
+INCLUDE "maps/RuggedRoadNorth.asm"
+INCLUDE "maps/RuggedRoadSouth.asm"
 INCLUDE "maps/SnowtopMountain.asm"
 INCLUDE "maps/Route39RuggedRoadGate.asm"
 
@@ -688,6 +689,7 @@ INCLUDE "maps/CeladonUniversityLounge.asm"
 INCLUDE "maps/CeladonUniversityPool.asm"
 INCLUDE "maps/CeladonUniversityWestwoodsOffice.asm"
 INCLUDE "maps/CeladonUniversityWillowsOffice.asm"
+INCLUDE "maps/CeladonUniversityNursesOffice.asm"
 
 
 SECTION "Celadon University Classroom Scripts", ROMX
@@ -703,11 +705,6 @@ SECTION "Celadon University Library Scripts", ROMX
 
 INCLUDE "maps/CeladonUniversityLibrary1F.asm"
 INCLUDE "maps/CeladonUniversityLibrary2F.asm" ; shares text with CeladonUniversityLibrary1F.asm
-
-
-SECTION "Celadon Outskirts Scripts", ROMX
-
-INCLUDE "maps/CeladonOutskirts.asm"
 
 
 SECTION "Saffron Scripts", ROMX
