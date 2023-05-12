@@ -276,7 +276,7 @@ wBattleBallsPocketScrollPosition:: db
 wBattleBerriesPocketScrollPosition:: db
 wBattleKeyItemsPocketScrollPosition:: db
 
-	assert ((wBattleItemsPocketScrollPosition - wBattleItemsPocketCursor) == (wItemsPocketScrollPosition - wItemsPocketCursor))
+	assert (wBattleItemsPocketScrollPosition - wBattleItemsPocketCursor) == (wItemsPocketScrollPosition - wItemsPocketCursor)
 
 wTMHMMoveNameBackup:: ds MOVE_NAME_LENGTH
 
@@ -310,6 +310,8 @@ wTempDexSeen:: dw
 wTempDexOwn:: dw
 wTempDexLast:: dw ; the last species marked as seen
 wTempDexEnd::
+NEXTU
+wTempPocketCursor:: ds NUM_POCKETS
 ENDU
 ENDU
 
@@ -442,12 +444,14 @@ wCurPartyLevel:: db
 wScrollingMenuListSize:: dw
 
 ; used when following a map warp
+wFollowedWarpData::
 wNextWarp:: db
 wNextMapGroup:: db
 wNextMapNumber:: db
 wPrevWarp:: db
 wPrevMapGroup:: db
 wPrevMapNumber:: db
+wFollowedWarpDataEnd::
 
 wPlayerBGMapOffsetX:: db ; used in FollowNotExact; unit is pixels
 wPlayerBGMapOffsetY:: db ; used in FollowNotExact; unit is pixels
@@ -573,6 +577,12 @@ NEXTU
 wMagikarpLengthMm::
 wMagikarpLengthMmHi:: db
 wMagikarpLengthMmLo:: db
+
+NEXTU
+; mint tea woman
+wMintTeaPartyMon:: db
+wMintTeaLikedFlavor:: db
+wMintTeaDislikedFlavor:: db
 
 NEXTU
 ; link data
@@ -731,7 +741,9 @@ wOTPlayerName:: ds NAME_LENGTH
 wOTPlayerID:: dw
 wOTPartyCount:: db
 
-	ds 7 ; unused
+wMirrorHerbPendingBoosts::
+	; 7 sets of nibbles $xy, one for each stat. x = player, y = enemy.
+	ds NUM_LEVEL_STATS - 1 ; ignore MULTIPLE_STATS
 
 UNION
 wOTPartyMons::
@@ -794,8 +806,8 @@ wScriptFlags3::
 
 wScriptMode:: db
 wScriptRunning:: db
-wScriptBank:: db
-wScriptPos:: dw
+
+	ds 3 ; unused
 
 wScriptStackSize:: db
 wScriptStack:: ds 3 * 12
@@ -847,11 +859,7 @@ wGameData::
 wPlayerData::
 wPlayerID:: dw
 
-wPlayerGender::
-; bit 0:
-;	0 male
-;	1 female
-	db
+wPlayerGender:: db
 
 wPlayerName:: ds NAME_LENGTH
 wRivalName:: ds NAME_LENGTH
@@ -884,18 +892,13 @@ wGameTimeFrames:: db
 
 wCurDay:: db
 
-; do not talk to the RTC hardware in the no-RTC patch
-if DEF(NO_RTC)
-wNoRTC::
-wNoRTCDayHi::   ds 1 ; copied to hRTCDayHi
-wNoRTCDayLo::   ds 1 ; copied to hRTCDayLo
-wNoRTCHours::   ds 1 ; copied to hRTCHours
-wNoRTCMinutes:: db ; copied to hRTCMinutes
-wNoRTCSeconds:: db ; copied to hRTCSeconds
-else
-; reserve equal space in RTC versions so that saved games remain compatible
-	ds 5
-endc
+; no-RTC patch needs to save/restore rtc state
+; builds with rtc will simply overwrite the saved value
+wRTCDayHi::   db
+wRTCDayLo::   db
+wRTCHours::   db
+wRTCMinutes:: db
+wRTCSeconds:: db
 
 wPlayerGoingUpStairs:: db
 
@@ -906,7 +909,7 @@ wFollowerMovementQueueLength:: db
 wFollowMovementQueue:: ds 5
 
 wObjectStructs::
-wPlayerStruct::   object_struct wPlayer
+wPlayerStruct::      object_struct wPlayer
 for n, 1, NUM_OBJECT_STRUCTS ; discount player
 wObject{d:n}Struct:: object_struct wObject{d:n}
 endr
@@ -920,10 +923,8 @@ wBattleFactoryCurStreak:: dw
 wBattleFactoryTopStreak:: dw
 wBattleFactorySwapCount:: db ; Amount of swaps performed.
 
-	ds 13 ; unused
-
 wMapObjects::
-wPlayerObject:: map_object wPlayer
+wPlayerObject::   map_object wPlayer
 for n, 1, NUM_OBJECTS ; discount player
 wMap{d:n}Object:: map_object wMap{d:n}
 endr
@@ -992,8 +993,6 @@ wTMsHMsEnd::
 wKeyItems:: ds NUM_KEY_ITEMS + 1
 wKeyItemsEnd::
 
-	ds 1 ; unused
-
 wNumItems:: db
 wItems:: ds MAX_ITEMS * 2 + 1
 wItemsEnd::
@@ -1048,7 +1047,7 @@ wAzaleaTownSceneID:: db
 wBattleFacilitySceneID:: db
 wRoute39RuggedRoadGateSceneID:: db
 wRuggedRoadSouthSceneID:: db
-	ds 1 ; unused
+wSnowtopMountainOutsideSceneID:: db
 wBattleTowerOutsideSceneID:: db
 wBellchimeTrailSceneID:: db
 wBrunosRoomSceneID:: db
@@ -1171,7 +1170,15 @@ wCurBox:: db
 wPlayerCaught:: db
 wPlayerCaught2:: db
 
-	ds 81 ; unused
+wUsedObjectPals:: db
+for n, 8
+wLoadedObjPal{d:n}:: db 
+endr
+wNeededPalIndex:: db
+
+wEmotePal:: db
+
+	ds 70 ; unused
 
 wWingAmounts::
 wHealthWingAmount:: dw
@@ -1238,7 +1245,7 @@ wHiddenGrottoContents::
 ; dbw content type, content id
 	ds NUM_HIDDEN_GROTTOES * 3
 
-	ds 3 ; unused
+	ds 2 ; unused
 
 wCurHiddenGrotto:: db
 
@@ -1275,7 +1282,7 @@ wPoisonStepCount:: db
 wPhoneList:: flag_array NUM_PHONE_CONTACTS
 wPhoneListEnd::
 
-	ds 2 ; unused
+	ds 1 ; unused
 
 wParkBallsRemaining::
 wSafariBallsRemaining:: db
@@ -1353,13 +1360,13 @@ wPokedexFlags::
 wPokedexCaught:: flag_array NUM_UNIQUE_POKEMON
 wEndPokedexCaught::
 
-	ds 2 ; unused
+	ds 1 ; unused
 
 wPokedexSeen:: flag_array NUM_UNIQUE_POKEMON
 wEndPokedexSeen::
 wEndPokedexFlags::
 
-	ds 2 ; unused
+	ds 1 ; unused
 
 wUnlockedUnowns:: db
 
@@ -1440,6 +1447,17 @@ wPokemonDataEnd::
 wGameDataEnd::
 
 
+SECTION "Sound Stack", WRAMX
+
+wSoundEngineBackup:: ds wChannelsEnd - wMusic
+wBackupMapMusic:: db
+
+
+SECTION "Music Player RAM", WRAMX
+
+wMPNotes:: ds 4 * 256
+
+
 SECTION "Pic Animations RAM", WRAMX
 
 wTempTileMap::
@@ -1487,11 +1505,6 @@ wPokeDB1UsedEntriesEnd::
 
 wPokeDB2UsedEntries:: flag_array MONDB_ENTRIES
 wPokeDB2UsedEntriesEnd::
-
-
-SECTION "Sound Stack", WRAMX
-
-wSoundEngineBackup:: ds wChannelsEnd - wMusic
 
 
 SECTION UNION "Metatiles", WRAMX
@@ -1566,7 +1579,7 @@ wDexAreaValidTreeGroups:: ds NUM_TREEMON_SETS
 ENDU
 wDexAreaValidGroupsEnd::
 
-	assert (HIGH(wDexAreaValidGroupsEnd) == HIGH(wDexAreaValidGroups))
+	assert HIGH(wDexAreaValidGroupsEnd) == HIGH(wDexAreaValidGroups)
 
 ; The last location type the player cycled to explicitly.
 ; The game will try to prefer this when changing region/mon/form. Updates when:
@@ -1581,7 +1594,7 @@ wDexAreaLastMode:: db
 
 	; Used to align wDexAreaMons. Feel free to add more data here, just don't
 	; let wDexAreaMons be misaligned (an assert will tell you if you do).
-	ds 5
+	ds 4
 
 ALIGN 8
 wDexAreaMons::
@@ -1640,15 +1653,14 @@ wDexMonsEnd::
 wDexConversionTable:: ds NUM_SPECIES * 2
 
 
-SECTION "Collisions or Music Player", WRAMX
+SECTION UNION "Attributes", WRAMX
 
-UNION
+wDecompressedCreditsGFX:: ds (4 * 4 tiles) * 13
+
+
+SECTION "Collisions", WRAMX
+
 wDecompressedCollisions:: ds 256 * 4
-NEXTU
-wMPNotes:: ds 4 * 256
-NEXTU
-wDecompressedCreditsGFX:: ; ds (4 * 4 tiles) * 13 ; ds $d00
-ENDU
 
 
 SECTION "Game Version", WRAMX
@@ -1719,6 +1731,7 @@ wOBPals1:: ds 8 palettes
 wBGPals2:: ds 8 palettes
 wOBPals2:: ds 8 palettes
 
+	align 8
 wLYOverrides:: ds SCREEN_HEIGHT_PX
 wLYOverridesEnd::
 
@@ -1739,6 +1752,7 @@ wPalFadeDelay:: db
 
 	ds 99 ; unused
 
+	align 8
 wLYOverridesBackup:: ds SCREEN_HEIGHT_PX
 wLYOverridesBackupEnd::
 

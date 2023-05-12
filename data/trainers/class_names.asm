@@ -3,6 +3,7 @@ TrainerClassNames::
 	li "?"                ; TRAINER_NONE
 	li "<PK><MN> Trainer" ; CARRIE
 	li "<PK><MN> Trainer" ; CAL
+	li "<PK><MN> Trainer" ; JACKY
 	li "Leader"           ; FALKNER
 	li "Leader"           ; BUGSY
 	li "Leader"           ; WHITNEY
@@ -99,6 +100,7 @@ TrainerClassNames::
 	li "Tamer"            ; TAMER
 	li "Artist"           ; ARTIST
 	li "Aroma Lady"       ; AROMA_LADY
+	li "Soldier"          ; SOLDIER
 	li "Waiter"           ; WAITER
 	li "Waitress"         ; WAITRESS
 	li "Sightseer"        ; SIGHTSEERM
@@ -144,6 +146,7 @@ TrainerClassNames::
 	li "Designer"         ; VALERIE
 	li "<PK><MN> Trainer" ; KUKUI
 	li "Vocalist"         ; PIERS
+	li "Patissier"        ; KATY
 	li "Surfer"           ; VICTOR
 	li "#Maniac"          ; BILL_T
 	li "<PK><MN> Trainer" ; YELLOW

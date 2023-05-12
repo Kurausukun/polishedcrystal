@@ -3,10 +3,12 @@ TrainerPalettes:
 	table_width PAL_COLOR_SIZE * 2, TrainerPalettes
 
 if !DEF(MONOCHROME)
-ChrisPalette:            INCLUDE "gfx/trainers/cal.pal"
 KrisPalette:
 CarriePalette:           INCLUDE "gfx/trainers/carrie.pal"
+ChrisPalette:
 CalPalette:              INCLUDE "gfx/trainers/cal.pal"
+CrysPalette:
+JackyPalette:            INCLUDE "gfx/trainers/jacky.pal"
 FalknerPalette:          INCLUDE "gfx/trainers/falkner.pal"
 BugsyPalette:            INCLUDE "gfx/trainers/bugsy.pal"
 WhitneyPalette:          INCLUDE "gfx/trainers/whitney.pal"
@@ -103,6 +105,7 @@ RoughneckPalette:        INCLUDE "gfx/trainers/roughneck.pal"
 TamerPalette:            INCLUDE "gfx/trainers/tamer.pal"
 ArtistPalette:           INCLUDE "gfx/trainers/artist.pal"
 AromaLadyPalette:        INCLUDE "gfx/trainers/aroma_lady.pal"
+SoldierPalette:          INCLUDE "gfx/trainers/soldier.pal"
 WaiterPalette:           INCLUDE "gfx/trainers/waiter.pal"
 WaitressPalette:         INCLUDE "gfx/trainers/waitress.pal"
 SightseermPalette:       INCLUDE "gfx/trainers/sightseer_m.pal"
@@ -148,6 +151,7 @@ MarlonPalette:           INCLUDE "gfx/trainers/marlon.pal"
 ValeriePalette:          INCLUDE "gfx/trainers/valerie.pal"
 KukuiPalette:            INCLUDE "gfx/trainers/kukui.pal"
 PiersPalette:            INCLUDE "gfx/trainers/piers.pal"
+KatyPalette:             INCLUDE "gfx/trainers/katy.pal"
 VictorPalette:           INCLUDE "gfx/trainers/victor.pal"
 BillPalette:             INCLUDE "gfx/trainers/bill.pal"
 YellowPalette:           INCLUDE "gfx/trainers/yellow.pal"
@@ -161,13 +165,15 @@ AerodactylFossilPalette: INCLUDE "gfx/trainers/aerodactyl_fossil.pal"
 CuboneArmorPalette:      INCLUDE "gfx/trainers/cubone_armor.pal"
 MeteoritePalette:        INCLUDE "gfx/trainers/meteorite.pal"
 SilhouettePalette:       INCLUDE "gfx/trainers/silhouette.pal"
+
 else
 ChrisPalette:
 KrisPalette:
+CrysPalette:
 Lyra1Palette:
-rept NUM_TRAINER_CLASS_PICS + 1
+rept NUM_TRAINER_CLASS_PICS
 	MONOCHROME_RGB_TWO
 endr
 endc
 
-	assert_table_length NUM_TRAINER_CLASS_PICS + 1
+	assert_table_length NUM_TRAINER_CLASS_PICS

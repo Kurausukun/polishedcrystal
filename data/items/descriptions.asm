@@ -102,8 +102,8 @@ ItemDescriptions:
 	dw XAttackDesc
 	dw XDefendDesc
 	dw XSpeedDesc
-	dw XSpclAtkDesc
-	dw XSpclDefDesc
+	dw XSpAtkDesc
+	dw XSpDefDesc
 	dw XAccuracyDesc
 	dw DireHitDesc
 	dw GuardSpecDesc
@@ -167,15 +167,10 @@ ItemDescriptions:
 	dw RockyHelmetDesc
 	dw AirBalloonDesc
 	dw RedCardDesc
-	dw RingTargetDesc
 	dw BindingBandDesc
-	dw AbsorbBulbDesc
-	dw CellBatteryDesc
 	dw EjectButtonDesc
 	dw WeakPolicyDesc
 	dw AssaultVestDesc
-	dw LuminousMossDesc
-	dw SnowballDesc
 	dw SafeGogglesDesc
 	dw ProtectPadsDesc
 	dw ThroatSprayDesc
@@ -183,7 +178,11 @@ ItemDescriptions:
 	dw HeavyBootsDesc
 	dw BlundrPolicyDesc
 	dw RoomServiceDesc
-	dw UtilUmbrellaDesc
+	dw ClearAmuletDesc
+	dw MirrorHerbDesc
+	dw PunchinGloveDesc
+	dw CovertCloakDesc
+	dw LoadedDiceDesc
 	dw LightBallDesc
 	dw LeekDesc
 	dw ThickClubDesc
@@ -224,6 +223,7 @@ ItemDescriptions:
 	dw RazorClawDesc
 	dw OvalStoneDesc
 	dw OddSouvenirDesc
+	dw LinkingCordDesc
 	dw SilverLeafDesc
 	dw GoldLeafDesc
 	dw MintLeafDesc
@@ -267,6 +267,7 @@ KeyItemDescriptions:
 	dw ApricornBoxDesc
 	dw WingCaseDesc
 	dw TypeChartDesc
+	dw GBCSoundsDesc
 	dw BlueCardDesc
 	dw SquirtBottleDesc
 	dw SilphScope2Desc
@@ -287,8 +288,8 @@ KeyItemDescriptions:
 	dw OrangeTicketDesc
 	dw MysticTicketDesc
 	dw OldSeaMapDesc
-	dw EerieLureDesc
-	dw ToughLureDesc
+	dw HarshLureDesc
+	dw PotentLureDesc
 	dw MalignLureDesc
 	dw ShinyCharmDesc
 	dw OvalCharmDesc
@@ -528,13 +529,13 @@ CarbosDesc:
 	done
 
 CalciumDesc:
-	text "Raises Spcl.Atk"
-	next "of one #mon."
+	text "Raises Sp.Atk of"
+	next "one #mon."
 	done
 
 ZincDesc:
-	text "Raises Spcl.Def"
-	next "of one #mon."
+	text "Raises Sp.Def of"
+	next "one #mon."
 	done
 
 RareCandyDesc:
@@ -612,13 +613,13 @@ XSpeedDesc:
 	next "(1 battle)"
 	done
 
-XSpclAtkDesc:
-	text "Raises Spcl. Atk."
+XSpAtkDesc:
+	text "Raises Sp.Atk."
 	next "(1 battle)"
 	done
 
-XSpclDefDesc:
-	text "Raises Spcl. Def."
+XSpDefDesc:
+	text "Raises Sp.Def."
 	next "(1 battle)"
 	done
 
@@ -676,6 +677,7 @@ SunStoneDesc:
 DuskStoneDesc:
 ShinyStoneDesc:
 IceStoneDesc:
+LinkingCordDesc:
 	text "Evolves certain"
 	next "kinds of #mon."
 	done
@@ -761,13 +763,13 @@ QualotBerryDesc:
 	done
 
 HondewBerryDesc:
-	text "Raises friendship,"
-	next "lowers Spcl.Atk."
+	text "Raises friendship"
+	next "but lowers Sp.Atk."
 	done
 
 GrepaBerryDesc:
-	text "Raises friendship,"
-	next "lowers Spcl.Def."
+	text "Raises friendship"
+	next "but lowers Sp.Def."
 	done
 
 TamatoBerryDesc:
@@ -791,13 +793,13 @@ SalacBerryDesc:
 	done
 
 PetayaBerryDesc:
-	text "Raises Spcl.Atk"
-	next "in a pinch."
+	text "Raises Sp.Atk in"
+	next "a pinch."
 	done
 
 ApicotBerryDesc:
-	text "Raises Spcl.Def"
-	next "in a pinch."
+	text "Raises Sp.Def in"
+	next "a pinch."
 	done
 
 LansatBerryDesc:
@@ -836,7 +838,7 @@ KeeBerryDesc:
 	done
 
 MarangaBerryDesc:
-	text "Raises Spcl.Def on"
+	text "Raises Sp.Def on"
 	next "a special hit."
 	done
 
@@ -1033,7 +1035,7 @@ AirBalloonDesc:
 	done
 
 AssaultVestDesc:
-	text "Ups Spcl.Def, but"
+	text "Boosts Sp.Def, but"
 	next "bans status moves."
 	done
 
@@ -1213,12 +1215,12 @@ PowerBeltDesc:
 	done
 
 PowerLensDesc:
-	text "Ups Spcl.Atk gain,"
+	text "Ups Sp.Atk gain,"
 	next "but lowers Speed."
 	done
 
 PowerBandDesc:
-	text "Ups Spcl.Def gain,"
+	text "Ups Sp.Def gain,"
 	next "but lowers Speed."
 	done
 
@@ -1238,8 +1240,8 @@ SweetHoneyDesc:
 	done
 
 EvioliteDesc:
-	text "Ups Def and Spcl."
-	next "Def of evolvers."
+	text "Ups Def and Sp.Def"
+	next "of evolvers."
 	done
 
 MuscleBandDesc:
@@ -1458,24 +1460,24 @@ RedCardDesc:
 	next "when hit. (Hold)"
 	done
 
-AbsorbBulbDesc:
-	text "Raises Spcl.Atk on"
-	next "a Water hit."
+ClearAmuletDesc:
+	text "Prevents stat-"
+	next "lowering by foes."
 	done
 
-CellBatteryDesc:
-	text "Raises Attack on"
-	next "an Electric hit."
+MirrorHerbDesc:
+	text "Copies foe's stat-"
+	next "boost once."
 	done
 
-LuminousMossDesc:
-	text "Raises Spcl.Def on"
-	next "a Water hit."
+PunchinGloveDesc:
+	text "Powers punch moves"
+	next "with no contact."
 	done
 
-SnowballDesc:
-	text "Raises Attack on"
-	next "an Ice hit."
+CovertCloakDesc:
+	text "Blocks additional"
+	next "attack effects."
 	done
 
 EjectPackDesc:
@@ -1494,7 +1496,7 @@ BlundrPolicyDesc:
 	done
 
 ThroatSprayDesc:
-	text "Raises Spcl.Atk on"
+	text "Raises Sp.Atk on"
 	next "a sound move."
 	done
 
@@ -1503,9 +1505,9 @@ HeavyBootsDesc:
 	next "traps. (Hold)"
 	done
 
-UtilUmbrellaDesc:
-	text "Protects from"
-	next "weather effects."
+LoadedDiceDesc:
+	text "Multi-hit moves"
+	next "hit more often."
 	done
 
 MintLeafDesc:
@@ -1617,6 +1619,11 @@ GSBallDesc:
 	next "Ball."
 	done
 
+GBCSoundsDesc:
+	text "A music player"
+	next "filled with songs."
+	done
+
 BlueCardDesc:
 	text "Card to save"
 	next "points."
@@ -1633,12 +1640,12 @@ OldSeaMapDesc:
 	next "of a small island."
 	done
 
-EerieLureDesc:
+HarshLureDesc:
 	text "A bottle with a"
 	next "cruel scent."
 	done
 
-ToughLureDesc:
+PotentLureDesc:
 	text "A bottle with a"
 	next "strong smell."
 	done

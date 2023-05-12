@@ -11,11 +11,19 @@ RuggedRoadSouth_MapScriptHeader:
 	def_coord_events
 	coord_event 27,  3, 1, RuggedRoadSouthBridgeOverheadTrigger
 	coord_event 27,  1, 0, RuggedRoadSouthBridgeUnderfootTrigger
+	coord_event 25, 23, 1, RuggedRoadSouthBridgeOverheadTrigger
 
 	def_bg_events
 	bg_event 17, 25, BGEVENT_JUMPTEXT, RuggedRoadSouthAdvancedTipsSignText
+	bg_event  7, 21, BGEVENT_ITEM + IRON, EVENT_RUGGED_ROAD_SOUTH_HIDDEN_IRON
 
 	def_object_events
+	itemball_event  4,  9, REVIVE, 1, EVENT_RUGGED_ROAD_SOUTH_REVIVE
+	itemball_event 27, 13, IRON_BALL, 1, EVENT_RUGGED_ROAD_SOUTH_IRON_BALL
+	smashrock_event 26,  9
+	smashrock_event 13, 10
+	smashrock_event  8, 25
+	smashrock_event 12, 30
 
 RuggedRoadSouthTileScript:
 	checkscene
@@ -37,9 +45,9 @@ RuggedRoadSouth_OverheadBridgeAsm:
 
 RuggedRoadSouth_UnderfootBridgeAsm:
 	changebridgeblock 14, 0, $aa, RUGGED_ROAD_SOUTH
-	changebridgeblock 16, 0, $e6, RUGGED_ROAD_SOUTH
-	changebridgeblock 18, 0, $e6, RUGGED_ROAD_SOUTH
-	changebridgeblock 20, 0, $e6, RUGGED_ROAD_SOUTH
+	changebridgeblock 16, 0, $fa, RUGGED_ROAD_SOUTH
+	changebridgeblock 18, 0, $fa, RUGGED_ROAD_SOUTH
+	changebridgeblock 20, 0, $fa, RUGGED_ROAD_SOUTH
 	changebridgeblock 22, 0, $ab, RUGGED_ROAD_SOUTH
 	jmp BufferScreen
 
@@ -61,18 +69,19 @@ RuggedRoadSouth_FinishBridge:
 RuggedRoadSouthAdvancedTipsSignText:
 	text "Advanced Tips!"
 
-	para "“Power” items that"
-	line "raise effort gain"
+	para "If your #mon"
+	line "KOs its opponent,"
 
-	para "will apply to"
-	line "every #mon that"
+	para "and it's holding a"
+	line "Power item that"
+	cont "ups effort gain,"
 
-	para "participates in a"
-	line "battle, as long as"
+	para "every #mon that"
+	line "participated in"
 
-	para "the #mon which"
-	line "actively KOs its"
+	para "the battle or"
+	line "that's holding an"
 
-	para "opponent is hold-"
-	line "ing a Power item!"
+	para "Exp.Share will"
+	line "gain from it!"
 	done

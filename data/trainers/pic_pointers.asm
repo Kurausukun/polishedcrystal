@@ -3,6 +3,7 @@ TrainerPicPointers::
 	table_width 3, TrainerPicPointers
 	dba CarriePic
 	dba CalPic
+	dba JackyPic
 	dba FalknerPic
 	dba BugsyPic
 	dba WhitneyPic
@@ -99,6 +100,7 @@ TrainerPicPointers::
 	dba TamerPic
 	dba ArtistPic
 	dba AromaLadyPic
+	dba SoldierPic
 	dba WaiterPic
 	dba WaitressPic
 	dba SightseermPic
@@ -144,6 +146,7 @@ TrainerPicPointers::
 	dba ValeriePic
 	dba KukuiPic
 	dba PiersPic
+	dba KatyPic
 	dba VictorPic
 	dba BillPic
 	dba YellowPic

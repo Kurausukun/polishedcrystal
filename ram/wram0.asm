@@ -62,7 +62,6 @@ wNoiseSampleAddress::
 wNoiseSampleAddressLo:: db
 wNoiseSampleAddressHi:: db
 wNoiseSampleDelay:: db ; noise delay?
-	ds 1
 wMusicNoiseSampleSet:: db
 wSFXNoiseSampleSet:: db
 wLowHealthAlarm::
@@ -80,17 +79,10 @@ wMusicFadeCount:: db
 wMusicFadeID::
 wMusicFadeIDLo:: db
 wMusicFadeIDHi:: db
-	ds 5
 wCryPitch:: dw
 wCryLength:: dw
 wLastVolume:: db
-	ds 1
 wSFXPriority:: db ; if nonzero, turn off music when playing sfx
-	ds 1
-wChannel1JumpCondition:: db
-wChannel2JumpCondition:: db
-wChannel3JumpCondition:: db
-wChannel4JumpCondition:: db
 wStereoPanningMask:: db
 wCryTracks::
 ; plays only in left or right track depending on what side the monster is on
@@ -104,6 +96,13 @@ wMapMusic:: db
 wDontPlayMapMusicOnReload:: db
 wMusicEnd::
 
+; Music player
+; audio engine input
+wChannelSelectorSwitches:: ds 4
+wPitchTransposition:: db
+wTempoAdjustment:: db
+; audio engine output
+wNoiseHit:: db
 
 SECTION "WRAM 0", WRAM0
 
@@ -187,14 +186,17 @@ wTilePermissions::
 ; bit 0: right
 	db
 
-	ds 2
+wPanningAroundTinyMap:: db
+wSavedXCoord:: db
 
 wLinkOtherPlayerGameID:: db
 wLinkOtherPlayerVersion:: dw
 wLinkOtherPlayerMinTradeVersion:: dw
 wLinkOtherPlayerGender:: db
 
-	ds 5
+wPalFlags:: db
+
+	ds 4
 
 
 SECTION "Sprite Animations", WRAM0
@@ -235,7 +237,7 @@ wGlobalAnimXOffset:: db
 wSpriteAnimsEnd::
 
 
-SECTION "Music Player RAM", WRAM0
+SECTION UNION "Misc 480", WRAM0
 
 wMusicPlayerWRAM::
 wSongSelection:: dw
@@ -263,12 +265,6 @@ wSelectorCur:: db
 ; song editor
 wChannelSelector:: db
 wAdjustingTempo:: db
-; audio engine input
-wChannelSelectorSwitches:: ds 4
-wPitchTransposition:: db
-wTempoAdjustment:: db
-; audio engine output
-wNoiseHit:: db
 wMusicPlayerWRAMEnd::
 
 
@@ -509,6 +505,9 @@ wEnemySelectedMove:: db
 wPlayerMetronomeCount:: db
 wEnemyMetronomeCount:: db
 
+wPlayerCudChewBerry:: db
+wEnemyCudChewBerry:: db
+
 wPartyParticipants:: ds PARTY_LENGTH
 
 wDeferredSwitch:: db
@@ -523,7 +522,7 @@ wPlayerStatLevels::
 ; 07 neutral
 wPlayerAtkLevel:: db
 wPlayerDefLevel:: db
-wPlayerSpdLevel:: db
+wPlayerSpeLevel:: db
 wPlayerSAtkLevel:: db
 wPlayerSDefLevel:: db
 wPlayerAccLevel:: db
@@ -534,7 +533,7 @@ wEnemyStatLevels::
 ; 07 neutral
 wEnemyAtkLevel:: db
 wEnemyDefLevel:: db
-wEnemySpdLevel:: db
+wEnemySpeLevel:: db
 wEnemySAtkLevel:: db
 wEnemySDefLevel:: db
 wEnemyAccLevel:: db
@@ -555,8 +554,6 @@ wCurEnemyMove:: db
 wLinkBattleRNCount:: db ; how far through the prng stream
 
 wEnemyItemState:: db
-
-	ds 2
 
 wCurEnemyMoveNum:: db
 
@@ -790,6 +787,7 @@ wNamingScreenType:: db
 wNamingScreenCursorObjectPointer:: dw
 wNamingScreenLastCharacter:: db
 wNamingScreenStringEntryCoord:: dw
+wNamingScreenKeyboardWidth:: db
 
 
 SECTION UNION "Misc 480", WRAM0
@@ -918,7 +916,7 @@ SECTION UNION "Misc 1326", WRAM0
 ; Bill's PC
 
 	; LCD hblank code block. Labels are defined as part of the code.
-	ds $ca
+	ds $cf
 	assert BillsPC_LCDCodeEnd - BillsPC_LCDCode == @ - STARTOF("Misc 1326")
 
 ; If you change ordering of this, remember to fix LCD hblank code too.
@@ -1170,6 +1168,7 @@ wMomBankDigitCursorPosition::
 wNamingScreenLetterCase::
 wHallOfFameMonCounter::
 wTradeDialog::
+wRandomValue::
 	db
 wFrameCounter2:: db
 wUnusedTradeAnimPlayEvolutionMusic:: db
@@ -1279,16 +1278,14 @@ w2DMenuDataEnd::
 wMonPicSize:: db
 wMonAnimationSize:: db
 
-wBTTempOTSprite:: db ; unused?
+	ds 1 ; unused
 
 wPendingOverworldGraphics:: db
 wTextDelayFrames:: db
 
 wGenericDelay:: db
 
-wGameTimerPaused::
-; bit 0
-	db
+wGameTimerPaused:: db
 
 wInputFlags::
 ; bits 7, 6, and 4 can be used to disable joypad input
@@ -1380,7 +1377,11 @@ wInitialOptions::
 	db
 
 wInitialOptions2::
-; bits 0-6: unused
+; bit 0: EVs disabled
+; bit 1: classic EVs (no 510 cap)
+; bit 2: modern EVs (510 cap)
+; (only one of bits 0-2 can be set)
+; bits 3-6: unused
 ; bit 7: ask to reset at start
 	db
 wOptionsEnd::

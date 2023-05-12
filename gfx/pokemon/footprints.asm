@@ -17,12 +17,10 @@ GlaceonFootprint:: INCBIN "gfx/footprints/umbreon_leafeon_glaceon.1bpp.lz"
 PidgeyFootprint::
 SpearowFootprint:: INCBIN "gfx/footprints/pidgey_spearow.1bpp.lz"
 
-SentretFootprint::
-HoppipFootprint:: INCBIN "gfx/footprints/sentret_hoppip.1bpp.lz"
-
 CorsolaFootprint::
 CursolaFootprint:: INCBIN "gfx/footprints/corsola_cursola.1bpp.lz"
 
+BlankFootprint::
 ArbokFootprint::
 BellossomFootprint::
 ChinchouFootprint::
@@ -33,6 +31,7 @@ DiglettFootprint::
 DittoFootprint::
 DragonairFootprint::
 DratiniFootprint::
+DudunsparceFootprint::
 DugtrioFootprint::
 DunsparceFootprint::
 EkansFootprint::
@@ -198,6 +197,7 @@ TyphlosionFootprint:: INCBIN "gfx/footprints/typhlosion.1bpp.lz"
 TotodileFootprint:: INCBIN "gfx/footprints/totodile.1bpp.lz"
 CroconawFootprint:: INCBIN "gfx/footprints/croconaw.1bpp.lz"
 FeraligatrFootprint:: INCBIN "gfx/footprints/feraligatr.1bpp.lz"
+SentretFootprint:: INCBIN "gfx/footprints/sentret.1bpp.lz"
 FurretFootprint:: INCBIN "gfx/footprints/furret.1bpp.lz"
 HoothootFootprint:: INCBIN "gfx/footprints/hoothoot.1bpp.lz"
 NoctowlFootprint:: INCBIN "gfx/footprints/noctowl.1bpp.lz"
@@ -218,6 +218,7 @@ MarillFootprint:: INCBIN "gfx/footprints/marill.1bpp.lz"
 AzumarillFootprint:: INCBIN "gfx/footprints/azumarill.1bpp.lz"
 SudowoodoFootprint:: INCBIN "gfx/footprints/sudowoodo.1bpp.lz"
 PolitoedFootprint:: INCBIN "gfx/footprints/politoed.1bpp.lz"
+HoppipFootprint:: INCBIN "gfx/footprints/hoppip.1bpp.lz"
 SkiploomFootprint:: INCBIN "gfx/footprints/skiploom.1bpp.lz"
 JumpluffFootprint:: INCBIN "gfx/footprints/jumpluff.1bpp.lz"
 AipomFootprint:: INCBIN "gfx/footprints/aipom.1bpp.lz"
@@ -293,3 +294,6 @@ WyrdeerFootprint:: INCBIN "gfx/footprints/wyrdeer.1bpp.lz"
 KleavorFootprint:: INCBIN "gfx/footprints/kleavor.1bpp.lz"
 UrsalunaFootprint:: INCBIN "gfx/footprints/ursaluna.1bpp.lz"
 SneaslerFootprint:: INCBIN "gfx/footprints/sneasler.1bpp.lz"
+FarigirafFootprint:: INCBIN "gfx/footprints/farigiraf.1bpp.lz"
+ClodsireFootprint:: INCBIN "gfx/footprints/clodsire.1bpp.lz"
+AnnihilapeFootprint:: INCBIN "gfx/footprints/annihilape.1bpp.lz"

@@ -2,7 +2,6 @@ Route39_MapScriptHeader:
 	def_scene_scripts
 
 	def_callbacks
-	callback MAPCALLBACK_TILES, Route39TileScript
 
 	def_warp_events
 	warp_event  1, 17, ROUTE_39_BARN, 1
@@ -25,10 +24,10 @@ Route39_MapScriptHeader:
 	object_event 13, 43, SPRITE_SAILOR, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, OBJECTTYPE_GENERICTRAINER, 5, GenericTrainerSailorEugene, -1
 	object_event 10, 36, SPRITE_POKEFAN_M, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, OBJECTTYPE_TRAINER, 4, TrainerPokefanmDerek1, -1
 	object_event 11, 33, SPRITE_POKEFAN_F, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, OBJECTTYPE_GENERICTRAINER, 4, GenericTrainerPokefanfRuth, -1
-	pokemon_event  3, 26, MILTANK, SPRITEMOVEDATA_POKEMON, -1, -1, PAL_NPC_RED, Route39MiltankText, -1
-	pokemon_event  6, 25, MILTANK, SPRITEMOVEDATA_POKEMON, -1, -1, PAL_NPC_RED, Route39MiltankText, -1
-	pokemon_event  4, 29, MILTANK, SPRITEMOVEDATA_POKEMON, -1, -1, PAL_NPC_RED, Route39MiltankText, -1
-	pokemon_event  8, 27, MILTANK, SPRITEMOVEDATA_POKEMON, -1, -1, PAL_NPC_RED, Route39MiltankText, -1
+	pokemon_event  3, 26, MILTANK, SPRITEMOVEDATA_POKEMON, -1, -1, PAL_NPC_PINK, Route39MiltankText, -1
+	pokemon_event  6, 25, MILTANK, SPRITEMOVEDATA_POKEMON, -1, -1, PAL_NPC_PINK, Route39MiltankText, -1
+	pokemon_event  4, 29, MILTANK, SPRITEMOVEDATA_POKEMON, -1, -1, PAL_NPC_PINK, Route39MiltankText, -1
+	pokemon_event  8, 27, MILTANK, SPRITEMOVEDATA_POKEMON, -1, -1, PAL_NPC_PINK, Route39MiltankText, -1
 	object_event 13, 21, SPRITE_PSYCHIC, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, 0, OBJECTTYPE_GENERICTRAINER, 1, GenericTrainerPsychicNorman, -1
 	fruittree_event  9, 17, FRUITTREE_ROUTE_39, CHESTO_BERRY, PAL_NPC_PURPLE
 	object_event  4, 36, SPRITE_POKEFAN_F, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, TrainerPokefanfJaime, -1
@@ -40,15 +39,6 @@ Route39_MapScriptHeader:
 
 	object_const_def
 	const ROUTE39_COWGIRL
-
-Route39TileScript:
-	checkflag ENGINE_FLYPOINT_SNOWTOP
-	iffalsefwd .End
-	changeblock 10, 8, $f4
-	changeblock 12, 8, $01
-	changeblock 14, 8, $01
-.End
-	endcallback
 
 TrainerPokefanmDerek1:
 	trainer POKEFANM, DEREK1, EVENT_BEAT_POKEFANM_DEREK, PokefanmDerek1SeenText, PokefanmDerek1BeatenText, 0, .Script
@@ -199,6 +189,12 @@ Route39CowgirlAnnieScript:
 	para "from Ecruteak to"
 	line "Olivine and I'll"
 	cont "fight ya."
+
+	para "Some o' them"
+	line "might only want"
+
+	para "to battle ya when"
+	line "it's dark out."
 	done
 
 .QuestionText:

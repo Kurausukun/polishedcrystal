@@ -23,7 +23,7 @@ WarehouseEntrance_MapScriptHeader:
 	bg_event  4, 13, BGEVENT_ITEM + PARALYZEHEAL, EVENT_WAREHOUSE_ENTRANCE_HIDDEN_PARALYZEHEAL
 	bg_event  2, 18, BGEVENT_ITEM + SUPER_POTION, EVENT_WAREHOUSE_ENTRANCE_HIDDEN_SUPER_POTION
 	bg_event 15,  8, BGEVENT_ITEM + ANTIDOTE, EVENT_WAREHOUSE_ENTRANCE_HIDDEN_ANTIDOTE
-	bg_event 20, 27, BGEVENT_ITEM + X_SPCL_ATK, EVENT_WAREHOUSE_ENTRANCE_HIDDEN_X_SPCL_ATK
+	bg_event 20, 27, BGEVENT_ITEM + X_SP_ATK, EVENT_WAREHOUSE_ENTRANCE_HIDDEN_X_SP_ATK
 
 	def_object_events
 	object_event  5, 11, SPRITE_GRAMPS, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, BargainMerchantScript, EVENT_WAREHOUSE_ENTRANCE_GRAMPS
@@ -36,6 +36,7 @@ WarehouseEntrance_MapScriptHeader:
 	object_event  1, 27, SPRITE_POKEMANIAC, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, 0, OBJECTTYPE_GENERICTRAINER, 2, GenericTrainerPokemaniacIssac, -1
 	object_event  0,  6, SPRITE_POKEMANIAC, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, OBJECTTYPE_GENERICTRAINER, 3, GenericTrainerPokemaniacDonald, -1
 	object_event  8, 27, SPRITE_COSPLAYER, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, OBJECTTYPE_GENERICTRAINER, 2, GenericTrainerCosplayerClara, -1
+	object_event 14, 25, SPRITE_PIDGEOTTO_SIDE, SPRITEMOVEDATA_MICROPHONE, 0, 0, -1, -1, PAL_NPC_EMOTE_GRAY, OBJECTTYPE_COMMAND, jumptextfaceplayer, PiersMicrophoneText, -1
 	keyitemball_event  5, 24, COIN_CASE, EVENT_WAREHOUSE_ENTRANCE_COIN_CASE
 
 	object_const_def
@@ -263,7 +264,7 @@ OlderHaircutBrotherScript:
 	special LoadMapPalettes
 	playmusic MUSIC_HEAL
 	pause 60
-	special FadeInPalettes
+	special FadeInPalettes_EnableDynNoApply
 	special RestartMapMusic
 	opentext
 	writetext GoldenrodUndergroundOlderHaircutBrotherAllDoneText
@@ -336,7 +337,7 @@ YoungerHaircutBrotherScript:
 	special LoadMapPalettes
 	playmusic MUSIC_HEAL
 	pause 60
-	special FadeInPalettes
+	special FadeInPalettes_EnableDynNoApply
 	special RestartMapMusic
 	opentext
 	writetext GoldenrodUndergroundYoungerHaircutBrotherAllDoneText
@@ -780,4 +781,8 @@ GoldenrodUndergroundWeAreNotOpenTodayText:
 GoldenrodUndergroundNoEntryText: ; text > text
 	text "NO ENTRY BEYOND"
 	line "THIS POINT"
+	done
+
+PiersMicrophoneText:
+	text "It's a microphone."
 	done

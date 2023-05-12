@@ -821,7 +821,7 @@
 	wildmon 32, SWINUB
 	wildmon 34, GOLBAT
 	wildmon 32, GOLBAT
-	wildmon 32, NINETALES, ALOLAN_FORM
+	wildmon 34, VULPIX, ALOLAN_FORM
 	; day
 	wildmon 30, SWINUB
 	wildmon 32, ZUBAT
@@ -829,7 +829,7 @@
 	wildmon 32, SWINUB
 	wildmon 34, GOLBAT
 	wildmon 32, GOLBAT
-	wildmon 32, NINETALES, ALOLAN_FORM
+	wildmon 34, VULPIX, ALOLAN_FORM
 	; nite
 	wildmon 30, DELIBIRD
 	wildmon 31, ZUBAT
@@ -848,7 +848,7 @@
 	wildmon 33, VULPIX, ALOLAN_FORM
 	wildmon 34, SWINUB
 	wildmon 35, GOLBAT
-	wildmon 33, NINETALES, ALOLAN_FORM
+	wildmon 35, VULPIX, ALOLAN_FORM
 	wildmon 32, JYNX
 	; day
 	wildmon 32, SWINUB
@@ -856,7 +856,7 @@
 	wildmon 33, VULPIX, ALOLAN_FORM
 	wildmon 34, SWINUB
 	wildmon 35, GOLBAT
-	wildmon 33, NINETALES, ALOLAN_FORM
+	wildmon 35, VULPIX, ALOLAN_FORM
 	wildmon 32, JYNX
 	; nite
 	wildmon 32, DELIBIRD
@@ -875,7 +875,7 @@
 	wildmon 34, ZUBAT
 	wildmon 34, VULPIX, ALOLAN_FORM
 	wildmon 35, SWINUB
-	wildmon 35, NINETALES, ALOLAN_FORM
+	wildmon 35, VULPIX, ALOLAN_FORM
 	wildmon 32, JYNX
 	wildmon 34, JYNX
 	; day
@@ -883,7 +883,7 @@
 	wildmon 34, ZUBAT
 	wildmon 34, VULPIX, ALOLAN_FORM
 	wildmon 35, SWINUB
-	wildmon 35, NINETALES, ALOLAN_FORM
+	wildmon 35, VULPIX, ALOLAN_FORM
 	wildmon 32, JYNX
 	wildmon 34, JYNX
 	; nite
@@ -903,7 +903,7 @@
 	wildmon 34, ZUBAT
 	wildmon 34, VULPIX, ALOLAN_FORM
 	wildmon 35, SWINUB
-	wildmon 35, NINETALES, ALOLAN_FORM
+	wildmon 35, VULPIX, ALOLAN_FORM
 	wildmon 32, JYNX
 	wildmon 34, JYNX
 	; day
@@ -911,7 +911,7 @@
 	wildmon 34, ZUBAT
 	wildmon 34, VULPIX, ALOLAN_FORM
 	wildmon 35, SWINUB
-	wildmon 35, NINETALES, ALOLAN_FORM
+	wildmon 35, VULPIX, ALOLAN_FORM
 	wildmon 32, JYNX
 	wildmon 34, JYNX
 	; nite
@@ -2131,23 +2131,23 @@
 	def_grass_wildmons MURKY_SWAMP
 	db 2 percent, 2 percent, 2 percent ; encounter rates: morn/day/nite
 	; morn
-	wildmon LEVEL_FROM_BADGES - 2, WOOPER
-	wildmon LEVEL_FROM_BADGES + 1, QUAGSIRE
+	wildmon LEVEL_FROM_BADGES - 2, WOOPER, PALDEAN_FORM
+	wildmon LEVEL_FROM_BADGES + 1, CLODSIRE
 	wildmon LEVEL_FROM_BADGES - 1, YANMA
 	wildmon LEVEL_FROM_BADGES - 1, GRIMER, ALOLAN_FORM
 	wildmon LEVEL_FROM_BADGES + 0, GRIMER, ALOLAN_FORM
 	wildmon LEVEL_FROM_BADGES + 1, MUK, ALOLAN_FORM
 	wildmon LEVEL_FROM_BADGES + 3, YANMEGA
 	; day
-	wildmon LEVEL_FROM_BADGES - 2, WOOPER
-	wildmon LEVEL_FROM_BADGES + 1, QUAGSIRE
+	wildmon LEVEL_FROM_BADGES - 2, WOOPER, PALDEAN_FORM
+	wildmon LEVEL_FROM_BADGES + 1, CLODSIRE
 	wildmon LEVEL_FROM_BADGES - 1, YANMA
 	wildmon LEVEL_FROM_BADGES - 1, GRIMER, ALOLAN_FORM
 	wildmon LEVEL_FROM_BADGES + 0, GRIMER, ALOLAN_FORM
 	wildmon LEVEL_FROM_BADGES + 1, MUK, ALOLAN_FORM
 	wildmon LEVEL_FROM_BADGES + 3, YANMEGA
 	; nite
-	wildmon LEVEL_FROM_BADGES + 1, QUAGSIRE
+	wildmon LEVEL_FROM_BADGES + 1, CLODSIRE
 	wildmon LEVEL_FROM_BADGES - 4, ZUBAT
 	wildmon LEVEL_FROM_BADGES + 1, VENONAT
 	wildmon LEVEL_FROM_BADGES - 2, GASTLY
@@ -2157,7 +2157,7 @@
 	end_grass_wildmons
 
 	def_grass_wildmons MAGNET_TUNNEL_INSIDE
-	db 6 percent, 6 percent, 6 percent ; encounter rates: morn/day/nite
+	db 4 percent, 4 percent, 4 percent ; encounter rates: morn/day/nite
 	; morn
 	wildmon LEVEL_FROM_BADGES - 2, VOLTORB
 	wildmon LEVEL_FROM_BADGES - 2, GEODUDE, ALOLAN_FORM
@@ -2208,11 +2208,11 @@
 	wildmon LEVEL_FROM_BADGES - 1, GRAVELER
 	wildmon LEVEL_FROM_BADGES - 1, GLIGAR
 	wildmon LEVEL_FROM_BADGES + 0, GLIGAR
-	wildmon LEVEL_FROM_BADGES + 1, DUNSPARCE
-	wildmon LEVEL_FROM_BADGES - 1, DUNSPARCE
+	wildmon LEVEL_FROM_BADGES + 1, HOUNDOUR
+	wildmon LEVEL_FROM_BADGES - 1, HOUNDOUR
 	end_grass_wildmons
 
-	def_grass_wildmons SNOWTOP_MOUNTAIN
+	def_grass_wildmons SNOWTOP_MOUNTAIN_INSIDE
 	db 8 percent, 8 percent, 8 percent ; encounter rates: morn/day/nite
 	; morn
 	wildmon LEVEL_FROM_BADGES - 2, SWINUB

@@ -114,8 +114,8 @@ ItemEffects:
 	dw XItemEffect        ; X_ATTACK
 	dw XItemEffect        ; X_DEFEND
 	dw XItemEffect        ; X_SPEED
-	dw XItemEffect        ; X_SPCL_ATK
-	dw XItemEffect        ; X_SPCL_DEF
+	dw XItemEffect        ; X_SP_ATK
+	dw XItemEffect        ; X_SP_DEF
 	dw XItemEffect        ; X_ACCURACY
 	dw DireHit            ; DIRE_HIT
 	dw GuardSpec          ; GUARD_SPEC
@@ -179,15 +179,10 @@ ItemEffects:
 	dw IsntTheTimeMessage ; ROCKY_HELMET
 	dw IsntTheTimeMessage ; AIR_BALLOON
 	dw IsntTheTimeMessage ; RED_CARD
-	dw IsntTheTimeMessage ; RING_TARGET
 	dw IsntTheTimeMessage ; BINDING_BAND
-	dw IsntTheTimeMessage ; ABSORB_BULB
-	dw IsntTheTimeMessage ; CELL_BATTERY
 	dw IsntTheTimeMessage ; EJECT_BUTTON
 	dw IsntTheTimeMessage ; WEAK_POLICY
 	dw IsntTheTimeMessage ; ASSAULT_VEST
-	dw IsntTheTimeMessage ; LUMINOUSMOSS
-	dw IsntTheTimeMessage ; SNOWBALL
 	dw IsntTheTimeMessage ; SAFE_GOGGLES
 	dw IsntTheTimeMessage ; PROTECT_PADS
 	dw IsntTheTimeMessage ; THROAT_SPRAY
@@ -195,7 +190,11 @@ ItemEffects:
 	dw IsntTheTimeMessage ; HEAVY_BOOTS
 	dw IsntTheTimeMessage ; BLUNDRPOLICY
 	dw IsntTheTimeMessage ; ROOM_SERVICE
-	dw IsntTheTimeMessage ; UTILUMBRELLA
+	dw IsntTheTimeMessage ; CLEAR_AMULET
+	dw IsntTheTimeMessage ; MIRROR_HERB
+	dw IsntTheTimeMessage ; PUNCHINGLOVE
+	dw IsntTheTimeMessage ; COVERT_CLOAK
+	dw IsntTheTimeMessage ; LOADED_DICE
 	dw IsntTheTimeMessage ; LIGHT_BALL
 	dw IsntTheTimeMessage ; LEEK
 	dw IsntTheTimeMessage ; THICK_CLUB
@@ -236,6 +235,7 @@ ItemEffects:
 	dw IsntTheTimeMessage ; RAZOR_CLAW
 	dw IsntTheTimeMessage ; OVAL_STONE
 	dw EvoStoneEffect     ; ODD_SOUVENIR
+	dw EvoStoneEffect     ; LINKING_CORD
 	dw IsntTheTimeMessage ; SILVER_LEAF
 	dw IsntTheTimeMessage ; GOLD_LEAF
 	dw IsntTheTimeMessage ; MINT_LEAF
@@ -291,6 +291,7 @@ KeyItemEffects:
 	dw ApricornBox        ; APRICORN_BOX
 	dw WingCase           ; WING_CASE
 	dw TypeChart          ; TYPE_CHART
+	dw GBCSounds          ; GBC_SOUNDS
 	dw BlueCard           ; BLUE_CARD
 	dw SquirtBottle       ; SQUIRTBOTTLE
 	dw IsntTheTimeMessage ; SILPHSCOPE2
@@ -311,8 +312,8 @@ KeyItemEffects:
 	dw IsntTheTimeMessage ; ORANGETICKET
 	dw IsntTheTimeMessage ; MYSTICTICKET
 	dw IsntTheTimeMessage ; OLD_SEA_MAP
-	dw IsntTheTimeMessage ; EERIE_LURE
-	dw IsntTheTimeMessage ; TOUGH_LURE
+	dw IsntTheTimeMessage ; HARSH_LURE
+	dw IsntTheTimeMessage ; POTENT_LURE
 	dw IsntTheTimeMessage ; MALIGN_LURE
 	dw IsntTheTimeMessage ; SHINY_CHARM
 	dw IsntTheTimeMessage ; OVAL_CHARM
@@ -727,7 +728,7 @@ endc
 	ld a, 1 ; shiny anim
 	ld [wBattleAnimParam], a
 	ld de, ANIM_SEND_OUT_MON
-	farcall Call_PlayBattleAnim
+	farcall PlayBattleAnimDE
 	call SetPlayerTurn
 .not_shiny
 
@@ -824,10 +825,10 @@ Text_GotchaMonWasCaught:
 	text_asm
 	call WaitSFX
 	push bc
-	ld de, MUSIC_NONE
+	ld e, MUSIC_NONE
 	call PlayMusic
 	call DelayFrame
-	ld de, MUSIC_CAPTURE
+	ld e, MUSIC_CAPTURE
 	call PlayMusic
 	pop bc
 	ld hl, TextJump_Waitbutton
@@ -916,6 +917,7 @@ ItemHappinessRoseButStatFellText:
 	text_end
 
 VitaminEffect:
+	call FixPlayerEVsAndStats
 	ld b, PARTYMENUACTION_HEALING_ITEM
 	call UseItem_SelectMon
 	jmp c, ItemNotUsed_ExitMenu
@@ -955,20 +957,69 @@ CheckEVCap:
 ; Take the EV amount in a with the stat in c, and clamp a to the max
 ; amount of EVs we can give for the given stat, if a exceeds it.
 ; Returns the relevant EV in hl. Returns carry if a was modified.
+; Assumes EVs obey the total limit if applicable, so run FixPlayerEVs first.
+	push de
 	push bc
 	ld b, a
-	ld a, MON_EVS
-	add c
-	call GetPartyParamLocationAndValue
 
-	; a = (252-CurEV) >= b ? b : (252-CurEV)
-	ld a, 252
+	; Calculate EV total excluding the relevant EV.
+	; TODO: This is basically duplicating most of GetEVTotal.
+	; Can we write this in a more optimized way by reusing that?
+	ld a, MON_EVS
+	call GetPartyParamLocationAndValue
+	ld a, 6
+	ld de, 0
+	inc c
+.loop
+	dec c
+	jr nz, .not_relevant_ev
+	push hl
+	inc hl
+	jr .next
+.not_relevant_ev
+	push af
+	ld a, [hli]
+	add e
+	ld e, a
+	adc d
+	sub e
+	ld d, a
+	pop af
+.next
+	dec a
+	jr nz, .loop
+
+	; At this point, relevant EV is on the stack. Figure out
+	; if we can apply a maximum of 252 EVs to this stat.
+	; If modern EVs aren't enabled, we can always apply 252.
+	ld a, [wInitialOptions2]
+	and EV_OPTMASK
+	cp EVS_OPT_MODERN
+	ld a, MODERN_MAX_EV
+	jr nz, .got_max_for_stat
+
+	; Otherwise, compare current EV total with (max EVs-252).
+	ld hl, -(MODERN_EV_LIMIT - MODERN_MAX_EV)
+	add hl, de
+	jr nc, .got_max_for_stat
+
+	; We can either apply exactly 252 or less.
+	; This combined with the later "sub [hl]" will never
+	; underflow because the relevant EV was not included when
+	; calculating EV total. This is also why FixPlayerEVs need
+	; to run before using this function, or we run into trouble.
+	sub l ; a = 252 - (potential EV overflow).
+
+.got_max_for_stat
+	; Retrieve EV to (potentially) change.
+	pop hl
 	sub [hl]
 	cp b
 	jr c, .modified
 	ld a, b
 .modified
 	pop bc
+	pop de
 	ret
 
 GetStatStringAndPlayFullHealSFX:
@@ -981,12 +1032,10 @@ _GetStatString:
 	ld de, wStringBuffer2
 	ld hl, StatStrings
 	add hl, bc
+	ld c, [hl]
+	ld b, 0
 	add hl, bc
-GetStatStringForLyra:
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	ld bc, ITEM_NAME_LENGTH
+	ld c, ITEM_NAME_LENGTH
 	rst CopyBytes
 	ret
 
@@ -1164,7 +1213,7 @@ GetItemHealingAction:
 	db 1 << BRN, PARTYMENUTEXT_HEAL_BRN
 	db 1 << PAR, PARTYMENUTEXT_HEAL_PAR
 	db 1 << FRZ, PARTYMENUTEXT_HEAL_FRZ
-	db SLP,      PARTYMENUTEXT_HEAL_SLP
+	db SLP_MASK, PARTYMENUTEXT_HEAL_SLP
 	db -1,       PARTYMENUTEXT_HEAL_ALL
 
 RevivalHerb:
@@ -1337,6 +1386,7 @@ UseItem_SelectMon2:
 	jr UseItem_DoSelectMon
 
 WingCase:
+	call FixPlayerEVsAndStats
 	ld b, PARTYMENUACTION_HEALING_ITEM ; also used for vitamins
 	ld hl, WingCase_MonSelected
 	jr UseItem_SelectMon_Loop
@@ -1541,8 +1591,8 @@ ReviveFullHP:
 	call LoadHPFromBuffer1
 ContinueRevive:
 	call UseItem_GetHPParameter
-	ld [hl], d
-	inc hl
+	ld a, d
+	ld [hli], a
 	ld [hl], e
 	jr LoadCurHPIntoBuffer5
 
@@ -1632,7 +1682,7 @@ GetOneFifthMaxHP:
 	ld a, 5
 	ldh [hDivisor], a
 	ld b, 2
-	call Divide
+	farcall Divide
 	ldh a, [hQuotient + 1]
 	ld d, a
 	ldh a, [hQuotient + 2]
@@ -1657,7 +1707,14 @@ GetHealingItemAmount:
 
 .figy_berry
 	call .set_de_to_hp
-	jr .half_hp
+	push bc
+	ld b, d
+	ld c, e
+	call GetThirdBC
+	ld d, b
+	ld e, c
+	pop bc
+	ret
 
 .sitrus_berry
 	call .set_de_to_hp
@@ -1828,6 +1885,11 @@ XItemEffect:
 	farcall GetStatRaiseMessage
 	or 1
 	farcall DoPrintStatChange
+	push hl
+	push bc
+	farcall ResetMirrorHerb
+	pop bc
+	pop hl
 	; fallthrough
 XItemHappiness:
 	ld a, [wCurBattleMon]
@@ -1881,7 +1943,7 @@ WingCase_MonSelected:
 	add hl, bc
 	ld a, [hld]
 	or [hl]
-	ld a, 252
+	ld a, MODERN_MAX_EV
 	jr nz, .have_wings
 	hlcoord 1, 16
 	ld de, .YouDontHaveAny
@@ -1896,10 +1958,10 @@ WingCase_MonSelected:
 	and a
 	jr nz, .overflow
 	ld a, [hl]
-	cp 252
+	cp MODERN_MAX_EV + 1
 	jr c, .got_amount
 .overflow
-	ld a, 252
+	ld a, MODERN_MAX_EV
 .got_amount
 	ld [wItemQuantityBuffer], a
 
@@ -2137,9 +2199,15 @@ PrintAprValues:
 	inc de
 	jmp PrintNum
 
+GBCSounds:
+	call FadeToMenu
+	farcall MusicPlayer
+	jr _FinishFullscreenItem
+
 TypeChart:
 	call FadeToMenu
 	farcall _TypeChart
+_FinishFullscreenItem:
 	call ExitMenu
 	xor a
 	ldh [hBGMapMode], a
@@ -2735,7 +2803,7 @@ ComputeMaxPP:
 	ld a, 5
 	ldh [hDivisor], a
 	ld b, 4
-	call Divide
+	farcall Divide
 	; Get the number of PP, which are bits 6 and 7 of the PP value stored in RAM.
 	ld a, [hl]
 	ld b, a

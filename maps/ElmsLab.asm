@@ -46,9 +46,9 @@ ElmsLab_MapScriptHeader:
 	def_object_events
 	object_event  5,  2, SPRITE_ELM, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, ProfElmScript, -1
 	object_event  2,  9, SPRITE_SCIENTIST, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, PAL_NPC_BROWN, OBJECTTYPE_SCRIPT, 0, ElmsAideScript, EVENT_ELMS_AIDE_IN_LAB
-	object_event  6,  3, SPRITE_BALL_CUT_FRUIT, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, CyndaquilPokeBallScript, EVENT_CYNDAQUIL_POKEBALL_IN_ELMS_LAB
-	object_event  7,  3, SPRITE_BALL_CUT_FRUIT, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_BLUE, OBJECTTYPE_SCRIPT, 0, TotodilePokeBallScript, EVENT_TOTODILE_POKEBALL_IN_ELMS_LAB
-	object_event  8,  3, SPRITE_BALL_CUT_FRUIT, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, ChikoritaPokeBallScript, EVENT_CHIKORITA_POKEBALL_IN_ELMS_LAB
+	object_event  6,  3, SPRITE_BALL_CUT_FRUIT, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_POKE_BALL, OBJECTTYPE_SCRIPT, 0, CyndaquilPokeBallScript, EVENT_CYNDAQUIL_POKEBALL_IN_ELMS_LAB
+	object_event  7,  3, SPRITE_BALL_CUT_FRUIT, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_DECO_ITEM, OBJECTTYPE_SCRIPT, 0, TotodilePokeBallScript, EVENT_TOTODILE_POKEBALL_IN_ELMS_LAB
+	object_event  8,  3, SPRITE_BALL_CUT_FRUIT, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, PAL_NPC_KEY_ITEM, OBJECTTYPE_SCRIPT, 0, ChikoritaPokeBallScript, EVENT_CHIKORITA_POKEBALL_IN_ELMS_LAB
 	object_event  5,  3, SPRITE_OFFICER, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, CopScript, EVENT_COP_IN_ELMS_LAB
 	object_event  5, 11, SPRITE_LYRA, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, ElmsLabLyraScript, EVENT_LYRA_IN_ELMS_LAB
 
@@ -377,7 +377,6 @@ ElmAfterTheftScript:
 	writetext ElmAfterTheftText5
 	promptbutton
 	setevent EVENT_GAVE_MYSTERY_EGG_TO_ELM
-	setflag ENGINE_BUG_CONTEST_ON
 	clearevent EVENT_LYRA_ROUTE_29
 	setmapscene ROUTE_29, $1
 	clearevent EVENT_ROUTE_30_YOUNGSTER_JOEY
@@ -404,7 +403,7 @@ ElmGiveOddSouvenirScript:
 	setevent EVENT_GOT_ODD_SOUVENIR_FROM_ELM
 	writetext ElmGiveOddSouvenirText2
 	waitbutton
-	checkevent EVENT_BEAT_PROF_ELM
+	checkevent EVENT_BATTLED_PROF_ELM
 	iffalsefwd ElmAlsoBattleScript
 	endtext
 
@@ -416,7 +415,7 @@ ElmGiveMasterBallScript:
 	setevent EVENT_GOT_MASTER_BALL_FROM_ELM
 	writetext ElmGiveMasterBallText2
 	waitbutton
-	checkevent EVENT_BEAT_PROF_ELM
+	checkevent EVENT_BATTLED_PROF_ELM
 	iftrue_endtext
 ElmAlsoBattleScript:
 	writetext ElmByTheWayText
@@ -424,7 +423,7 @@ ElmAlsoBattleScript:
 	sjumpfwd ElmAskBattleScript
 
 ElmCheckBattleScript:
-	checkevent EVENT_BEAT_PROF_ELM
+	checkevent EVENT_BATTLED_PROF_ELM
 	iftrue_jumpopenedtext ElmText_CallYou
 	checkevent EVENT_BEAT_FALKNER
 	iffalse_jumpopenedtext ElmText_CallYou
@@ -455,8 +454,10 @@ ElmAskBattleScript:
 	loadtrainer PROF_ELM, 3
 .GotTeam:
 	loadvar VAR_BATTLETYPE, BATTLETYPE_CANLOSE
+	setevent EVENT_BATTLED_PROF_ELM
 	startbattle
 	reloadmap
+	special HealPartyEvenForNuzlocke
 	jumptextfaceplayer ElmAfterBattleText
 
 ElmGiveTicketScript:
@@ -1198,6 +1199,15 @@ ElmAfterTheftText6:
 	para "Before you leave,"
 	line "make sure that you"
 	cont "talk to your mom."
+
+	para "And give me a call"
+	line "sometimes too."
+
+	para "I can tell you all"
+	line "about my research"
+
+	para "on how #mon"
+	line "evolve!"
 	done
 
 ElmStudyingEggText:

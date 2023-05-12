@@ -5,6 +5,7 @@ TrainerGroups:
 	table_width 3, TrainerGroups
 	dba CarrieGroup
 	dba CalGroup
+	dba JackyGroup
 	dba FalknerGroup
 	dba BugsyGroup
 	dba WhitneyGroup
@@ -101,6 +102,7 @@ TrainerGroups:
 	dba TamerGroup
 	dba ArtistGroup
 	dba AromaLadyGroup
+	dba SoldierGroup
 	dba WaiterGroup
 	dba WaitressGroup
 	dba SightseerMGroup
@@ -146,6 +148,7 @@ TrainerGroups:
 	dba ValerieGroup
 	dba KukuiGroup
 	dba PiersGroup
+	dba KatyGroup
 	dba VictorGroup
 	dba BillGroup
 	dba YellowGroup

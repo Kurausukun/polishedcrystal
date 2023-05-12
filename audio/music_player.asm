@@ -60,48 +60,10 @@ MACRO jpheldbutton
 ENDM
 
 MusicPlayerPals:
-if !DEF(MONOCHROME)
-; bg
-	RGB 02, 03, 04
-	RGB 02, 03, 04
-	RGB 10, 12, 14
-	RGB 26, 28, 30
-; green
-	RGB 02, 03, 04
-	RGB 02, 03, 04
-	RGB 06, 26, 06
-	RGB 26, 28, 30
-; blue
-	RGB 02, 03, 04
-	RGB 02, 03, 04
-	RGB 07, 07, 31
-	RGB 26, 28, 30
-; red
-	RGB 02, 03, 04
-	RGB 02, 03, 04
-	RGB 31, 07, 07
-	RGB 26, 28, 30
-else
-rept 4
-	RGB_MONOCHROME_BLACK
-	RGB_MONOCHROME_BLACK
-	RGB_MONOCHROME_DARK
-	RGB_MONOCHROME_WHITE
-endr
-endc
+INCLUDE "gfx/music_player/music_player.pal"
 
 MusicPlayerNotePals:
-if !DEF(MONOCHROME)
-	RGB 02, 03, 04 ; bg
-	RGB 06, 26, 06 ; green
-	RGB 07, 07, 31 ; blue
-	RGB 31, 07, 07 ; red
-else
-	RGB_MONOCHROME_BLACK
-	RGB_MONOCHROME_WHITE
-	RGB_MONOCHROME_DARK
-	RGB_MONOCHROME_LIGHT
-endc
+INCLUDE "gfx/music_player/notes.pal"
 
 MusicPlayer::
 	call ClearTileMap
@@ -158,7 +120,7 @@ MusicPlayer::
 ; Load graphics
 	ld hl, MusicPlayerGFX
 	ld de, vTiles2
-	lb bc, BANK(MusicPlayerGFX), $45
+	lb bc, BANK(MusicPlayerGFX), $47
 	call DecompressRequest2bpp
 
 	ld hl, NotesGFX
@@ -209,19 +171,7 @@ RenderMusicPlayer:
 	xor a
 	ldh [hOAMUpdate], a ; we will manually do it in LCD interrupt
 
-	ld hl, wChannelSelectorSwitches
-	ld a, NUM_MUSIC_CHANS - 1
-.ch_label_loop:
-	ld [wChannelSelector], a
-	ld a, [hli]
-	push hl
-	call DrawChannelLabel
-	pop hl
-	ld a, [wChannelSelector]
-	dec a
-	cp -1
-	jr nz, .ch_label_loop
-
+	call RedrawChannelLabels
 	call DelayFrame
 
 	ldh a, [rSVBK]
@@ -234,7 +184,7 @@ RenderMusicPlayer:
 	and a
 	jr nz, _RedrawMusicPlayer
 .bad_selection
-	ld a, MUSIC_MAIN_MENU
+	ld a, [wMapMusic]
 ; fallthrough
 
 _RedrawMusicPlayer:
@@ -358,14 +308,15 @@ MusicPlayerLoop:
 SongEditor:
 	call MPUpdateUIAndGetJoypad
 	ld hl, hJoyDown
-	jrheldbutton D_UP, .up, 10
+	jpheldbutton D_UP, .up, 10
 	jpheldbutton D_DOWN, .down, 10
 	ld hl, hJoyPressed
 	jrbutton D_LEFT, .left
 	jrbutton D_RIGHT, .right
 	jrbutton A_BUTTON, .a
+	jpbutton B_BUTTON, .b
 	jpbutton START, .start
-	jpbutton SELECT | B_BUTTON, .select_b
+	jpbutton SELECT, .select
 
 	; prioritize refreshing the note display
 	ld a, 2
@@ -404,7 +355,7 @@ SongEditor:
 ; otherwise: toggle editable field
 	ld a, [wChannelSelector]
 	cp MP_EDIT_PITCH
-	jr z, SongEditor
+	jmp z, SongEditor
 	cp MP_EDIT_TEMPO
 	jmp z, AdjustTempo
 	ld c, a
@@ -462,9 +413,27 @@ SongEditor:
 	call DrawPianoRollOverlay
 	jmp SongEditor
 
-.select_b:
+.b:
+; clear settings
+	xor a
+	ld hl, wChannelSelectorSwitches
+rept 4
+	ld [hli], a
+endr
+	ld [hli], a ; wPitchTransposition
+	cp [hl]
+	ld [hl], a ; wTempoAdjustment
+
+	ld d, a
+	ld a, [wSongSelection]
+	ld e, a
+; If wTempoAdjustment was not zero, restart the song at default tempo
+	call nz, PlayMusic2
+
+.select:
 ; exit song editor
 	call ClearChannelSelector
+	call RedrawChannelLabels
 	xor a ; ld a, MP_EDIT_CH1
 	ld [wChannelSelector], a
 	call DrawPitchTransposition
@@ -825,6 +794,21 @@ _LocateChannelSelector:
 .x_coords
 	db 0, 5, 10, 16
 
+RedrawChannelLabels:
+	xor a
+	ld hl, wChannelSelectorSwitches
+.ch_label_loop:
+	ld [wChannelSelector], a
+	ld a, [hli]
+	push hl
+	call DrawChannelLabel
+	pop hl
+	ld a, [wChannelSelector]
+	inc a
+	cp NUM_MUSIC_CHANS
+	jr nz, .ch_label_loop
+	ret
+
 DrawChannelLabel:
 	and a
 	jr nz, .off
@@ -893,7 +877,7 @@ _DrawCh1_2_3:
 	push af
 	push hl
 	call CheckChannelOn
-	ld a, 0
+	ld a, 0 ; no-optimize a = 0
 	jr c, .blank_note_name
 	call GetPitchAddr
 	ld a, [hl]
@@ -951,14 +935,13 @@ _DrawCh1_2_3:
 	push hl
 	call CheckChannelOn
 	pop hl
-	ld a, 0
+	ld a, 0 ; no-optimize a = 0
 	jr c, .blank_volume
 	push hl
 	call GetPitchAddr
 	ld a, [hl]
 	and a
 	pop hl
-	ld a, 0
 	jr z, .blank_volume
 	push hl
 	call GetIntensityAddr

@@ -61,7 +61,7 @@ Facings:
 	dw FacingTinyWindows4     ; FACING_TINY_WINDOWS_4
 	dw FacingTinyWindows5     ; FACING_TINY_WINDOWS_5
 	dw FacingTinyWindows6     ; FACING_TINY_WINDOWS_6
-	dw FacingTinyWindows7     ; FACING_TINY_WINDOWS_7
+	dw FacingMicrophone       ; FACING_MICROPHONE
 	assert_table_length NUM_FACINGS
 	dw 0 ; end
 
@@ -348,6 +348,7 @@ FacingStepUpFlip:
 	db  8,  8, RELATIVE_ATTRIBUTES | X_FLIP, $06
 
 FacingPokecomNews:
+FacingMicrophone:
 	db 4 ; #
 	db  4,  0, 0, $08
 	db  4,  8, 0, $09
@@ -439,42 +440,38 @@ FacingTinyWindows1:
 	db 12,  20, 0, $84
 
 FacingTinyWindows2:
-	db 1 ; #
-	db 12,  8, 0, $85
+	db 2 ; #
+	db  8,  4, 0, $84
+	db  8, 20, 0, $84
 
 FacingTinyWindows3:
 	db 2 ; #
-	db  8,  4, 0, $84
-	db  8, 20, 0, $84
-
-FacingTinyWindows4:
-	db 2 ; #
 	db 20,  4, 0, $84
 	db 20, 20, 0, $84
+
+FacingTinyWindows4:
+	db 6 ; #
+	db  4, -16, 0, $86
+	db  4,   8, X_FLIP, $86
+	db 12, -16, 0, $88
+	db 12,  -8, 0, $87
+	db 12,   0, X_FLIP, $87
+	db 12,   8, X_FLIP, $88
 
 FacingTinyWindows5:
 	db 6 ; #
-	db  4,  0, 0, $86
-	db  4, 24, X_FLIP, $86
-	db 12,  0, 0, $88
-	db 12,  8, 0, $87
-	db 12, 16, X_FLIP, $87
-	db 12, 24, X_FLIP, $88
+	db  8, -12, 0, $84
+	db  8,  -4, 0, $84
+	db  8,   4, 0, $84
+	db 24, -12, 0, $84
+	db 24,  -4, 0, $84
+	db 24,   4, 0, $84
 
 FacingTinyWindows6:
 	db 6 ; #
-	db  8,  4, 0, $84
-	db  8, 12, 0, $84
-	db  8, 20, 0, $84
-	db 24,  4, 0, $84
-	db 24, 12, 0, $84
-	db 24, 20, 0, $84
-
-FacingTinyWindows7:
-	db 6 ; #
-	db  8,  4, 0, $84
-	db  8, 12, 0, $84
-	db  8, 20, 0, $84
-	db 20,  4, 0, $84
-	db 20, 12, 0, $84
-	db 20, 20, 0, $84
+	db  8, -12, 0, $84
+	db  8,  -4, 0, $84
+	db  8,   4, 0, $84
+	db 20, -12, 0, $84
+	db 20,  -4, 0, $84
+	db 20,   4, 0, $84

@@ -11,7 +11,7 @@
 	const SPRITE_MOM ; 07
 	const SPRITE_DAD ; 08
 	const SPRITE_LYRA ; 09
-	const SPRITE_SILVER ; 0a
+	const SPRITE_RIVAL ; 0a
 	const SPRITE_FALKNER ; 0b
 	const SPRITE_BUGSY ; 0c
 	const SPRITE_WHITNEY ; 0d
@@ -176,7 +176,7 @@
 	const SPRITE_BIG_LAPRAS ; ac
 	const SPRITE_BIG_ONIX ; ad
 	const SPRITE_BIG_GYARADOS ; ae
-	const SPRITE_PIDGEOTTO_SIDE ; af (blank side frame)
+	const SPRITE_PIDGEOTTO_SIDE ; af
 	const SPRITE_RATTATA_BACK ; b0 (blank side frame)
 	const SPRITE_SLOWPOKETAIL ; b1
 	const SPRITE_WEIRD_TREE ; b2
@@ -196,7 +196,13 @@
 	const SPRITE_BEACH_GUY ; c0
 	const SPRITE_BEACH_GIRL ; c1
 	const SPRITE_PIERS ; c2
-	const SPRITE_ALOLAN_EXEGGUTOR ; c3
+	const SPRITE_KATY ; c3
+	const SPRITE_ALOLAN_EXEGGUTOR ; c4
+	const SPRITE_SOLDIER ; c5
+	const SPRITE_CRYS ; c6
+	const SPRITE_CRYS_BIKE ; c7
+	const SPRITE_CRYS_SURF ; c8
+	const SPRITE_THORTON ; c9
 DEF NUM_OVERWORLD_SPRITES EQU const_value - 1
 
 ; special GetMonSprite values (see engine/overworld/overworld.asm)

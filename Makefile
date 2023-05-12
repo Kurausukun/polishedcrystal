@@ -214,14 +214,11 @@ gfx/paintings/%.2bpp: rgbgfx += -Z
 
 gfx/player/chris_back.2bpp: rgbgfx += -Z
 gfx/player/kris_back.2bpp: rgbgfx += -Z
+gfx/player/crys_back.2bpp: rgbgfx += -Z
 
 gfx/pokedex/%.bin: gfx/pokedex/%.tilemap gfx/pokedex/%.attrmap ; $Qcat $^ > $@
 gfx/pokedex/pokedex.2bpp: gfx/pokedex/pokedex0.2bpp gfx/pokedex/pokedex1.2bpp gfx/pokedex/area.2bpp ; $Qcat $^ > $@
-gfx/pokedex/pokedex0.2bpp: tools/gfx += --trim-whitespace
-gfx/pokedex/pokedex1.2bpp: tools/gfx += --trim-whitespace
-gfx/pokedex/area.2bpp: tools/gfx += --trim-whitespace
 gfx/pokedex/question_mark.2bpp: rgbgfx += -Z
-gfx/pokedex/slowpoke.2bpp: tools/gfx += --trim-whitespace
 
 gfx/pokegear/pokegear.2bpp: tools/gfx += --trim-whitespace
 gfx/pokegear/pokegear_sprites.2bpp: tools/gfx += --trim-whitespace
@@ -250,6 +247,7 @@ gfx/trade/trade_screen.2bpp: gfx/trade/border.2bpp gfx/trade/textbox.2bpp ; $Qca
 
 gfx/trainer_card/chris_card.2bpp: rgbgfx += -Z
 gfx/trainer_card/kris_card.2bpp: rgbgfx += -Z
+gfx/trainer_card/crys_card.2bpp: rgbgfx += -Z
 
 gfx/trainers/%.2bpp: rgbgfx += -Z
 

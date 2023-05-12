@@ -24,10 +24,13 @@ MultipleEvolutions:
 	multi_evo SLOWPOKE, GALARIAN_FORM, EVOLVE_SLOWPOKE_GALARIAN
 	multi_evo MAGNETON
 	multi_evo EXEGGCUTE
+	multi_evo KOFFING
 	multi_evo CUBONE
 	multi_evo SCYTHER
 	multi_evo EEVEE
 	multi_evo MIME_JR_
 	multi_evo URSARING
 	multi_evo STANTLER
+	multi_evo DUNSPARCE, DUDUNSPARCE_TWO_SEGMENT_FORM, EVOLVE_DUNSPARCE
+	multi_evo DUNSPARCE, DUDUNSPARCE_THREE_SEGMENT_FORM, EVOLVE_DUNSPARCE
 	dw -1

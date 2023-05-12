@@ -6,10 +6,12 @@ Route32PokeCenter1F_BlockData:
 AzaleaPokeCenter1F_BlockData:
 EcruteakPokeCenter1F_BlockData:
 OlivinePokeCenter1F_BlockData:
+SnowtopPokeCenter1F_BlockData:
 CianwoodPokeCenter1F_BlockData:
 MahoganyPokeCenter1F_BlockData:
 BlackthornPokeCenter1F_BlockData:
 SilverCavePokeCenter1F_BlockData:
+ShamoutiPokeCenter1F_BlockData:
 	INCBIN "maps/JohtoPokeCenter1F.ablk.lz"
 
 PokeCenter2F_BlockData:
@@ -26,7 +28,6 @@ CeladonPokeCenter1F_BlockData:
 SaffronPokeCenter1F_BlockData:
 FuchsiaPokeCenter1F_BlockData:
 CinnabarPokeCenter1F_BlockData:
-ShamoutiPokeCenter1F_BlockData:
 	INCBIN "maps/KantoPokeCenter1F.ablk.lz"
 
 KantoPokeCenter2F_BlockData:
@@ -642,9 +643,13 @@ SECTION "RuggedRoadSouth_BlockData", ROMX
 RuggedRoadSouth_BlockData:
 	INCBIN "maps/RuggedRoadSouth.ablk.lz"
 
-SECTION "SnowtopMountain_BlockData", ROMX
-SnowtopMountain_BlockData:
-	INCBIN "maps/SnowtopMountain.ablk.lz"
+SECTION "SnowtopMountainInside_BlockData", ROMX
+SnowtopMountainInside_BlockData:
+	INCBIN "maps/SnowtopMountainInside.ablk.lz"
+
+SECTION "SnowtopMountainOutside_BlockData", ROMX
+SnowtopMountainOutside_BlockData:
+	INCBIN "maps/SnowtopMountainOutside.ablk.lz"
 
 SECTION "OlivineGym_BlockData", ROMX
 OlivineGym_BlockData:
@@ -1332,6 +1337,26 @@ CeladonUniversityLibrary1F_BlockData:
 SECTION "CeladonUniversityLibrary2F_BlockData", ROMX
 CeladonUniversityLibrary2F_BlockData:
 	INCBIN "maps/CeladonUniversityLibrary2F.ablk.lz"
+
+SECTION "RocketHideoutB1F_BlockData", ROMX
+RocketHideoutB1F_BlockData:
+	INCBIN "maps/RocketHideoutB1F.ablk.lz"
+
+SECTION "RocketHideoutB2F_BlockData", ROMX
+RocketHideoutB2F_BlockData:
+	INCBIN "maps/RocketHideoutB2F.ablk.lz"
+
+SECTION "RocketHideoutB3F_BlockData", ROMX
+RocketHideoutB3F_BlockData:
+	INCBIN "maps/RocketHideoutB3F.ablk.lz"
+
+SECTION "RocketHideoutB4F_BlockData", ROMX
+RocketHideoutB4F_BlockData:
+	INCBIN "maps/RocketHideoutB4F.ablk.lz"
+
+SECTION "RocketHideoutElevator_BlockData", ROMX
+RocketHideoutElevator_BlockData:
+	INCBIN "maps/RocketHideoutElevator.ablk.lz"
 
 SECTION "SaffronGym_BlockData", ROMX
 SaffronGym_BlockData:

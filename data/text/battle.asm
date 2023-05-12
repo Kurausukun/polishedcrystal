@@ -1082,6 +1082,14 @@ MistText:
 	line "shrouded in mist!"
 	prompt
 
+ProtectedByItemText:
+	text "<TARGET> is"
+	line "protected by"
+	cont ""
+	text_ram wStringBuffer1
+	text "."
+	prompt
+
 ProtectedByMistText:
 	text "<TARGET> is"
 	line "protected by mist."
@@ -1184,7 +1192,7 @@ TrickRoomEndedText:
 
 LightScreenEffectText:
 	text "<USER>'s"
-	line "Spcl.Def rose!"
+	line "Sp.Def rose!"
 	prompt
 
 ReflectEffectText:
@@ -1614,6 +1622,7 @@ GetOutText:
 
 CarrieFinalPkmnText:
 CalFinalPkmnText:
+JackyFinalPkmnText:
 	text "I still have one"
 	line "#mon!"
 	prompt
@@ -2045,6 +2054,12 @@ PiersFinalPkmnText:
 	para "Not songs…"
 	line "Not moves…"
 	cont "Not #mon!"
+	prompt
+
+KatyFinalPkmnText:
+	text "Oh? How should I"
+	line "roll things out"
+	cont "from here?"
 	prompt
 
 BillFinalPkmnText:

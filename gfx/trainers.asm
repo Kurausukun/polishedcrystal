@@ -9,6 +9,9 @@ CarriePic: INCBIN "gfx/trainers/carrie.2bpp.lz"
 SECTION "CalPic", ROMX
 CalPic: INCBIN "gfx/trainers/cal.2bpp.lz"
 
+SECTION "JackyPic", ROMX
+JackyPic: INCBIN "gfx/trainers/jacky.2bpp.lz"
+
 SECTION "FalknerPic", ROMX
 FalknerPic: INCBIN "gfx/trainers/falkner.2bpp.lz"
 
@@ -279,6 +282,9 @@ ArtistPic: INCBIN "gfx/trainers/artist.2bpp.lz"
 SECTION "AromaLadyPic", ROMX
 AromaLadyPic: INCBIN "gfx/trainers/aroma_lady.2bpp.lz"
 
+SECTION "SoldierPic", ROMX
+SoldierPic: INCBIN "gfx/trainers/soldier.2bpp.lz"
+
 SECTION "WaiterPic", ROMX
 WaiterPic: INCBIN "gfx/trainers/waiter.2bpp.lz"
 
@@ -413,6 +419,9 @@ KukuiPic: INCBIN "gfx/trainers/kukui.2bpp.lz"
 
 SECTION "PiersPic", ROMX
 PiersPic: INCBIN "gfx/trainers/piers.2bpp.lz"
+
+SECTION "KatyPic", ROMX
+KatyPic: INCBIN "gfx/trainers/katy.2bpp.lz"
 
 SECTION "VictorPic", ROMX
 VictorPic: INCBIN "gfx/trainers/victor.2bpp.lz"

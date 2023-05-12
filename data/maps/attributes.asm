@@ -20,8 +20,8 @@ ENDM
 	map_attributes VioletCity, VIOLET_CITY, $5, NORTH | SOUTH | WEST | EAST
 	connection north, VioletOutskirts, VIOLET_OUTSKIRTS, 0
 	connection south, Route32, ROUTE_32, 0
-	connection west, Route36, ROUTE_36, 2
-	connection east, Route31, ROUTE_31, 11
+	connection west, Route36, ROUTE_36, 0
+	connection east, Route31, ROUTE_31, 9
 
 	map_attributes AzaleaTown, AZALEA_TOWN, $5, WEST | EAST
 	connection west, Route34, ROUTE_34, -18
@@ -81,7 +81,7 @@ ENDM
 
 	map_attributes Route31, ROUTE_31, $5, SOUTH | WEST
 	connection south, Route30, ROUTE_30, 10
-	connection west, VioletCity, VIOLET_CITY, -8
+	connection west, VioletCity, VIOLET_CITY, -9
 
 	map_attributes Route32, ROUTE_32, $5, NORTH | SOUTH | WEST | EAST
 	connection north, VioletCity, VIOLET_CITY, 0
@@ -123,7 +123,7 @@ ENDM
 	map_attributes Route36, ROUTE_36, $5, NORTH | SOUTH | EAST
 	connection north, Route37, ROUTE_37, 12
 	connection south, Route35, ROUTE_35, 0
-	connection east, VioletCity, VIOLET_CITY, -2
+	connection east, VioletCity, VIOLET_CITY, 0
 
 	map_attributes Route37, ROUTE_37, $5, NORTH | SOUTH
 	connection north, EcruteakCity, ECRUTEAK_CITY, -5
@@ -773,6 +773,11 @@ ENDM
 	map_attributes CeladonUniversityClassroom2, CELADON_UNIVERSITY_CLASSROOM_2, $0, 0
 	map_attributes CeladonUniversityClassroom3, CELADON_UNIVERSITY_CLASSROOM_3, $0, 0
 	map_attributes CeladonUniversityClassroom4, CELADON_UNIVERSITY_CLASSROOM_4, $0, 0
+	map_attributes RocketHideoutB1F, ROCKET_HIDEOUT_B1F, $0, 0
+	map_attributes RocketHideoutB2F, ROCKET_HIDEOUT_B2F, $0, 0
+	map_attributes RocketHideoutB3F, ROCKET_HIDEOUT_B3F, $0, 0
+	map_attributes RocketHideoutB4F, ROCKET_HIDEOUT_B4F, $0, 0
+	map_attributes RocketHideoutElevator, ROCKET_HIDEOUT_ELEVATOR, $0, 0
 	map_attributes ManiasHouse, MANIAS_HOUSE, $0, 0
 	map_attributes CianwoodGym, CIANWOOD_GYM, $0, 0
 	map_attributes CianwoodPokeCenter1F, CIANWOOD_POKECENTER_1F, $0, 0
@@ -848,7 +853,9 @@ ENDM
 	map_attributes CeruleanCave2F, CERULEAN_CAVE_2F, $9, 0
 	map_attributes CeruleanCaveB1F, CERULEAN_CAVE_B1F, $9, 0
 	map_attributes Route39RuggedRoadGate, ROUTE_39_RUGGED_ROAD_GATE, $0, 0
-	map_attributes SnowtopMountain, SNOWTOP_MOUNTAIN, $0, 0
+	map_attributes SnowtopMountainInside, SNOWTOP_MOUNTAIN_INSIDE, $d5, 0
+	map_attributes SnowtopMountainOutside, SNOWTOP_MOUNTAIN_OUTSIDE, $0, 0
+	map_attributes SnowtopPokeCenter1F, SNOWTOP_POKECENTER_1F, $0, 0
 	map_attributes YellowForestGate, YELLOW_FOREST_GATE, $0, 0
 	map_attributes YellowForest, YELLOW_FOREST, $55, 0
 	map_attributes QuietCave1F, QUIET_CAVE_1F, $9, 0

@@ -39,6 +39,11 @@ INCLUDE "maps/GoldenrodPokecomCenter1F.asm"
 INCLUDE "maps/GoldenrodPokecomCenterOffice.asm"
 
 
+SECTION "Pokemon Center Scripts 5", ROMX
+
+INCLUDE "maps/SnowtopPokeCenter1F.asm"
+
+
 SECTION "Special Map Scripts", ROMX
 
 INCLUDE "maps/PokeCenter2F.asm"
@@ -311,7 +316,8 @@ SECTION "Rugged Road + Snowtop Mountain Scripts", ROMX
 
 INCLUDE "maps/RuggedRoadNorth.asm"
 INCLUDE "maps/RuggedRoadSouth.asm"
-INCLUDE "maps/SnowtopMountain.asm"
+INCLUDE "maps/SnowtopMountainInside.asm"
+INCLUDE "maps/SnowtopMountainOutside.asm"
 INCLUDE "maps/Route39RuggedRoadGate.asm"
 
 
@@ -705,6 +711,15 @@ SECTION "Celadon University Library Scripts", ROMX
 
 INCLUDE "maps/CeladonUniversityLibrary1F.asm"
 INCLUDE "maps/CeladonUniversityLibrary2F.asm" ; shares text with CeladonUniversityLibrary1F.asm
+
+
+SECTION "Rocket Hideout Scripts", ROMX
+
+INCLUDE "maps/RocketHideoutB1F.asm"
+INCLUDE "maps/RocketHideoutB2F.asm"
+INCLUDE "maps/RocketHideoutB3F.asm"
+INCLUDE "maps/RocketHideoutB4F.asm"
+INCLUDE "maps/RocketHideoutElevator.asm"
 
 
 SECTION "Saffron Scripts", ROMX

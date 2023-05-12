@@ -4008,12 +4008,6 @@ _MoveForgotText::
 	para "And…"
 	prompt
 
-SECTION "_MoveCantForgetHMText", ROMX
-_MoveCantForgetHMText::
-	text "HM moves can't be"
-	line "forgotten now."
-	prompt
-
 SECTION "_CardFlipPlayWithThreeCoinsText", ROMX
 _CardFlipPlayWithThreeCoinsText::
 	text "Play with three"
@@ -4259,8 +4253,11 @@ SECTION "_ItemHappinessRoseButStatFellText", ROMX
 _ItemHappinessRoseButStatFellText::
 	text_ram wStringBuffer1
 	text " became"
-	line "friendly. Base"
-	cont ""
+	line "more friendly."
+	para ""
+	text_ram wStringBuffer1
+	text "'s base"
+	line ""
 	text_ram wStringBuffer2
 	text " fell!"
 	prompt
@@ -4556,6 +4553,20 @@ WonderTradePromptText::
 	line "you want to trade?"
 	prompt
 
+SECTION "WonderTradeCantTradeSpikyEaredPichuText", ROMX
+WonderTradeCantTradeSpikyEaredPichuText::
+    text "This Pichu appears"
+    line "to have traveled"
+    cont "through time."
+
+    para "It would be risky"
+    line "to transfer it,"
+
+    para "so it's best for"
+    line "Pichu to stay"
+    cont "where it is."
+    prompt
+
 ;SECTION "WonderTradeCantTradeEggText", ROMX
 ;WonderTradeCantTradeEggText::
 ;	text "Sorry. We can't"
@@ -4640,6 +4651,7 @@ SECTION "MartPremierBallText", ROMX
 MartPremierBallText::
 	text "You also get a"
 	line "Premier Ball as"
+	text_sound SFX_TRANSACTION
 	cont "an added bonus."
 	done
 

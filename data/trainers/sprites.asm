@@ -3,6 +3,7 @@ BTTrainerClassSprites:
 	table_width 1, BTTrainerClassSprites
 	db SPRITE_KRIS          ; CARRIE
 	db SPRITE_CHRIS         ; CAL
+	db SPRITE_CRYS          ; JACKY
 	db SPRITE_FALKNER       ; FALKNER
 	db SPRITE_BUGSY         ; BUGSY
 	db SPRITE_WHITNEY       ; WHITNEY
@@ -26,9 +27,9 @@ BTTrainerClassSprites:
 	db SPRITE_BLUE          ; BLUE
 	db SPRITE_RED           ; RED
 	db SPRITE_LEAF          ; LEAF
-	db SPRITE_SILVER        ; RIVAL0
-	db SPRITE_SILVER        ; RIVAL1
-	db SPRITE_SILVER        ; RIVAL2
+	db SPRITE_RIVAL         ; RIVAL0
+	db SPRITE_RIVAL         ; RIVAL1
+	db SPRITE_RIVAL         ; RIVAL2
 	db SPRITE_LYRA          ; LYRA1
 	db SPRITE_LYRA          ; LYRA2
 	db SPRITE_YOUNGSTER     ; YOUNGSTER
@@ -99,6 +100,7 @@ BTTrainerClassSprites:
 	db SPRITE_TAMER         ; TAMER
 	db SPRITE_ARTIST        ; ARTIST
 	db SPRITE_AROMA_LADY    ; AROMA_LADY
+	db SPRITE_SOLDIER       ; SOLDIER
 	db SPRITE_COOL_DUDE     ; WAITER
 	db SPRITE_WAITRESS      ; WAITRESS
 	db SPRITE_SIGHTSEER_M   ; SIGHTSEERM
@@ -120,5 +122,5 @@ BTTrainerClassSprites:
 	db SPRITE_EUSINE        ; MYSTICALMAN
 	db SPRITE_BLACK_BELT    ; KARATE_KING
 	db SPRITE_PALMER        ; TOWERTYCOON
-	db SPRITE_DARACH        ; FACTORYHEAD (TODO: Thorton)
+	db SPRITE_THORTON       ; FACTORYHEAD
 	assert_table_length FACTORYHEAD

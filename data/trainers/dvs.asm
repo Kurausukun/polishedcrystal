@@ -2,9 +2,10 @@ TrainerClassDVsAndPersonality:
 ; entries correspond to trainer classes (see constants/trainer_constants.asm)
 	table_width 5, TrainerClassDVsAndPersonality
 	;  EVs  HP   Def  SAt
-	;  *    Atk  Spd  SDf  Gender
+	;  *    Atk  Spe  SDf  Gender
 	db 252, PERFECT_DVS,   FEMALE ; carrie
 	db 252, PERFECT_DVS,   MALE   ; cal
+	db 252, PERFECT_DVS,   MALE   ; jacky
 	db 252, $BB, $BB, $BB, MALE   ; falkner
 	db 252, $BB, $BB, $BB, MALE   ; bugsy
 	db 252, $CC, $CC, $CC, FEMALE ; whitney
@@ -101,6 +102,7 @@ TrainerClassDVsAndPersonality:
 	db  72, $DD, $DD, $DD, MALE   ; tamer
 	db  72, $DD, $DD, $DD, FEMALE ; artist
 	db  72, $DD, $DD, $DD, FEMALE ; aroma lady
+	db  72, $DD, $DD, $DD, MALE   ; soldier
 	db  72, $DD, $DD, $DD, MALE   ; waiter
 	db  72, $DD, $DD, $DD, FEMALE ; waitress
 	db  72, $DD, $DD, $DD, MALE   ; sightseerm
@@ -117,7 +119,7 @@ TrainerClassDVsAndPersonality:
 	db 112, $DD, $DD, $DD, FEMALE ; ariana
 	db 160, PERFECT_DVS,   MALE   ; giovanni
 	db 252, PERFECT_DVS,   MALE   ; prof oak
-	db 160, $CC, $CC, $CC, MALE   ; prof elm
+	db  32, $BB, $BB, $BB, MALE   ; prof elm
 	db 252, PERFECT_DVS,   FEMALE ; prof ivy
 	db  88, $DD, $DD, $DD, MALE   ; mysticalman
 	db  88, PERFECT_DVS,   MALE   ; karate king
@@ -146,6 +148,7 @@ TrainerClassDVsAndPersonality:
 	db 252, PERFECT_DVS,   FEMALE ; valerie
 	db 252, PERFECT_DVS,   MALE   ; kukui
 	db 252, $DD, $DD, $DD, MALE   ; piers
+	db 252, $DD, $DD, $DD, FEMALE ; katy
 	db 192, $EE, $EE, $EE, MALE   ; victor
 	db 252, PERFECT_DVS,   MALE   ; bill
 	db 252, $EE, $EE, $EE, FEMALE ; yellow

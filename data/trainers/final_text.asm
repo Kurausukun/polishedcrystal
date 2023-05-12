@@ -48,6 +48,7 @@ FinalText_SinglePhrases:
 	table_width 2, FinalText_SinglePhrases
 	dw CarrieFinalPkmnText
 	dw CalFinalPkmnText
+	dw JackyFinalPkmnText
 	dw FalknerFinalPkmnText
 	dw BugsyFinalPkmnText
 	dw WhitneyFinalPkmnText
@@ -102,6 +103,7 @@ FinalText_SinglePhrases:
 	dw ValerieFinalPkmnText
 	dw KukuiFinalPkmnText
 	dw PiersFinalPkmnText
+	dw KatyFinalPkmnText
 	dw NULL ; Victor
 	dw BillFinalPkmnText
 	dw YellowFinalPkmnText
