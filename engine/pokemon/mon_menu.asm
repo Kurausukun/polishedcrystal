@@ -133,7 +133,6 @@ SwitchPartyMons:
 
 	farcall InitPartySwap
 	call ApplyTilemapInVBlank
-	call SetPalettes
 	call DelayFrame
 
 	ld a, A_BUTTON | B_BUTTON | SELECT
@@ -149,6 +148,7 @@ SwitchPartyMons:
 	ld [wPartyMenuActionText], a
 
 	farcall LoadPartyMenuGFX
+	call SetPalettes
 	farcall InitPartyMenuWithCancel
 	farcall InitPartyMenuGFX
 
@@ -712,6 +712,10 @@ _OpenPartyStats:
 	ld a, TEMPMON
 	ld [wMonType], a
 	predef StatsScreenInit
+	; This ensures that MaxVolume works as it should if we're in the middle of
+	; playing a cry.
+	ld a, $77
+	ld [wLastVolume], a
 	call MaxVolume
 	call ExitMenu
 	xor a
