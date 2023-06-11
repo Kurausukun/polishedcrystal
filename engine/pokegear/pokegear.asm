@@ -1340,9 +1340,11 @@ _TownMap:
 	jmp TownMapJohtoFlips
 
 TownMap_InitFlyPossible:
-	lb de, FLY, HM_FLY
-	farcall CheckPartyMove
-	jr c, .no_fly
+	ld a, HM_FLY
+	ld [wCurItem], a
+	ld hl, wNumItems
+	call CheckItem
+	jr nc, .no_fly
 	ld de, ENGINE_STORMBADGE
 	farcall CheckBadge
 	jr c, .no_fly
