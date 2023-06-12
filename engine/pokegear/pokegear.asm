@@ -1341,9 +1341,8 @@ _TownMap:
 
 TownMap_InitFlyPossible:
 	ld a, HM_FLY
-	ld [wCurItem], a
-	ld hl, wNumItems
-	call CheckItem
+	ld [wCurTMHM], a
+	call CheckTMHM
 	jr nc, .no_fly
 	ld de, ENGINE_STORMBADGE
 	farcall CheckBadge
