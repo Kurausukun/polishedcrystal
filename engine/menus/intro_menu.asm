@@ -1216,14 +1216,6 @@ TitleScreenTimer:
 
 ; Start a timer
 	ld de, 73 * 60 + 36
-	ld a, [wSaveFileExists]
-	and a
-	jr z, .ok
-	ld hl, wStatusFlags
-	bit 6, [hl] ; hall of fame
-	jr z, .ok
-	ld de, 56 * 60
-.ok
 	ld hl, wTitleScreenTimer
 	ld a, e
 	ld [hli], a
