@@ -738,7 +738,7 @@ BrunoGroup:
 	dbp 55, MACHAMP
 		db LEFTOVERS
 		ev_spread 100 HP, 252 Atk
-		db ROCK_SLIDE, FORESIGHT, CROSS_CHOP, SWORDS_DANCE
+		db ROCK_SLIDE, FORESIGHT, CROSS_CHOP, BULK_UP
 	db -1 ; end
 
 	; BRUNO
@@ -2431,14 +2431,14 @@ BugCatcherGroup:
 	db "Arnie@"
 	db TRAINERTYPE_NORMAL
 	; party
-	dbp 15, VENONAT
+	dbp 16, VENONAT
 	db -1 ; end
 
 	; BUG_CATCHER
 	db "Arnie@"
 	db TRAINERTYPE_NORMAL
 	; party
-	dbp 19, VENONAT
+	dbp 20, VENONAT
 	db -1 ; end
 
 	; BUG_CATCHER
@@ -2586,9 +2586,9 @@ CamperGroup:
 	db "Ivan@"
 	db TRAINERTYPE_NORMAL
 	; party
-	dbp 10, DIGLETT
-	dbp 10, ZUBAT
-	dbp 14, DIGLETT
+	dbp 11, DIGLETT
+	dbp 11, ZUBAT
+	dbp 15, DIGLETT
 	db -1 ; end
 
 	; CAMPER
@@ -2885,7 +2885,7 @@ endc
 	db "Kim@"
 	db TRAINERTYPE_NORMAL
 	; party
-	dbp 15, VULPIX
+	dbp 17, VULPIX
 	db -1 ; end
 
 	; PICNICKER
@@ -4602,8 +4602,8 @@ OfficerMGroup:
 	db "Dirk@"
 	db TRAINERTYPE_NORMAL
 	; party
-	dbp 14, GROWLITHE
-	dbp 14, MACHOP
+	dbp 15, GROWLITHE
+	dbp 15, MACHOP
 	db -1 ; end
 
 
@@ -5957,9 +5957,9 @@ SchoolgirlGroup:
 	db "Molly@"
 	db TRAINERTYPE_NICKNAME
 	; party
-	dbp 6, TEDDIURSA
+	dbp 7, TEDDIURSA
 		db "Teddy@"
-	dbp 5, PHANPY
+	dbp 6, PHANPY
 		db "@"
 	db -1 ; end
 
@@ -6090,8 +6090,8 @@ PsychicGroup:
 	db "Phil@"
 	db TRAINERTYPE_NORMAL
 	; party
-	dbp 35, XATU
 	dbp 36, KADABRA
+	dbp 35, XATU
 	db -1 ; end
 
 	; PSYCHIC_T
@@ -6823,9 +6823,9 @@ BreederGroup:
 	db "Theresa@"
 	db TRAINERTYPE_ITEM | TRAINERTYPE_PERSONALITY
 	; party
-	dbp 14, MAGBY, FEMALE
+	dbp 15, MAGBY, FEMALE
 		db EVIOLITE, ABILITY_1 | NAT_NEUTRAL
-	dbp 14, ELEKID, FEMALE
+	dbp 16, ELEKID, FEMALE
 		db EVIOLITE, SHINY_MASK | ABILITY_1 | NAT_NEUTRAL
 	db -1 ; end
 
@@ -9064,11 +9064,11 @@ CooltrainerMGroup:
 	db "Finch@"
 	db TRAINERTYPE_ITEM | TRAINERTYPE_EVS | TRAINERTYPE_DVS | TRAINERTYPE_PERSONALITY | TRAINERTYPE_MOVES
 	; party
-	dbp LEVEL_FROM_BADGES + 3, GEODUDE, MALE
+	dbp LEVEL_FROM_BADGES + 4, GEODUDE, MALE
 		db AIR_BALLOON, $DD, $DD, $DD, ABIL_GEODUDE_STURDY | NAT_DEF_UP_SPE_DOWN
 		ev_spread 12 HP
 		db TACKLE, DEFENSE_CURL, MUD_SLAP, ROLLOUT
-	dbp LEVEL_FROM_BADGES + 4, MAREEP, MALE
+	dbp LEVEL_FROM_BADGES + 5, MAREEP, MALE
 		db AIR_BALLOON, $DD, $DD, $DD, ABIL_MAREEP_STATIC | NAT_SATK_UP_SDEF_DOWN
 		ev_spread 12 HP
 		db TACKLE, THUNDER_WAVE, THUNDERSHOCK, MUD_SLAP
@@ -10414,7 +10414,7 @@ endc
 		db NEVERMELTICE, ABILITY_1 | NAT_NEUTRAL
 		db IRON_HEAD, ICICLE_CRASH, EARTHQUAKE, RAPID_SPIN
 	dbp 76, AERODACTYL, MALE
-		db KINGS_ROCK, ABILITY_1 | NAT_NEUTRAL, MALE
+		db KINGS_ROCK, ABILITY_1 | NAT_NEUTRAL
 		db ROCK_SLIDE, CRUNCH, AERIAL_ACE, IRON_HEAD
 	dbp 80, STEELIX, MALE
 		db MUSCLE_BAND, ABILITY_1 | NAT_NEUTRAL

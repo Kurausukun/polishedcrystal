@@ -23,8 +23,7 @@ OaksLab_MapScriptHeader:
 	bg_event  8,  7, BGEVENT_JUMPSTD, difficultbookshelf
 	bg_event  9,  7, BGEVENT_JUMPSTD, difficultbookshelf
 	bg_event  4,  0, BGEVENT_JUMPTEXT, OaksLabPoster1Text
-	bg_event  5,  0, BGEVENT_JUMPTEXT, OaksLabPoster2Text
-	bg_event  9,  3, BGEVENT_JUMPTEXT, OaksLabTrashcanText
+	bg_event  5,  0, BGEVENT_JUMPTEXT, OaksLabPoster2Text	
 	bg_event  0,  1, BGEVENT_JUMPTEXT, OaksLabPCText
 
 	def_object_events
@@ -106,7 +105,7 @@ Oak:
 	special ProfOaksPCBoot
 	checkevent EVENT_GOT_OVAL_CHARM_FROM_OAK
 	iftruefwd .NoOvalCharm
-	setval16 NUM_SPECIES - 2
+	setval16 NUM_POKEMON
 	special CountSeen
 	iffalsefwd .NoOvalCharm
 	writetext OakLabSeenAllText
@@ -118,7 +117,7 @@ Oak:
 .NoOvalCharm
 	checkevent EVENT_GOT_SHINY_CHARM_FROM_OAK
 	iftruefwd .NoShinyCharm
-	setval16 NUM_SPECIES - 2
+	setval16 NUM_POKEMON
 	special CountCaught
 	iffalsefwd .NoShinyCharm
 	writetext OakLabCaughtAllText
@@ -504,11 +503,6 @@ OaksLabPoster2Text:
 
 	para "Use it in a timely"
 	line "manner."
-	done
-
-OaksLabTrashcanText:
-	text "There's nothing in"
-	line "here…"
 	done
 
 OaksLabPCText:

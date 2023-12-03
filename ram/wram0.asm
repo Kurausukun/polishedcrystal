@@ -298,10 +298,9 @@ wAttrmapEnd::
 
 
 SECTION UNION "Misc 480", WRAM0
-; misc
+; footprints
 
-wMisc:: ds (SCREEN_WIDTH + 4) * (SCREEN_HEIGHT + 2)
-wMiscEnd::
+wFootprintQueue:: ds 7
 
 
 SECTION UNION "Misc 480", WRAM0
@@ -479,8 +478,7 @@ wDamageTaken::
 	dw
 
 wBattleReward:: ds 3
-wBattleAnimParam::
-wKickCounter:: db
+wBattleAnimParam:: db
 
 wPartyBackupItems::
 ; Back up of party items before a battle. Modified in-battle for consumed/harvested.
@@ -875,6 +873,11 @@ SECTION UNION "Misc 480", WRAM0
 wUnownPuzzle::
 wPuzzlePieces:: ds 6 * 6
 wUnownPuzzleEnd::
+
+
+SECTION "Unused", WRAM0
+
+	ds 76
 
 
 SECTION UNION "Misc 1326", WRAM0
@@ -1349,7 +1352,9 @@ wTextboxFrame::
 	db
 wTextboxFlags::
 ; bit 0: 1-frame text delay
-; bit 4: no text delay
+; bit 1: no text delay
+; bit 2: no line spacing
+; bit 3: use bg map width
 	db
 
 wOptions2::

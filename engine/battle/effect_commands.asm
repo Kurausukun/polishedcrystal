@@ -199,7 +199,7 @@ BattleCommand_checkturn:
 	xor a
 	ld [wAttackMissed], a
 	ld [wEffectFailed], a
-	ld [wKickCounter], a
+	ld [wBattleAnimParam], a
 	ld [wAlreadyDisobeyed], a
 	ld [wAlreadyExecuted], a
 
@@ -1230,17 +1230,7 @@ UserValidBattleItem:
 
 	; Check exact species+form.
 	ld a, [hl]
-	xor b
-	jr z, .matched
-
-	; If this isn't just a form mismatch, species is wrong.
-	cp EXTSPECIES_MASK
-	jr nc, .next
-
-	; Otherwise, see if the table explicitly defines a form. If it doesn't,
-	; i.e. form=0, any form is OK.
-	xor b ; Reverses previous xor
-	and FORM_MASK
+	call CompareSpeciesForm
 	jr z, .matched
 .next
 	inc hl
@@ -1350,7 +1340,7 @@ BattleCommand_stab:
 	cp ADAPTABILITY
 	ld a, [wTypeMatchup]
 	jr nz, .no_adaptability
-	sla a
+	add a
 	ld [wTypeMatchup], a
 	jr .stab_done
 .no_adaptability
@@ -1635,7 +1625,7 @@ _CheckTypeMatchup:
 	jr .TypesLoop
 .se
 	ld a, [wTypeMatchup]
-	sla a
+	add a
 	ld [wTypeMatchup], a
 	jr .TypesLoop
 .nve
@@ -2238,7 +2228,7 @@ BattleCommand_lowersub:
 	ld [wNumHits], a
 	ld [wFXAnimIDHi], a
 	inc a
-	ld [wKickCounter], a
+	ld [wBattleAnimParam], a
 	ld a, SUBSTITUTE
 	jmp LoadAnim
 
@@ -2317,7 +2307,7 @@ BattleCommand_moveanimnosub:
 
 .normal_move
 	xor a
-	ld [wKickCounter], a
+	ld [wBattleAnimParam], a
 .pursuit
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
@@ -2339,10 +2329,10 @@ BattleCommand_moveanimnosub:
 .multihit
 .conversion
 .doublehit
-	ld a, [wKickCounter]
+	ld a, [wBattleAnimParam]
 	and 1
 	xor 1
-	ld [wKickCounter], a
+	ld [wBattleAnimParam], a
 	ld a, [de]
 	cp $1
 	push af
@@ -2369,7 +2359,7 @@ StatUpDownAnim:
 
 	xor a
 	ld [wNumHits], a
-	ld [wKickCounter], a
+	ld [wBattleAnimParam], a
 
 	ld a, BATTLE_VARS_MOVE_ANIM
 	call GetBattleVar
@@ -2390,7 +2380,7 @@ BattleCommand_raisesub:
 	ld [wNumHits], a
 	ld [wFXAnimIDHi], a
 	ld a, $2
-	ld [wKickCounter], a
+	ld [wBattleAnimParam], a
 	ld a, SUBSTITUTE
 	jmp LoadAnim
 
@@ -2575,7 +2565,7 @@ GetFailureResultText:
 	ld hl, CrashedText
 	call StdBattleTextbox
 	ld a, $1
-	ld [wKickCounter], a
+	ld [wBattleAnimParam], a
 	call LoadMoveAnim
 	ld c, $1
 	jmp TakeOpponentDamage
@@ -2998,7 +2988,7 @@ BattleCommand_postfainteffects:
 	ld [wNumHits], a
 	ld [wFXAnimIDHi], a
 	inc a
-	ld [wKickCounter], a
+	ld [wBattleAnimParam], a
 	ld a, DESTINY_BOND
 	call LoadAnim
 	call SwitchTurn
@@ -3673,9 +3663,7 @@ BattleCommand_damagestats:
 	ld b, a
 	ld c, [hl]
 
-if !DEF(FAITHFUL)
 	call HailDefenseBoost
-endc
 	call DittoMetalPowder
 	call UnevolvedEviolite
 
@@ -3824,17 +3812,13 @@ CheckAttackItemBoost:
 	push de
 	push hl
 	ld b, a
+	ld a, MON_ITEM
 	call TrueUserPartyAttr
 	cp b
 	pop hl
-	call z, SpeciesItemBoost
+	call z, TrueUserValidBattleItem
 	pop de
 	pop bc
-	ret
-
-SpeciesItemBoost:
-; Helper function for items boosting (Sp.) Atk, i.e. Thick Club/Light Ball.
-	call TrueUserValidBattleItem
 	ret nz
 
 	; Double the stat
@@ -5633,7 +5617,7 @@ BattleCommand_charge:
 	xor a
 	ld [wNumHits], a
 	inc a
-	ld [wKickCounter], a
+	ld [wBattleAnimParam], a
 	call LoadMoveAnim
 	ld a, BATTLE_VARS_MOVE_EFFECT
 	call GetBattleVar
@@ -6463,11 +6447,11 @@ AnimateCurrentMove:
 	push hl
 	push de
 	push bc
-	ld a, [wKickCounter]
+	ld a, [wBattleAnimParam]
 	push af
 	call BattleCommand_lowersub
 	pop af
-	ld [wKickCounter], a
+	ld [wBattleAnimParam], a
 	call LoadMoveAnim
 	call BattleCommand_raisesub
 	jmp PopBCDEHL

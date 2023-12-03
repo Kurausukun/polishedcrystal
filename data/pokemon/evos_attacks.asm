@@ -2626,8 +2626,8 @@ LickitungEvosAttacks:
 	db -1 ; no more level-up moves
 
 KoffingEvosAttacks:
-	evo_data EVOLVE_LEVEL, 35, WEEZING, PLAIN_FORM
 	evo_data EVOLVE_HOLDING, CHARCOAL, TR_ANYTIME, WEEZING, GALARIAN_FORM
+	evo_data EVOLVE_LEVEL, 35, WEEZING, PLAIN_FORM
 	db -1 ; no more evolutions
 	db 1, TACKLE
 	db 4, ACID ; Smog → new move
@@ -3168,10 +3168,10 @@ EeveeEvosAttacks:
 	evo_data EVOLVE_ITEM, LEAF_STONE, LEAFEON
 	evo_data EVOLVE_ITEM, ICE_STONE, GLACEON
 	evo_data EVOLVE_ITEM, SHINY_STONE, SYLVEON
-	evo_data EVOLVE_HAPPINESS, TR_MORNDAY, ESPEON
-	evo_data EVOLVE_HAPPINESS, TR_EVENITE, UMBREON
 	evo_data EVOLVE_LOCATION, ILEX_FOREST, LEAFEON
 	evo_data EVOLVE_LOCATION, ICE_PATH, GLACEON
+	evo_data EVOLVE_HAPPINESS, TR_MORNDAY, ESPEON
+	evo_data EVOLVE_HAPPINESS, TR_EVENITE, UMBREON
 	db -1 ; no more evolutions
 	db 1, GROWL
 	db 1, TACKLE
@@ -5274,6 +5274,7 @@ DelibirdEvosAttacks:
 	db 49, BELLY_DRUM
 	db 53, HURRICANE
 	db 57, BLIZZARD
+	db -1 ; no more level-up moves
 
 MantineEvosAttacks:
 	db -1 ; no more evolutions
@@ -5872,9 +5873,9 @@ BonslyEvosAttacks:
 	db -1 ; no more level-up moves
 
 MimeJrEvosAttacks:
+	evo_data EVOLVE_LOCATION, ICE_PATH, MR__MIME, GALARIAN_FORM
 	evo_data EVOLVE_LEVEL, 30, MR__MIME, PLAIN_FORM
 	evo_data EVOLVE_ITEM, ICE_STONE, MR__MIME, GALARIAN_FORM
-	evo_data EVOLVE_LOCATION, ICE_PATH, MR__MIME, GALARIAN_FORM
 	db -1 ; no more evolutions
 	db 1, BARRIER
 	db 1, CONFUSION
