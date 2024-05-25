@@ -231,7 +231,7 @@ wWalkingDirection:: db
 wFacingDirection:: db
 wWalkingX:: db
 wWalkingY:: db
-wWalkingTile:: db
+wWalkingTileCollision:: db
 	ds 6
 wPlayerTurningDirection:: db
 
@@ -358,11 +358,11 @@ wBattlePlayerAction::
 wSolvedUnownPuzzle::
 	db
 
-wVramState::
+wStateFlags::
 ; bit 0: overworld sprite updating on/off
-; bit 6: something to do with text
-; bit 7: on when surf initiates
-;        flickers when climbing waterfall
+; bit 1: last 12 sprite OAM structs reserved
+; bit 6: in text state
+; bit 7: in scripted movement
 	db
 
 wBattleResult::
@@ -492,8 +492,10 @@ wTempMonSlot:: db
 wDexCacheValid:: db
 wDexCacheSeen:: dw
 wDexCacheOwn:: dw
+wDexPrevCursorPos:: db
+wDexPrevOffset:: db
 
-	ds 34 ; unused
+	ds 32 ; unused
 
 wOverworldMapAnchor:: dw
 wMetatileStandingY:: db
@@ -795,7 +797,7 @@ wScriptFlags1::
 	db
 wScriptFlags2::
 	db
-wScriptFlags3::
+wEnabledPlayerEvents::
 ; bit 0: count steps
 ; bit 1: xy triggers
 ; bit 2: warps and connections
@@ -1171,7 +1173,7 @@ wPlayerCaught2:: db
 
 wUsedObjectPals:: db
 for n, 8
-wLoadedObjPal{d:n}:: db 
+wLoadedObjPal{d:n}:: db
 endr
 wNeededPalIndex:: db
 
@@ -1196,8 +1198,8 @@ wOWState:: dw
 wCurMapSceneScriptPointer:: dw
 
 wCurCaller:: dw
-wCurMapWarpCount:: db
-wCurMapWarpsPointer:: dw
+wCurMapWarpEventCount:: db
+wCurMapWarpEventsPointer:: dw
 wCurMapCoordEventCount:: db
 wCurMapCoordEventsPointer:: dw
 wCurMapBGEventCount:: db

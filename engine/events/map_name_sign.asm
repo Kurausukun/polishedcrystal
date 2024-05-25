@@ -194,7 +194,7 @@ PlaceMapNameSign::
 .stage_5_sliding_out
 	add a
 	cpl
-	add SCREEN_HEIGHT_PX + TILE_WIDTH + 1 ; a = SCREEN_HEIGHT_PX + TILE_WIDTH - a
+	add SCREEN_HEIGHT_PX + 1 ; a = SCREEN_HEIGHT_PX - a
 .got_value
 	ldh [rWY], a
 	ldh [hWY], a
@@ -276,7 +276,7 @@ LoadMapNameSignGFX:
 	rst AddNTimes ; preserves bc
 	ld de, wBGPals1 palette PAL_BG_TEXT
 	call FarCopyColorWRAM
-	jmp SetPalettes
+	jmp SetDefaultBGPAndOBP
 
 .continue
 	; save position in landmark name

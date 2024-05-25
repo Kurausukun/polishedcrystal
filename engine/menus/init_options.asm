@@ -44,7 +44,7 @@ SetInitialOptions:
 	farcall ApplyPals
 
 	call ApplyAttrAndTilemapInVBlank
-	call SetPalettes
+	call SetDefaultBGPAndOBP
 
 	ld hl, .InitialOptionsText
 	call PrintText
@@ -95,7 +95,7 @@ SetInitialOptions:
 
 ;	ld a, CGB_PLAIN
 ;	call GetCGBLayout
-;	call SetPalettes
+;	call SetDefaultBGPAndOBP
 
 	ld a, [wJumptableIndex]
 	push af
@@ -183,7 +183,7 @@ INCBIN "gfx/new_game/init_bg.2bpp.lz"
 	next1 "            :"
 	next1 "Exp. scaling"
 	next1 "            :"
-	next1 "IVs vary colors"
+	next1 "Color variation"
 	next1 "            :"
 	next1 "Perfect stats"
 	next1 "            :"

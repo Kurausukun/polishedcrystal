@@ -211,4 +211,8 @@ SFX:
 	fardw Sfx_Twinkle
 	fardw Sfx_Puddle
 	fardw Sfx_AbilitySlideout
+	fardw Sfx_CriticalCapture
+	fardw Sfx_StatUp
+	fardw Sfx_StatDown
+	fardw Sfx_Gravity
 	assert_table_length NUM_SFX

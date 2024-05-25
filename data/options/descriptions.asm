@@ -73,15 +73,24 @@ InitialOptionDescriptions:
 	prompt
 
 .InitialOptionDesc_ColorVariation:
-	text "Both normal and"
-	line "shiny #mon"
+	text "Individual #-"
+	line "mon, both regular"
+	cont "and shiny, will"
 
 	para "have their colors"
-	line "subtly varied"
-	cont "based on IVs."
+	line "subtly varied."
+
+	para "The variation is"
+	line "pseudorandom, not"
+
+	para "correlated with"
+	line "stat quality."
 
 	para "Inspired by"
-	line "Stadium."
+	line "Stadium's color"
+
+	para "variation based"
+	line "on nicknames."
 	prompt
 
 .InitialOptionDesc_PerfectIVs:

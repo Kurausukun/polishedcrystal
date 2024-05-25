@@ -210,4 +210,8 @@
 	const SFX_TWINKLE                     ; ce
 	const SFX_PUDDLE                      ; cf
 	const SFX_ABILITYSLIDEOUT             ; d0
+	const SFX_CRITICAL_CAPTURE            ; d1
+	const SFX_STAT_UP                     ; d2
+	const SFX_STAT_DOWN                   ; d3
+	const SFX_GRAVITY                     ; d4
 DEF NUM_SFX EQU const_value

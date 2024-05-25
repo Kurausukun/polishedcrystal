@@ -151,16 +151,16 @@ SkipUpdateMapSprites:
 	ret
 
 CheckUpdatePlayerSprite:
-	call .CheckBiking
+	call .CheckForcedBiking
 	jr c, .ok
 	call .CheckSurfing
 	jr c, .ok
-	call .CheckSurfing2
+	call .ResetSurfingOrBikingState
 	ret nc
 .ok
 	jmp UpdatePlayerSprite
 
-.CheckBiking:
+.CheckForcedBiking:
 	and a
 	ld hl, wOWState
 	bit OWSTATE_BIKING_FORCED, [hl]
@@ -170,7 +170,7 @@ CheckUpdatePlayerSprite:
 	scf
 	ret
 
-.CheckSurfing2:
+.ResetSurfingOrBikingState:
 	ld a, [wPlayerState]
 	and a ; cp PLAYER_NORMAL
 	jr z, .nope
@@ -246,17 +246,17 @@ DecompressMetatiles:
 	ret z
 	; fallthrough
 _DecompressMetatiles:
-	assert wDecompressedMetatiles == WRAM1_Begin
+	assert wDecompressedMetatiles == STARTOF(WRAMX)
 	ld hl, wTilesetBlocksAddress
 	ld c, BANK(wDecompressedMetatiles)
 	call .Decompress
 
-	assert wDecompressedAttributes == WRAM1_Begin
+	assert wDecompressedAttributes == STARTOF(WRAMX)
 	ld hl, wTilesetAttributesAddress
 	ld c, BANK(wDecompressedAttributes)
 	call .Decompress
 
-	assert wDecompressedCollisions == WRAM1_Begin
+	assert wDecompressedCollisions == STARTOF(WRAMX)
 	ld hl, wTilesetCollisionAddress
 	ld c, BANK(wDecompressedCollisions)
 	; fallthrough
