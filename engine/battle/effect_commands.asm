@@ -632,6 +632,11 @@ CheckOpponentAffection:
 CheckAffection:
 ; Returns an Affection level between 0-3.
 ; If affection level is 0, also return z.
+	; Affection has to be enabled.
+	ld a, [wInitialOptions]
+	bit AFFECTION_OPT, a
+	jr z, .no_affection
+
 	; Affection doesn't function in Link or Battle Tower battles.
 	ld a, [wLinkMode]
 	and a
@@ -3994,7 +3999,7 @@ WeatherDefenseBoost:
 	cp b
 	ld a, c
 	pop bc
-	ret z
+	ret nz
 	push bc
 	push de
 	push hl
