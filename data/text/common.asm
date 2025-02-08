@@ -3951,7 +3951,9 @@ SECTION "_MoveAskForgetText", ROMX
 _MoveAskForgetText::
 	text "Which move should"
 	next "be forgotten?"
-	prompt
+
+	para ""
+	done
 
 SECTION "_StopLearningMoveText", ROMX
 _StopLearningMoveText::
@@ -4541,17 +4543,17 @@ WonderTradePromptText::
 
 SECTION "WonderTradeCantTradeSpikyEaredPichuText", ROMX
 WonderTradeCantTradeSpikyEaredPichuText::
-    text "This Pichu appears"
-    line "to have traveled"
-    cont "through time."
+	text "This Pichu appears"
+	line "to have traveled"
+	cont "through time."
 
-    para "It would be risky"
-    line "to transfer it,"
+	para "It would be risky"
+	line "to transfer it,"
 
-    para "so it's best for"
-    line "Pichu to stay"
-    cont "where it is."
-    prompt
+	para "so it's best for"
+	line "Pichu to stay"
+	cont "where it is."
+	prompt
 
 ;SECTION "WonderTradeCantTradeEggText", ROMX
 ;WonderTradeCantTradeEggText::

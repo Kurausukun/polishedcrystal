@@ -2,24 +2,28 @@ INCLUDE "data/sprites/facings.asm"
 
 DeleteMapObject::
 	push bc
-	ld hl, OBJECT_MAP_OBJECT_INDEX
-	add hl, bc
-	ld a, [hl]
-	push af
 	ld h, b
 	ld l, c
-	ld bc, OBJECT_LENGTH
+	xor a
+	ld [hli], a
+	ld a, [hl]
+	push af
+	ld a, UNASSOCIATED_OBJECT
+	ld [hli], a
+	ld bc, OBJECT_LENGTH - 2
 	xor a
 	rst ByteFill
 	pop af
-	cp -1
+	cp UNASSOCIATED_OBJECT
+	jr z, .ok
+	cp TEMP_OBJECT
 	jr z, .ok
 	bit 7, a
 	jr nz, .ok
 	call GetMapObject
-	ld hl, OBJECT_SPRITE
+	ld hl, MAPOBJECT_OBJECT_STRUCT_ID
 	add hl, bc
-	ld [hl], -1
+	ld [hl], UNASSOCIATED_MAPOBJECT
 .ok
 	pop bc
 	farjp CheckForUsedObjPals
@@ -176,7 +180,7 @@ _HandleStepType:
 
 StepTypesJumptable:
 ; entries correspond to STEP_TYPE_* constants (see constants/map_object_constants.asm)
-	table_width 2, StepTypesJumptable
+	table_width 2
 	dw StepFunction_Reset           ; STEP_TYPE_RESET
 	dw StepFunction_FromMovement    ; STEP_TYPE_FROM_MOVEMENT
 	dw StepFunction_NPCWalk         ; STEP_TYPE_NPC_WALK
@@ -242,6 +246,19 @@ CopyCurCoordsToNextCoords:
 	add hl, bc
 	ld [hl], a
 	ret
+
+GrottoUpdatePlayerTallGrassFlags::
+	ld bc, wPlayerStruct
+	ld hl, OBJECT_MAP_X
+	add hl, bc
+	ld d, [hl]
+	ld hl, OBJECT_MAP_Y
+	add hl, bc
+	ld e, [hl]
+	push bc
+	call GetCoordTileCollision
+	pop bc
+	jr SetTallGrassFlags
 
 UpdateTallGrassFlags:
 	ld hl, OBJECT_FLAGS2
@@ -437,7 +454,9 @@ RestoreDefaultMovement:
 	ld hl, OBJECT_MAP_OBJECT_INDEX
 	add hl, bc
 	ld a, [hl]
-	cp -1
+	cp UNASSOCIATED_OBJECT
+	jr z, .ok
+	cp TEMP_OBJECT
 	jr z, .ok
 	push bc
 	call GetMapObject
@@ -526,7 +545,7 @@ endr
 
 .Pointers:
 ; entries correspond to SPRITEMOVEFN_* constants (see constants/map_object_constants.asm)
-	table_width 2, StepFunction_FromMovement.Pointers
+	table_width 2
 	dw DoNothing                     ; SPRITEMOVEFN_00
 	dw .RandomWalkY                  ; SPRITEMOVEFN_RANDOM_WALK_Y
 	dw .RandomWalkX                  ; SPRITEMOVEFN_RANDOM_WALK_X
@@ -1341,6 +1360,9 @@ StepFunction_Skyfall:
 	ld hl, OBJECT_STEP_DURATION
 	add hl, bc
 	ld [hl], 16
+	ld hl, OBJECT_FLAGS2
+	add hl, bc
+	set HIGH_PRIORITY_F, [hl]
 	call IncrementObjectStructField1c
 .Step:
 	ld hl, OBJECT_STEP_DURATION
@@ -1384,6 +1406,9 @@ StepFunction_Skyfall:
 	ld hl, OBJECT_SPRITE_Y_OFFSET
 	add hl, bc
 	ld [hl], 0
+	ld hl, OBJECT_FLAGS2
+	add hl, bc
+	res HIGH_PRIORITY_F, [hl]
 	ld hl, OBJECT_STEP_TYPE
 	add hl, bc
 	ld [hl], STEP_TYPE_FROM_MOVEMENT
@@ -2129,11 +2154,12 @@ InitTempObject:
 
 CopyTempObjectData:
 ; load into wTempObjectCopy:
-; -1, -1, [de], [de + 1], [de + 2], [hMapObjectIndexBuffer], [NextMapX], [NextMapY], -1
+; TEMP_OBJECT, -1, [de], [de + 1], [de + 2], [hMapObjectIndexBuffer], [NextMapX], [NextMapY], -1
 ; This spawns the object at the same place as whichever object is loaded into bc.
 	ld hl, wTempObjectCopyMapObjectIndex
-	ld a, -1
+	ld a, TEMP_OBJECT
 	ld [hli], a
+	ld a, -1
 	ld [hli], a
 	ld a, [de]
 	inc de
@@ -2207,7 +2233,7 @@ RespawnObject:
 	ld hl, MAPOBJECT_OBJECT_STRUCT_ID
 	add hl, bc
 	ld a, [hl]
-	cp -1
+	cp UNASSOCIATED_MAPOBJECT
 	ret z
 	cp NUM_OBJECT_STRUCTS
 	ret nc
@@ -2481,6 +2507,8 @@ ContinueSpawnFacing:
 	jmp SetSpriteDirection
 
 StartFollow::
+	ld hl, wPlayerFlags + 1
+	set HIGH_PRIORITY_F, [hl]
 	push bc
 	ld a, b
 	call SetLeaderIfVisible
@@ -2514,6 +2542,8 @@ SetFollowerIfVisible:
 	ret
 
 StopFollow::
+	ld hl, wPlayerFlags + 1
+	res HIGH_PRIORITY_F, [hl]
 	ld a, -1
 	ld [wObjectFollow_Leader], a
 	; fallthrough
@@ -2609,7 +2639,9 @@ ResetObject:
 	ld hl, OBJECT_MAP_OBJECT_INDEX
 	add hl, bc
 	ld a, [hl]
-	cp -1
+	cp UNASSOCIATED_OBJECT
+	jr z, .set_standing
+	cp TEMP_OBJECT
 	jr z, .set_standing
 	push bc
 	call GetMapObject

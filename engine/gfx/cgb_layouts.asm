@@ -13,7 +13,7 @@ LoadCGBLayout::
 	call StackJumpTable
 
 .Jumptable:
-	table_width 2, LoadCGBLayout.Jumptable
+	table_width 2
 	dw _CGB_BattleGrayscale
 	dw _CGB_BattleColors
 	dw _CGB_PokegearPals
@@ -261,13 +261,13 @@ _CGB_FinishBattleScreenLayout:
 	xor a ; PAL_BATTLE_BG_PLAYER
 	call FillBoxWithByte
 
-	hlcoord 10, 0, wAttrmap
-	lb bc, 7, 10
+	hlcoord 11, 0, wAttrmap
+	lb bc, 7, 9
 	ld a, PAL_BATTLE_BG_ENEMY
 	call FillBoxWithByte
 
 	hlcoord 0, 0, wAttrmap
-	lb bc, 4, 10
+	lb bc, 4, 11
 	ld a, PAL_BATTLE_BG_ENEMY_HP
 	call FillBoxWithByte
 
@@ -1248,7 +1248,7 @@ GetBillsPCThemePalette:
 	ret
 
 .ThemePals:
-	table_width PAL_COLOR_SIZE * 4, GetBillsPCThemePalette.ThemePals
+	table_width PAL_COLOR_SIZE * 4
 INCLUDE "gfx/pc/themes.pal"
 	assert_table_length NUM_BILLS_PC_THEMES
 
