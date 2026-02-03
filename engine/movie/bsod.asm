@@ -8,16 +8,16 @@ BSOD:
 
 	call ClearTileMap
 
-	ldh a, [rSVBK]
+	ldh a, [rWBK]
 	push af
 	ld a, 5
-	ldh [rSVBK], a
+	ldh [rWBK], a
 	ld hl, BSODPalette
 	ld de, wBGPals2
 	ld bc, 1 palettes
 	rst CopyBytes
 	pop af
-	ldh [rSVBK], a
+	ldh [rWBK], a
 
 	ld a, 1
 	ldh [hCGBPalUpdate], a
@@ -71,13 +71,13 @@ PrintNum_NoHRAM:
 	call .print_digit
 	ld b, 10
 	call .print_digit
-	add "0"
+	add '0'
 	ld [hl], a
 	pop af
 	ret
 
 .print_digit:
-	ld [hl], "0" - 1
+	ld [hl], '0' - 1
 .loop
 	inc [hl]
 	sub b
@@ -125,7 +125,9 @@ BSODErrorStrings:
 	dr .ChecksumMismatch ; ERR_CHECKSUM_MISMATCH
 	dr .OldBox           ; ERR_OLDBOX
 	dr .NewBox           ; ERR_NEWBOX
-	dr .WinStackOverflow ; ERR_WINSTACK_OVERFLOW
+	dr .WindowOverflow   ; ERR_WINDOW_OVERFLOW
+	dr .WindowUnderflow  ; ERR_WINDOW_UNDERFLOW
+	dr .SRAMMismatch     ; ERR_SRAM_MISMATCH
 	dr .UnknownError     ; unknown
 	assert_table_length NUM_ERR_CODES + 1
 
@@ -139,5 +141,7 @@ BSODErrorStrings:
 .ChecksumMismatch: text "Checksum mismatch@"
 .OldBox:           text "Old PC Box storage@"
 .NewBox:           text "Fatal PC Box error@"
-.WinStackOverflow: text "Win.stack overflow@"
+.WindowOverflow:   text "Window overflow@"
+.WindowUnderflow:  text "Window underflow@"
+.SRAMMismatch:     text "SRAM/WRAM mismatch@"
 .UnknownError:     text "Unknown error@"
